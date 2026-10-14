@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.andrew.enzona.core.logging.logger
 import org.andrew.enzona.core.result.EzResult
 import org.andrew.enzona.core.result.userMessage
 import org.andrew.enzona.core.util.Cancellable
@@ -26,6 +27,8 @@ sealed interface LoginUiState {
 class LoginViewModel(
     private val session: SessionRepository,
 ) : ViewModel() {
+    private val log = logger<LoginViewModel>()
+
     private val _state = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
     val state: StateFlow<LoginUiState> = _state.asStateFlow()
 
@@ -49,6 +52,8 @@ class LoginViewModel(
 
     /** La UI nativa cancela o falla el login. */
     fun onAuthFailed(message: String) {
+        // El texto lo aporta el navegador/IdP (p. ej. `oauthErrorMsg`): solo en Debug.
+        log.debug("Motivo del fallo en el navegador: {Motivo}", message)
         session.cancelLogin()
         _state.value = LoginUiState.Error(message)
     }

@@ -6,8 +6,6 @@ import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.plugin
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -34,8 +32,7 @@ interface TokenProvider {
 private fun HttpClientConfig<*>.installBase() {
     expectSuccess = false
     install(ContentNegotiation) { json(enzonaJson) }
-    // Nivel INFO: método, URL y status. Nunca HEADERS/BODY (llevarían tokens y contraseñas).
-    install(Logging) { level = LogLevel.INFO }
+    install(RequestLogging)
 }
 
 /**

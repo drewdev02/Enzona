@@ -125,7 +125,7 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 - ☐ i18n (es/en), formato de moneda/fecha.
 - ☐ Tests: unit (domain/usecases), contract (DTOs vs esquemas verificados), auth flow.
 - ☐ CI (build Android + framework iOS), lint/format.
-- ☐ Observabilidad (Napier) sin filtrar datos sensibles.
+- ☑ Observabilidad: logger estilo .NET (`core/logging`, Kermit debajo) con `Sensitive<T>`, logging de red sin ruta ni cabeceras y tests de redacción (ver ARCHITECTURE §4). Pendiente: sink a archivo / "compartir logs", y la regla keep si se activa R8.
 
 ## Orden recomendado
 **M0 → M1** primero (prueban toda la arquitectura). Luego M2 como plantilla de feature;

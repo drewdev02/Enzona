@@ -3,13 +3,13 @@ package org.andrew.enzona.feature.auth.data
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.forms.submitForm
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.http.URLBuilder
 import kotlinx.coroutines.CancellationException
 import org.andrew.enzona.core.EnzonaConfig
 import org.andrew.enzona.core.crypto.Pkce
+import org.andrew.enzona.core.logging.logger
 import org.andrew.enzona.core.result.EzResult
 import org.andrew.enzona.core.result.Failure
 import org.andrew.enzona.feature.auth.data.dto.TokenDto
@@ -20,6 +20,7 @@ import org.andrew.enzona.feature.auth.data.dto.TokenDto
  * aquí se construye la URL de authorize y se canjea/renueva el token (form-urlencoded).
  */
 class OAuthService(private val client: HttpClient) {
+    private val log = logger<OAuthService>()
 
     /** URL que la UI nativa abre en Custom Tabs / ASWebAuthenticationSession. */
     fun authorizeUrl(pkce: Pkce): String {
@@ -61,11 +62,14 @@ class OAuthService(private val client: HttpClient) {
         if (resp.status == HttpStatusCode.OK) {
             EzResult.Success(resp.body<TokenDto>())
         } else {
-            EzResult.Error(Failure.Auth("Token HTTP ${resp.status.value}: ${resp.bodyAsText()}"))
+            // Sin el cuerpo: lo muestra la UI y lo leen los logs, y un error del IdP puede repetir
+            // datos de la solicitud (code, verifier). El estado HTTP basta para diagnosticar.
+            EzResult.Error(Failure.Auth("El servidor de identidad rechazó la solicitud (HTTP ${resp.status.value})."))
         }
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
+        log.warn("Fallo de red hablando con el IdP: {Tipo}", e::class.simpleName)
         EzResult.Error(Failure.Network(e.message))
     }
 }
