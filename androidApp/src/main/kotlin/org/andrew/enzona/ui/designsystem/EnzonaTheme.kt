@@ -36,6 +36,9 @@ fun EnzonaTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable
         darkColorScheme(
             primary = c.primary, onPrimary = c.onPrimary,
             primaryContainer = c.primaryContainer, onPrimaryContainer = c.onPrimaryContainer,
+            // Sin esto Material usa su lavanda por defecto en los botones secundarios.
+            secondary = c.primary, onSecondary = c.onPrimary,
+            secondaryContainer = c.primaryContainer, onSecondaryContainer = c.onPrimaryContainer,
             background = c.background, onBackground = c.onSurface,
             surface = c.surface, onSurface = c.onSurface,
             surfaceVariant = c.surfaceVariant, onSurfaceVariant = c.onSurfaceVariant,
@@ -47,6 +50,9 @@ fun EnzonaTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable
         lightColorScheme(
             primary = c.primary, onPrimary = c.onPrimary,
             primaryContainer = c.primaryContainer, onPrimaryContainer = c.onPrimaryContainer,
+            // Sin esto Material usa su lavanda por defecto en los botones secundarios.
+            secondary = c.primary, onSecondary = c.onPrimary,
+            secondaryContainer = c.primaryContainer, onSecondaryContainer = c.onPrimaryContainer,
             background = c.background, onBackground = c.onSurface,
             surface = c.surface, onSurface = c.onSurface,
             surfaceVariant = c.surfaceVariant, onSurfaceVariant = c.onSurfaceVariant,
