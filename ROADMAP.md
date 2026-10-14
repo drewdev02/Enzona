@@ -26,24 +26,26 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 
 ---
 
-## M1 · Autenticación (end-to-end)  ◧ EN CURSO
+## M1 · Autenticación (end-to-end)  ✅ CÓDIGO COMPLETO · ◧ falta prueba de login real
 **Meta:** login real con OAuth/PKCE + sesión persistente, UI nativa en cada plataforma.
 
 - ⛔ ~~Plugin SKIE~~ → **no compatible con Kotlin 2.4.20/AGP 9**; se usa un **puente manual** (`core/util/FlowBridge.kt`: `Cancellable` + `StateFlow.watch`). Migrar a SKIE cuando soporte Kotlin 2.4.
-- ☐ Endurecer `SecureStorage`: Keystore (Android) / Keychain (iOS) antes de guardar tokens reales. *(pendiente)*
-- ☑ `core/crypto/Pkce`: code_verifier + S256 challenge (okio).
+- ☑ `core/crypto/Pkce`: S256 (okio). **Verificado contra el vector de la RFC 7636** (test, Android + iOS).
 - ☑ `feature/auth/data/OAuthService`: authorize URL + exchange + refresh (form-urlencoded).
-- ☑ `feature/auth/data/TokenStore` sobre `SecureStorage` (access/refresh/id_token).
-- ☐ `core/network`: plugin de auth con **refresh automático** ante 401. *(pendiente — M1 cont.)*
-- ☑ `feature/auth/presentation/AuthViewModel` + `AuthUiState` (StateFlow) + intents.
-- ☑ Android: **Custom Tabs** + deep link `apk-callback` (intent-filter + onNewIntent) → `onRedirectCode`.
-- ☑ iOS: **WKWebView** (ASWebAuthenticationSession no capta `http://`) + observación vía `watchState`.
-- ☑ Restaurar sesión al arranque (`restore()`).
-- ☐ Renovar con refresh_token de forma automática. *(pendiente — junto al plugin de auth)*
+- ☑ `feature/auth/data/TokenStore` sobre `SecureStorage`.
+- ☑ **Refresh automático ante 401**: interceptor `HttpSend` (no el plugin `Auth` de Ktor, que cachea tokens). Un cliente sin auth para el IdP y otro para la API; refresh serializado con mutex; un solo reintento; el token solo viaja al host de la API. 5 tests (Android + iOS).
+- ☑ Sesión caducada: si el servidor rechaza el refresh se borran los tokens y se vuelve al login con aviso; un fallo de red **no** cierra la sesión.
+- ☑ `AuthViewModel` + `AuthUiState` (StateFlow) + intents; restaurar sesión al arranque.
+- ☑ Android: **Custom Tabs** + deep link `apk-callback`; pantallas Compose.
+- ☑ iOS: **WKWebView** (ASWebAuthenticationSession no capta `http://`); pantallas SwiftUI. **El Swift compila** contra el framework real (`xcodebuild`).
+- ☑ **SecureStorage endurecido**: Android = AES-256-GCM con clave en el **Android Keystore**; iOS = **Keychain** (`AfterFirstUnlockThisDeviceOnly`). `allowBackup=false`.
+  - Verificado **dentro de la app real** (emulador Android y simulador iOS): guardar/leer con unicode, sobrescribir, borrar; en Android el valor no queda en claro en disco.
+  - ⚠ No hay test automatizado del Keychain/Keystore: el Keychain no está disponible en el proceso de test de línea de comandos (`errSecNotAvailable`) y el Keystore necesita dispositivo. Se probó con un probe temporal, ya retirado.
+- ☐ **Pendiente — probar el login real** (portal OAuth + SMS OTP) en emulador/simulador con una cuenta propia. Nada del flujo completo contra el IdP se ha ejecutado aún en la app KMP; lo validado es cada pieza por separado y el flujo equivalente en el PoC de macOS.
+- ☐ `client_id` propio (hoy se usa el del APK oficial como marcador).
 
-**Done cuando:** login real en Android e iOS, token en Keychain/Keystore, re-arranque sin re-login.
-(Login multi-paso con **SMS OTP**: se honra, no se evita.) · Builds verdes: Android `assembleDebug`,
-framework iOS linkeado; app iOS se compila en Xcode.
+**Done cuando:** login real en Android e iOS con token en Keychain/Keystore y re-arranque sin re-login.
+(Login multi-paso con **SMS OTP**: se honra, no se evita.)
 
 ---
 
