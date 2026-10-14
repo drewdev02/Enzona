@@ -201,5 +201,63 @@
       "sha256": "35d94180f382852b41abd3d69196981c514090df7f00a85da72328fe3d35618d",
       "key": "clasica"
     }
+  ],
+  "operation_icons": [
+    {
+      "resource": "op_transfer",
+      "source": "assets/flutter_assets/assets/images/iconos/ic_tranferencia.png",
+      "width": 777,
+      "height": 777,
+      "sha256": "b42c0b10e4fd186197417deb6869f3e821127699c33c9ac278dc34011c0865d3",
+      "key": "op_transfer"
+    },
+    {
+      "resource": "op_mobile",
+      "source": "assets/flutter_assets/assets/images/iconos/ic_pago_telefono.png",
+      "width": 777,
+      "height": 777,
+      "sha256": "1a057dc192ba59396ecf23dde3b68332f435a1fe28c58eda0e8ddec8c1ff61b2",
+      "key": "op_mobile"
+    },
+    {
+      "resource": "op_payroll",
+      "source": "assets/flutter_assets/assets/images/iconos/ic_nomina_verde.png",
+      "width": 777,
+      "height": 777,
+      "sha256": "b9838afaad8495bfced5d86b2ae1bf8c7db6466bc2b86fbbf0eae841a1da849e",
+      "key": "op_payroll"
+    },
+    {
+      "resource": "op_pos",
+      "source": "assets/flutter_assets/assets/images/iconos/ic_pos.png",
+      "width": 777,
+      "height": 777,
+      "sha256": "ac31b9f8a810d051b01fad9c4cd4b0a0e4825edd4f85dd7eeccacba0961c93a9",
+      "key": "op_pos"
+    },
+    {
+      "resource": "op_withdrawal",
+      "source": "assets/flutter_assets/assets/images/iconos/ic_extraccion.png",
+      "width": 777,
+      "height": 777,
+      "sha256": "d40ee13e31636880acb8e1e82d30f73e2f500e2b1d6f89a45359adfd5dbeac6b",
+      "key": "op_withdrawal"
+    },
+    {
+      "resource": "op_merchant",
+      "source": "assets/flutter_assets/assets/images/iconos/ic_pago_comercio.png",
+      "width": 777,
+      "height": 777,
+      "sha256": "f75e69f08adac492dc9807be2901b52822c132ad48ee67c650b237f2cfc98f63",
+      "key": "op_merchant"
+    },
+    {
+      "resource": "op_ez",
+      "source": "assets/flutter_assets/assets/images/iconos/ic_enzona_new.png",
+      "width": 257,
+      "height": 257,
+      "sha256": "12ceead3f0f9ff29d5a7b3d1a75da6478184961f9251dd9ae77684396c3e9762",
+      "key": "op_ez"
+    }
   ]
 }

@@ -5,10 +5,13 @@ sobran recursos huérfanos. Sale con código 1 si algo no cuadra.
 
     python3 tools/check_assets.py
 
-Dos grupos:
+Tres grupos:
 - Casillas del inicio: `HomeService` (sharedLogic)  ->  `service_<nombre en minúsculas>`
 - Skins de tarjeta:    `CardSkin`   (sharedLogic)  ->  `card_skin_<nombre en minúsculas>` (GENERIC no tiene imagen)
+- Iconos de operación: `op_*` según `tools/assets_manifest.json` (existen en ambas plataformas, mismo sha256)
 """
+import hashlib
+import json
 import re
 import sys
 from pathlib import Path
@@ -50,6 +53,28 @@ for prefix, (label, names, expected_count) in groups.items():
         if not (IOS / f"{n}.imageset" / f"{n}.png").is_file():
             problems.append(f"iOS: {n}.imageset no contiene {n}.png")
     print(f"{label}: {len(names)} | Android: {len(android)} | iOS: {len(ios)}")
+
+# Iconos de operación: no hay enum compartido (el dominio no conoce nombres de iconos); la fuente de verdad
+# es el manifiesto. Cada entrada debe existir en Android e iOS con el mismo contenido (sha256) y no sobrar ninguno.
+manifest = json.loads((ROOT / "tools/assets_manifest.json").read_text())
+ops = {e["resource"]: e["sha256"] for e in manifest.get("operation_icons", [])}
+if not ops:
+    problems.append("operaciones: el manifiesto no trae operation_icons")
+android_ops = {p.stem: p for p in ANDROID.glob("op_*.png")}
+ios_ops = {p.name.removesuffix(".imageset"): p / p.name.replace(".imageset", ".png")
+           for p in IOS.glob("op_*.imageset")}
+for plat, have in (("Android", android_ops), ("iOS", ios_ops)):
+    for name in sorted(set(ops) - set(have)):
+        problems.append(f"{plat}: falta {name}")
+    for name in sorted(set(have) - set(ops)):
+        problems.append(f"{plat}: recurso huérfano {name}")
+    for name in sorted(set(ops) & set(have)):
+        path = have[name]
+        if not path.is_file():
+            problems.append(f"{plat}: {name} no contiene su PNG")
+        elif hashlib.sha256(path.read_bytes()).hexdigest() != ops[name]:
+            problems.append(f"{plat}: {name} no coincide con el sha256 del manifiesto")
+print(f"operaciones: {len(ops)} | Android: {len(android_ops)} | iOS: {len(ios_ops)}")
 
 print("OK" if not problems else "\n".join("FALLA: " + p for p in problems))
 sys.exit(1 if problems else 0)
