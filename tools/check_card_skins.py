@@ -40,6 +40,8 @@ ZONES = {
 }
 # Campo declarado en CardSkin.kt -> zonas que cubre.
 ZONES_OF_FIELD = {"number": ["number"], "text": ["name", "info"], "menu": ["menu"]}
+DEFAULT_INSET = 0.044   # = DEFAULT_NUMBER_INSET en CardSkin.kt
+NUMBER_WIDTH = 0.636    # ancho que ocupa "**** **** **** 1234" (de 0.044 a 0.68)
 SCRIM = 0.35   # opacidad del velo negro tras el icono cuando `menuScrim = true` (debe igualar a la UI)
 
 
@@ -102,8 +104,10 @@ def contrast(l1, l2):
     return (a + 0.05) / (b + 0.05)
 
 
-def zone_luminances(px, w, h, zone):
+def zone_luminances(px, w, h, zone, number_inset=None):
     u0, u1, v0, v1, _ = ZONES[zone]
+    if zone == "number" and number_inset is not None:      # el número puede empezar más a la derecha
+        u0, u1 = number_inset, number_inset + NUMBER_WIDTH
     crop = (CARD_RATIO and (1 / CARD_RATIO) / (w / h))        # fracción visible del ancho (cover)
     out = []
     for yi in range(8):
@@ -148,10 +152,11 @@ def declared():
     src = SKIN_KT.read_text()
     out = {}
     pat = (r"^\s+([A-Z][A-Z0-9_]*)\(\s*number = CardInk\.(\w+),\s*text = CardInk\.(\w+),\s*"
-           r"menu = CardInk\.(\w+)(?:,\s*menuScrim = (true|false))?\s*\)")
+           r"menu = CardInk\.(\w+)(?:,\s*menuScrim = (true|false))?(?:,\s*numberInset = ([0-9.]+)f)?\s*\)")
     for m in re.finditer(pat, src, re.M):
         out[m.group(1).lower()] = dict(number=m.group(2), text=m.group(3), menu=m.group(4),
-                                       scrim=(m.group(5) == "true"))
+                                       scrim=(m.group(5) == "true"),
+                                       inset=float(m.group(6)) if m.group(6) else DEFAULT_INSET)
     return out
 
 
@@ -167,7 +172,7 @@ def verify():
         for field, zones in ZONES_OF_FIELD.items():
             ink = decl[key][field]
             for zone in zones:
-                lums = zone_luminances(px, w, h, zone)
+                lums = zone_luminances(px, w, h, zone, decl[key]["inset"])
                 note = ""
                 if field == "menu" and decl[key]["scrim"]:
                     lums, note = with_scrim(lums), " +velo"
