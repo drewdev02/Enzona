@@ -1,29 +1,37 @@
 import SwiftUI
 import SharedLogic
 
-/// Raíz de la zona autenticada: conecta el ViewModel de Kotlin con las pantallas.
+/// Raíz de la zona autenticada: conecta el ViewModel y el modelo compartido con las pantallas.
 struct HomeView: View {
     let onLogout: () -> Void
     @StateObject private var profile = ProfileModel()
+    @State private var comingSoon: String?
 
-    private var dashboardContent: DashboardView.Content {
-        switch profile.phase {
-        case .loading: return .loading
-        case .content(let account): return .greeting("Hola, \(account.fullName)")
-        case .error(let message): return .error(message)
-        }
+    /// Orden y etiquetas vienen del enum compartido `HomeService` (una sola fuente).
+    private let services: [EzServiceItem] = HomeServices.shared.all.map {
+        EzServiceItem(id: $0.iconKey, title: $0.label, imageName: $0.iconKey)
     }
 
     var body: some View {
         MainTabView(
             home: {
                 // Escanear / Recibir llegan con el hito de QR (M5).
-                DashboardView(content: dashboardContent, onRetry: { profile.load() })
+                DashboardView(services: services, onService: { item in
+                    // La navegación de cada servicio se añade con su hito; hasta entonces avisa.
+                    comingSoon = item.title
+                })
             },
             profile: {
                 NavigationStack { ProfileView(profile: profile, onLogout: onLogout) }
             }
         )
-        .onAppear { profile.load() }
+        .alert(
+            "Próximamente",
+            isPresented: Binding(get: { comingSoon != nil }, set: { if !$0 { comingSoon = nil } })
+        ) {
+            Button("Entendido", role: .cancel) {}
+        } message: {
+            Text("\(comingSoon ?? "") estará disponible próximamente.")
+        }
     }
 }

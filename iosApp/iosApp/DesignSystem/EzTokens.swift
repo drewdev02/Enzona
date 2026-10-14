@@ -46,6 +46,8 @@ enum Ez {
         static let brandBadge: CGFloat = 80
         static let heroGlyph: CGFloat = 64
         static let heroActionsHeight: CGFloat = 172
+        /// Icono de una casilla de servicio (el PNG ya trae su marco y sombra).
+        static let serviceIcon: CGFloat = 72
     }
 
     enum Elevation {

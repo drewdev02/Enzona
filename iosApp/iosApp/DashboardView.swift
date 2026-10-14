@@ -2,16 +2,10 @@ import SwiftUI
 
 /// Pantalla de inicio. Sin estado ni dependencias del framework Kotlin: por eso se puede previsualizar.
 struct DashboardView: View {
-    enum Content {
-        case loading
-        case greeting(String)
-        case error(String)
-    }
-
-    let content: Content
+    let services: [EzServiceItem]
     var onScan: () -> Void = {}
     var onReceive: () -> Void = {}
-    var onRetry: () -> Void = {}
+    var onService: (EzServiceItem) -> Void = { _ in }
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -36,9 +30,12 @@ struct DashboardView: View {
                     UnevenRoundedRectangle(topLeadingRadius: Ez.Radius.sheet, topTrailingRadius: Ez.Radius.sheet)
                         .fill(Ez.Palette.surface)
                         .ignoresSafeArea(edges: .bottom)
-                    sheetContent
-                        .padding(.top, Ez.Size.brandBadge / 2 + Ez.Space.sm)
-                        .padding(.horizontal, Ez.Space.xl)
+                    ScrollView {
+                        EzServiceGrid(items: services, onTap: onService)
+                            .padding(.horizontal, Ez.Space.lg)
+                            .padding(.top, Ez.Size.brandBadge / 2 + Ez.Space.xl)
+                            .padding(.bottom, Ez.Space.lg)
+                    }
                     BrandBadge()
                         .offset(y: -Ez.Size.brandBadge / 2)
                 }
@@ -49,36 +46,22 @@ struct DashboardView: View {
     private func action(_ title: String, symbol: String, handler: @escaping () -> Void) -> some View {
         Button(action: handler) {
             VStack(spacing: Ez.Space.sm) {
-                Image(systemName: symbol).font(.system(size: Ez.Size.heroGlyph, weight: .light))
+                // Marco fijo: los dos símbolos miden distinto y sus etiquetas quedarían desalineadas.
+                Image(systemName: symbol)
+                    .font(.system(size: Ez.Size.heroGlyph, weight: .light))
+                    .frame(width: Ez.Size.heroGlyph + Ez.Space.md, height: Ez.Size.heroGlyph + Ez.Space.md)
                 Text(title).font(Ez.Typography.titleMedium)
             }
             .foregroundStyle(.white)
+            // La cabecera tiene altura fija: con texto enorme la etiqueta chocaría con la insignia.
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         }
         .buttonStyle(.plain)
     }
-
-    @ViewBuilder
-    private var sheetContent: some View {
-        switch content {
-        case .loading:
-            EzLoadingState()
-        case .greeting(let text):
-            VStack(alignment: .leading, spacing: Ez.Space.sm) {
-                Text(text).font(Ez.Typography.headlineMedium).foregroundStyle(Ez.Palette.onSurface)
-                Text("Tus tarjetas y movimientos aparecerán aquí.")
-                    .font(Ez.Typography.bodyMedium)
-                    .foregroundStyle(Ez.Palette.onSurfaceVariant)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        case .error(let message):
-            EzErrorState(message: message, onRetry: onRetry)
-        }
-    }
 }
 
-#Preview("Cargando") { DashboardView(content: .loading) }
-#Preview("Con contenido") { DashboardView(content: .greeting("Hola, Test User")) }
-#Preview("Con contenido (oscuro)") {
-    DashboardView(content: .greeting("Hola, Test User")).preferredColorScheme(.dark)
+#Preview("Inicio") { DashboardView(services: EzServiceItem.samples) }
+#Preview("Inicio (oscuro)") { DashboardView(services: EzServiceItem.samples).preferredColorScheme(.dark) }
+#Preview("Inicio (texto grande)") {
+    DashboardView(services: EzServiceItem.samples).dynamicTypeSize(.accessibility2)
 }
-#Preview("Error") { DashboardView(content: .error("Sin conexión. Revisa tu red e inténtalo de nuevo.")) }

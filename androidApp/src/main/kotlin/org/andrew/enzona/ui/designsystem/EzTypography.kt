@@ -32,6 +32,8 @@ data class EzExtraTypography(
     val amount: TextStyle = TextStyle(
         fontSize = 16.sp, lineHeight = 24.sp, fontWeight = FontWeight.SemiBold, fontFeatureSettings = "tnum",
     ),
+    /** Etiqueta bajo el icono de una casilla de servicio (4 columnas: debe ser compacta). */
+    val tileLabel: TextStyle = TextStyle(fontSize = 13.sp, lineHeight = 18.sp, fontWeight = FontWeight.Normal),
     val amountLarge: TextStyle = TextStyle(
         fontSize = 36.sp, lineHeight = 44.sp, fontWeight = FontWeight.Bold, fontFeatureSettings = "tnum",
     ),

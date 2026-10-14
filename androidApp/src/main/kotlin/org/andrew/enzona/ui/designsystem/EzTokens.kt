@@ -39,6 +39,8 @@ data class EzSizes(
     val brandBadge: Dp = 80.dp,
     val heroGlyph: Dp = 76.dp,
     val heroActionsHeight: Dp = 172.dp,
+    /** Icono de una casilla de servicio (el PNG ya trae su marco y sombra). */
+    val serviceIcon: Dp = 72.dp,
 )
 
 /** Radios de esquina. `pill` = totalmente redondeado (botones, barra inferior). */

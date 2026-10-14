@@ -4,8 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,8 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -28,33 +26,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.andrew.enzona.feature.account.domain.Account
-import org.andrew.enzona.feature.account.presentation.AccountUiState
-import org.andrew.enzona.feature.account.presentation.AccountViewModel
+import androidx.compose.ui.res.painterResource
+import org.andrew.enzona.feature.home.domain.HomeService
+import org.andrew.enzona.feature.home.domain.HomeServices
 import org.andrew.enzona.ui.designsystem.EnzonaTheme
 import org.andrew.enzona.ui.designsystem.WhiteStatusBarIcons
-import org.andrew.enzona.ui.designsystem.components.EzErrorState
-import org.andrew.enzona.ui.designsystem.components.EzLoadingState
+import org.andrew.enzona.ui.designsystem.components.EzServiceGrid
+import org.andrew.enzona.ui.designsystem.components.EzServiceTile
 import org.andrew.enzona.ui.designsystem.icons.BrandBadge
 import org.andrew.enzona.ui.designsystem.icons.ReceiveGlyph
 import org.andrew.enzona.ui.designsystem.icons.ScanGlyph
 
-/** Conecta el ViewModel con la pantalla. La pantalla en sí no sabe nada de Koin. */
+/** La cuadrícula es configuración estática: no depende de la cuenta ni de la red. */
 @Composable
-fun DashboardRoute(vm: AccountViewModel, onScan: () -> Unit, onReceive: () -> Unit) {
-    LaunchedEffect(Unit) { vm.load() }
-    val state by vm.state.collectAsStateWithLifecycle()
-    DashboardScreen(state, onScan, onReceive, onRetry = vm::load)
+fun DashboardRoute(onScan: () -> Unit, onReceive: () -> Unit, onServiceClick: (HomeService) -> Unit) {
+    DashboardScreen(onScan, onReceive, onServiceClick)
 }
 
 @Composable
 fun DashboardScreen(
-    state: AccountUiState,
     onScan: () -> Unit,
     onReceive: () -> Unit,
-    onRetry: () -> Unit,
+    onServiceClick: (HomeService) -> Unit,
     modifier: Modifier = Modifier,
+    services: List<HomeService> = HomeServices.all,
 ) {
     WhiteStatusBarIcons()
     val colors = EnzonaTheme.colors
@@ -85,11 +80,20 @@ fun DashboardScreen(
             shape = EnzonaTheme.shapes.sheet,
             color = colors.surface,
         ) {
-            Box(
-                Modifier.fillMaxSize().padding(
-                    top = sizes.brandBadge / 2 + spacing.sm, start = spacing.xl, end = spacing.xl,
+            EzServiceGrid(
+                items = services,
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    start = spacing.lg, end = spacing.lg,
+                    top = sizes.brandBadge / 2 + spacing.xl, bottom = spacing.lg,
+                ),
+            ) { service ->
+                EzServiceTile(
+                    label = service.label,
+                    icon = painterResource(service.iconRes),
+                    onClick = { onServiceClick(service) },
                 )
-            ) { SheetContent(state, onRetry) }
+            }
         }
 
         BrandBadge(
@@ -113,53 +117,20 @@ private fun HeaderAction(label: String, onClick: () -> Unit, glyph: @Composable 
     }
 }
 
+// ---- Previews (no tocan Koin ni la red) ----
+
+@Preview(name = "Inicio", showBackground = true, widthDp = 360, heightDp = 780)
 @Composable
-private fun BoxScope.SheetContent(state: AccountUiState, onRetry: () -> Unit) {
-    when (state) {
-        is AccountUiState.Loading -> EzLoadingState()
-        is AccountUiState.Error -> EzErrorState(state.message, onRetry)
-        is AccountUiState.Content -> Column(Modifier.fillMaxWidth()) {
-            Text("Hola, ${state.account.fullName}", style = MaterialTheme.typography.titleLarge,
-                color = EnzonaTheme.colors.onSurface)
-            Text(
-                "Tus tarjetas y movimientos aparecerán aquí.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = EnzonaTheme.colors.onSurfaceVariant,
-                modifier = Modifier.padding(top = EnzonaTheme.spacing.sm),
-            )
-        }
-    }
-}
+private fun DashboardPreview() = EnzonaTheme(darkTheme = false) { DashboardScreen({}, {}, {}) }
 
-// ---- Previews (con datos inventados; no tocan Koin ni la red) ----
-
-private val sampleAccount = Account(
-    uuid = "sample", username = "user1", firstName = "Test", lastName = "User",
-    email = "test@example.com", phone = "55555555", avatarUrl = null, primaryCurrency = "CUP",
-    profileLevel = 8, isVerified = true, isPhoneVerified = true, hasPaymentPassword = true,
-    biometricEnabled = true, isMerchant = false, createdAt = null,
-)
-
-@Preview(name = "Cargando", showBackground = true, widthDp = 360, heightDp = 780)
+@Preview(name = "Inicio (oscuro)", showBackground = true, widthDp = 360, heightDp = 780)
 @Composable
-private fun DashboardLoadingPreview() = EnzonaTheme(darkTheme = false) {
-    DashboardScreen(AccountUiState.Loading, {}, {}, {})
-}
+private fun DashboardDarkPreview() = EnzonaTheme(darkTheme = true) { DashboardScreen({}, {}, {}) }
 
-@Preview(name = "Con contenido", showBackground = true, widthDp = 360, heightDp = 780)
+@Preview(name = "Inicio (fuente x1.5)", showBackground = true, widthDp = 360, heightDp = 780, fontScale = 1.5f)
 @Composable
-private fun DashboardContentPreview() = EnzonaTheme(darkTheme = false) {
-    DashboardScreen(AccountUiState.Content(sampleAccount), {}, {}, {})
-}
+private fun DashboardLargeFontPreview() = EnzonaTheme(darkTheme = false) { DashboardScreen({}, {}, {}) }
 
-@Preview(name = "Con contenido (oscuro)", showBackground = true, widthDp = 360, heightDp = 780)
+@Preview(name = "Inicio (pantalla estrecha)", showBackground = true, widthDp = 320, heightDp = 640)
 @Composable
-private fun DashboardContentDarkPreview() = EnzonaTheme(darkTheme = true) {
-    DashboardScreen(AccountUiState.Content(sampleAccount), {}, {}, {})
-}
-
-@Preview(name = "Error", showBackground = true, widthDp = 360, heightDp = 780)
-@Composable
-private fun DashboardErrorPreview() = EnzonaTheme(darkTheme = false) {
-    DashboardScreen(AccountUiState.Error("Sin conexión. Revisa tu red e inténtalo de nuevo."), {}, {}, {})
-}
+private fun DashboardNarrowPreview() = EnzonaTheme(darkTheme = false) { DashboardScreen({}, {}, {}) }

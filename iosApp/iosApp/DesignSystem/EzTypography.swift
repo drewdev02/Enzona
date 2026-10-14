@@ -17,6 +17,8 @@ extension Ez {
         static let labelLarge = Font.subheadline.weight(.medium)
         static let labelMedium = Font.caption.weight(.medium)
         static let labelSmall = Font.caption2.weight(.medium)
+        /// Etiqueta bajo el icono de una casilla de servicio (4 columnas: debe ser compacta).
+        static let tileLabel = Font.footnote
 
         /// Importes: cifras tabulares para que los de una lista se alineen.
         static let amount = Font.headline.weight(.semibold).monospacedDigit()

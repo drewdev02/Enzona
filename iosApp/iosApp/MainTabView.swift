@@ -23,7 +23,7 @@ struct MainTabView<Home: View, Profile: View>: View {
 
 #Preview("Conjunto") {
     MainTabView(
-        home: { DashboardView(content: .greeting("Hola, Test User")) },
+        home: { DashboardView(services: EzServiceItem.samples) },
         profile: { EzEmptyState(title: "Perfil", message: "(vista previa)", systemImage: "person") }
     )
 }
