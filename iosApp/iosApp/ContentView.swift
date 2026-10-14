@@ -51,18 +51,3 @@ struct LoginView: View {
         .padding()
     }
 }
-
-struct HomeView: View {
-    let onLogout: () -> Void
-
-    var body: some View {
-        VStack(spacing: 12) {
-            Text("Sesión iniciada").font(.title).bold()
-            Text("M1 · auth OK (perfil llega en M2)")
-                .font(.subheadline).foregroundColor(.secondary)
-            Button("Cerrar sesión", action: onLogout).padding(.top, 16)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding()
-    }
-}

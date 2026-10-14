@@ -13,7 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andrew.enzona.di.KoinHelper
 import org.andrew.enzona.feature.auth.presentation.AuthUiState
 import org.andrew.enzona.feature.auth.presentation.AuthViewModel
-import org.andrew.enzona.ui.HomeScreen
+import org.andrew.enzona.ui.nav.AppNavigation
 import org.andrew.enzona.ui.LoginScreen
 
 class MainActivity : ComponentActivity() {
@@ -57,7 +57,10 @@ class MainActivity : ComponentActivity() {
 private fun AppRoot(vm: AuthViewModel, onLogin: () -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
     when (state) {
-        is AuthUiState.LoggedIn -> HomeScreen(onLogout = vm::logout)
+        is AuthUiState.LoggedIn -> AppNavigation(
+            accountVm = KoinHelper.accountViewModel,
+            onLogout = vm::logout,
+        )
         else -> LoginScreen(
             state = state,
             onLogin = onLogin,

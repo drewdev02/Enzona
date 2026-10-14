@@ -49,14 +49,19 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 
 ---
 
-## M2 · Perfil / Cuenta
+## M2 · Perfil / Cuenta  ✅ HECHO — UI no vista con sesión real
 **Meta:** primera feature completa; valida el patrón "ViewModel compartido + UI nativa".
 
-- ☐ `domain`: `Account` entity + `AccountRepository` + `GetAccountUseCase`.
-- ☐ `data`: `AccountDto` (campos verificados), `AccountRemoteDataSource` (`GET /account/v1.0.0/account?username=<sub>`, envelope `{"account":{}}`), `AccountRepositoryImpl`.
-- ☐ `feature/account/presentation`: `AccountViewModel` + `AccountUiState`.
-- ☐ Android: pantalla perfil en **Compose** (`collectAsState`).
-- ☐ iOS: pantalla perfil en **SwiftUI** (observa StateFlow vía el puente `watchState`).
+- ☑ `domain`: `Account` + `AccountRepository` + `GetAccountUseCase` (username = claim `sub` del id_token).
+- ☑ `data`: `GET /account/v1.0.0/account?username=<sub>`, envelope `{"account":{}}`. DTO solo con los campos usados; los flags de tipo laxo (`"1"`, `"true"`, `"8"`, `false`) se leen como `String` y se normalizan en el mapper.
+- ☑ El cuerpo de error nunca se propaga (puede llevar datos personales).
+- ☑ `AccountViewModel` + `AccountUiState` (StateFlow) + `watchState` para Swift.
+- ☑ **Navegación**: Android = `androidx.navigation:navigation-compose` **2.10.2** (rutas tipadas `@Serializable`); iOS = `NavigationStack`. (Navigation 3 queda como alternativa futura.)
+- ☑ Android: Home → Mi perfil en **Compose**. iOS: Home → Mi perfil en **SwiftUI**.
+- ☑ Fix transversal: `apiCall` y `OAuthService` ya no convierten `CancellationException` en error de red.
+- ☑ Tests (20/20 en Android e iOS): forma real de la respuesta con datos inventados, tipos laxos, `false` como ausente, 404 sin filtrar cuerpo, JSON malformado, JWT, y **resolución del grafo de Koin** completo.
+- ⚠ **Sin ver en pantalla con sesión real**: ambas UIs compilan y el grafo se resuelve en test, pero el perfil está detrás del login. La respuesta real solo se validó vía el PoC de macOS.
+- ☐ Avatar remoto (`avatarUrl`): hoy se muestran iniciales; requiere librería de imágenes.
 
 **Done cuando:** ambas apps muestran el perfil real del usuario logueado desde el mismo ViewModel.
 

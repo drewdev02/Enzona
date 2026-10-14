@@ -116,7 +116,8 @@ Migrar a SKIE después = cambiar solo esta capa de observación iOS; la lógica 
 | Storage | multiplatform-settings o `expect SecureStorage` |
 | Logs | Napier |
 | Swift interop | **SKIE** (plugin) |
-| Auth UI | Custom Tabs (Android) · ASWebAuthenticationSession (iOS) |
+| Auth UI | Custom Tabs (Android) · WKWebView (iOS; ASWebAuthenticationSession no capta `http://`) |
+| Navegación | Android: `navigation-compose` 2.10.2 (rutas tipadas) · iOS: `NavigationStack` |
 | QR | CameraX + MLKit (Android) · AVFoundation (iOS) |
 | Biometría | BiometricPrompt (Android) · LAContext (iOS) |
 
