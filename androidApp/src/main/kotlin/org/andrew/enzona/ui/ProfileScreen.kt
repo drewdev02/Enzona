@@ -29,9 +29,10 @@ import org.andrew.enzona.ui.designsystem.components.EzErrorState
 import org.andrew.enzona.ui.designsystem.components.EzListItem
 import org.andrew.enzona.ui.designsystem.components.EzLoadingState
 import org.andrew.enzona.ui.designsystem.components.EzTopAppBar
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ProfileScreen(vm: AccountViewModel, onLogout: () -> Unit) {
+fun ProfileScreen(onLogout: () -> Unit, vm: AccountViewModel = koinViewModel()) {
     LaunchedEffect(Unit) { vm.load() }
     val state by vm.state.collectAsStateWithLifecycle()
     ProfileContentScreen(state, onRetry = vm::load, onLogout = onLogout)

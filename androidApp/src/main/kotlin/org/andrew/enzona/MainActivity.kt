@@ -58,11 +58,7 @@ class MainActivity : ComponentActivity() {
 private fun AppRoot(vm: AuthViewModel, onLogin: () -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
     when (state) {
-        is AuthUiState.LoggedIn -> AppNavigation(
-            accountVm = KoinHelper.accountViewModel,
-            cardsVm = KoinHelper.cardsViewModel,
-            onLogout = vm::logout,
-        )
+        is AuthUiState.LoggedIn -> AppNavigation(onLogout = vm::logout)
         else -> LoginScreen(
             state = state,
             onLogin = onLogin,

@@ -32,6 +32,11 @@ fun initKoinIos(): KoinApplication = initKoin {}
 object KoinHelper : KoinComponent {
     val greeting: Greeting by inject()
     val authViewModel: org.andrew.enzona.feature.auth.presentation.AuthViewModel by inject()
-    val accountViewModel: org.andrew.enzona.feature.account.presentation.AccountViewModel by inject()
-    val cardsViewModel: org.andrew.enzona.feature.cards.presentation.CardsViewModel by inject()
+
+    /** Un ViewModel nuevo por pantalla; quien lo pide llama a `clear()` al destruirla. */
+    fun accountViewModelHolder(): ViewModelHolder<org.andrew.enzona.feature.account.presentation.AccountViewModel> =
+        getKoin().viewModelHolder()
+
+    fun cardsViewModelHolder(): ViewModelHolder<org.andrew.enzona.feature.cards.presentation.CardsViewModel> =
+        getKoin().viewModelHolder()
 }

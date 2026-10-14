@@ -49,6 +49,10 @@ class KoinGraphTest {
             assertNotNull(koin.get<AuthViewModel>())
             assertNotNull(koin.get<AccountViewModel>())
             assertNotNull(koin.get<CardsViewModel>())
+            // Estado por pantalla: cada pantalla recibe su propia instancia, así nada del
+            // usuario anterior sobrevive a un logout.
+            assertNotSame(koin.get<AccountViewModel>(), koin.get<AccountViewModel>())
+            assertNotSame(koin.get<CardsViewModel>(), koin.get<CardsViewModel>())
             assertNotNull(koin.get<OAuthService>())
             // Dos clientes distintos: el del IdP (sin auth) y el de la API (con Bearer + refresh).
             assertNotSame(koin.get<HttpClient>(), koin.get<HttpClient>(PlainHttpClient))

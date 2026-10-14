@@ -17,6 +17,7 @@ kotlin {
             baseName = "SharedLogic"
             isStatic = true
             export(libs.koin.core)
+            export(libs.androidx.lifecycle.viewmodel)
         }
     }
     
@@ -39,6 +40,8 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(libs.koin.core)
+            api(libs.koin.core.viewmodel)
+            api(libs.androidx.lifecycle.viewmodel)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
