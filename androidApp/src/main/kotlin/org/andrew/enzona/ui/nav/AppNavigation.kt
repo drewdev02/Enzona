@@ -19,6 +19,9 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.andrew.enzona.feature.account.presentation.AccountViewModel
+import org.andrew.enzona.feature.cards.presentation.CardsViewModel
+import org.andrew.enzona.feature.home.domain.HomeService
+import org.andrew.enzona.ui.cards.BalanceRoute
 import org.andrew.enzona.ui.ComingSoonScreen
 import org.andrew.enzona.ui.ProfileScreen
 import org.andrew.enzona.ui.dashboard.DashboardRoute
@@ -28,23 +31,30 @@ import org.andrew.enzona.ui.dashboard.DashboardRoute
 @Serializable data object Notifications
 @Serializable data object Friends
 @Serializable data object Profile
+/** Segundo nivel (no es una pestaña): se abre desde la casilla "Balance" del inicio. */
+@Serializable data object Balance
 
 /** Navegación de la zona autenticada. El paso login <-> app lo decide AuthUiState, no este grafo. */
 @Composable
-fun AppNavigation(accountVm: AccountViewModel, onLogout: () -> Unit) {
+fun AppNavigation(accountVm: AccountViewModel, cardsVm: CardsViewModel, onLogout: () -> Unit) {
     val nav = rememberNavController()
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val entry by nav.currentBackStackEntryAsState()
-    val selected = TopLevel.entries.firstOrNull { entry?.destination?.hasRoute(it.route::class) == true }
-        ?: TopLevel.HOME
+    val topLevel = TopLevel.entries.firstOrNull { entry?.destination?.hasRoute(it.route::class) == true }
+    val selected = topLevel ?: TopLevel.HOME
+    fun showMessage(text: String) = scope.launch {
+        snackbar.currentSnackbarData?.dismiss()
+        snackbar.showSnackbar(text)
+    }
 
     Scaffold(
         // Cada pantalla gestiona sus propios insets (el dashboard dibuja bajo la barra de estado).
         contentWindowInsets = WindowInsets(0),
         snackbarHost = { SnackbarHost(snackbar) },
+        // Las pantallas de segundo nivel (Balance) no llevan barra inferior, como en el original.
         bottomBar = {
-            EnzonaBottomBar(selected = selected, onSelect = { dest ->
+            if (topLevel != null) EnzonaBottomBar(selected = selected, onSelect = { dest ->
                 nav.navigate(dest.route) {
                     popUpTo(nav.graph.findStartDestination().id) { saveState = true }
                     launchSingleTop = true
@@ -64,9 +74,9 @@ fun AppNavigation(accountVm: AccountViewModel, onLogout: () -> Unit) {
                     onScan = {}, onReceive = {},
                     onServiceClick = { service ->
                         // La navegación de cada servicio se añade con su hito; hasta entonces avisa.
-                        if (!service.isAvailable) scope.launch {
-                            snackbar.currentSnackbarData?.dismiss()
-                            snackbar.showSnackbar("${service.label} estará disponible próximamente.")
+                        when {
+                            !service.isAvailable -> showMessage("${service.label} estará disponible próximamente.")
+                            service == HomeService.BALANCE -> nav.navigate(Balance)
                         }
                     },
                 )
@@ -78,6 +88,14 @@ fun AppNavigation(accountVm: AccountViewModel, onLogout: () -> Unit) {
                 ComingSoonScreen("Amigos", "Contactos y destinatarios llegarán más adelante.")
             }
             composable<Profile> { ProfileScreen(accountVm, onLogout) }
+            composable<Balance> {
+                BalanceRoute(
+                    vm = cardsVm,
+                    onBack = { nav.popBackStack() },
+                    // Eliminar / predeterminada / PIN / operaciones son operaciones nuevas: llegan en su hito.
+                    onCardMenu = { showMessage("Las acciones de la tarjeta estarán disponibles próximamente.") },
+                )
+            }
         }
     }
 }

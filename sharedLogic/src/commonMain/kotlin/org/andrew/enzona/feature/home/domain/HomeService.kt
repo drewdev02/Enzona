@@ -13,7 +13,7 @@ package org.andrew.enzona.feature.home.domain
  */
 enum class HomeService(val label: String, val isAvailable: Boolean = false) {
     TRANSFER("Transferir"),
-    BALANCE("Balance"),
+    BALANCE("Balance", isAvailable = true),
     BULEVAR("Bulevar"),
     GIFT("Regalo"),
     DONATE("Donar"),

@@ -67,18 +67,24 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 
 ---
 
-## M3 · Tarjetas + Dashboard  ◧ estructura visual hecha
-- ☑ **Estructura del dashboard** (según el mockup de la app original, con componentes nativos): cabecera con degradado + acciones Escanear/Recibir, hoja blanca con insignia, barra inferior de 4 pestañas (Inicio · Avisos · Amigos · Perfil). Android: Compose, píldora propia, iconos dibujados con Canvas. iOS: `TabView` nativo (cápsula flotante en iOS 26+), SF Symbols.
-- ☑ Pantallas sin estado con `@Preview` (Android) y `#Preview` (iOS); verificadas visualmente en emulador y simulador con datos inventados.
-- ☑ Perfil pasa a ser una pestaña y aloja "Cerrar sesión". Avisos y Amigos son pantallas "próximamente".
-- ⚠ Escanear y Recibir **no hacen nada aún** (llegan con M5). La insignia es un **placeholder neutro** (tres barras): usar el logotipo propio.
-- ⚠ No verificado en pantalla: que Perfil restaure los iconos oscuros de la barra de estado al salir del dashboard (la lógica lo hace, pero no lo vi).
-- ☐ `CardDto` + `CardRepository` (`GET /coremz/1.0.2/card/username/{username}`, envelope `{"card":[]}`).
-- ☐ Balance (`/coremz/1.0.2/api/balance/lastOperations/{uuid}`), tarjeta por defecto/principal.
-- ☐ `HomeViewModel` + dashboard (saldo, tarjetas, accesos rápidos).
-- ☐ UI nativa: lista de tarjetas + home en Compose y SwiftUI.
+## M3 · Tarjetas + Dashboard  ◧ lista de tarjetas hecha · faltan saldo y acciones
+- ☑ **Estructura del dashboard** (según el mockup del original, con componentes nativos): cabecera con degradado + Escanear/Recibir, hoja blanca con insignia, barra inferior de 4 pestañas. Android: Compose, píldora propia. iOS: `TabView` nativo.
+- ☑ **Cuadrícula de servicios** con los 14 iconos del original (`HomeService` compartido; `tools/extract_assets.py` los importa; `tools/check_assets.py` los verifica). Las casillas de funciones que no existen avisan "próximamente".
+- ☑ **Tarjetas** (`feature/cards`): `GET /coremz/1.0.2/card/username/{username}` → `{"card":[…]}`; modelo `BankCard`, `CardsViewModel` (cargando / contenido / vacío / error). Orden: predeterminada primero y luego la más nueva (**inferido** de una captura del original).
+- ☑ **Pantalla Balance** = la lista de tarjetas, cada una con el **skin de su banco** (como el original). Se abre desde la casilla "Balance"; sin barra inferior; atrás vuelve.
+- ☑ **Skins**: 7 imágenes del original elegidas por `bank_code` (02 AIS · 03 Clásica · 04 BICSA · 05/95 Metropolitano · 06 Bandec · 12 BPA); Bandec usa el skin USD o CUP según la moneda (**inferido**: el original calcula la bandera fuera del despachador). Banco desconocido → fondo propio.
+- ☑ **Color del texto por skin, medido sobre los píxeles** (`tools/check_card_skins.py`: texto 4.5:1, número 3:1 por ser texto grande, menú 3:1; modelado el velo de Bandec USD). Se conserva el del original salvo donde no cumplía (Bandec: número negro sobre rojo ≈ 2.3:1). `tarjeta_clasica_ofa.png` no se importa: ningún widget del original la usa.
+- ☑ Accesibilidad de la tarjeta: un único elemento con `spokenDescription()` (la imagen no se lee y el número quedaría en trozos); el menú es un botón aparte.
+- ☑ Verificado en emulador Android y simulador iOS, claro y oscuro, con datos inventados que cubren los 7 skins y el genérico; y en Android la **navegación real** (Balance → atrás → aviso de otra casilla).
+- ⚠ El **menú de tres puntos está dibujado pero es inerte**: muestra "próximamente". Sus acciones (PIN, Balance, Operaciones, Eliminar, Predeterminada) son operaciones nuevas.
+- ⚠ **iOS**: la barra de Balance es azul plano, no degradado (la barra nativa no admite degradado), y la hora/iconos de la barra de estado salen negros (ni `toolbarColorScheme` lo cambia en iOS 26). Sobre el azul de marca cumplen contraste (~6:1); **en el inicio, sobre el azul marino, no**: defecto conocido sin resolver.
+- ⚠ El margen izquierdo del número en BPA (0.115 del ancho) se fijó **mirando el render**: el triángulo dorado de ese skin no lo detecta ningún verificador. BICSA/BPA referencian `redsa.jpeg` en el original; no sé si lo dibujan encima (aquí no).
+- ⚠ **Sin ver con datos reales**: ninguna tarjeta real se ha dibujado (está detrás del login). El mapeo se probó con la **forma** real de la respuesta (datos inventados).
+- ☐ **Saldo**: `balance/lastOperations/{uuid}` y la pantalla "consultar saldo" (la lista de tarjetas del original no muestra importes).
+- ☐ Menú de tarjeta: activar/cambiar PIN, eliminar, marcar predeterminada.
+- ☐ Insignia de la marca: sigue siendo un placeholder neutro; usar el logotipo propio.
 
-**Done cuando:** home funcional con tarjetas reales en ambas plataformas.
+**Done cuando:** saldo por tarjeta y acciones del menú funcionando con la cuenta real.
 
 ---
 

@@ -60,4 +60,25 @@ enum Ez {
         static let disabled: Double = 0.38
         static let pressed: Double = 0.85
     }
+
+    /// Geometría de la tarjeta bancaria, medida sobre el original. Si cambias estos valores, revisa
+    /// también `tools/check_card_skins.py` (las zonas de texto y el recorte salen de aquí).
+    enum Card {
+        /// Alto / ancho: el original usa 0.55 y recorta la imagen (BoxFit.cover).
+        static let heightRatio: CGFloat = 0.55
+        /// Margen izquierdo del texto, en fracción del ancho.
+        static let startInset: CGFloat = 0.044
+        /// Radio de esquina, en fracción del ancho (el de los PNG: ~20px de 630).
+        static let cornerRadius: CGFloat = 0.032
+        /// Centro vertical de cada fila de texto, en fracción del alto.
+        static let numberCenter: CGFloat = 0.51
+        static let nameCenter: CGFloat = 0.776
+        static let infoCenter: CGFloat = 0.88
+        /// Posición de los iconos de arriba a la derecha.
+        static let iconCenterY: CGFloat = 0.175
+        static let menuCenterX: CGFloat = 0.94
+        static let checkCenterX: CGFloat = 0.855
+        /// Opacidad del velo negro tras el icono cuando el fondo es una foto. Igual a SCRIM en tools/check_card_skins.py.
+        static let menuScrimAlpha: Double = 0.35
+    }
 }

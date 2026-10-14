@@ -1,10 +1,17 @@
 import SwiftUI
 import SharedLogic
 
-/// Raíz de la zona autenticada: conecta el ViewModel y el modelo compartido con las pantallas.
+/// Segundo nivel (no son pestañas): pantallas que se abren desde el inicio.
+enum HomeRoute: Hashable {
+    case balance
+}
+
+/// Raíz de la zona autenticada: conecta los ViewModels y el modelo compartido con las pantallas.
 struct HomeView: View {
     let onLogout: () -> Void
     @StateObject private var profile = ProfileModel()
+    @StateObject private var cards = CardsModel()
+    @State private var path: [HomeRoute] = []
     @State private var comingSoon: String?
 
     /// Orden y etiquetas vienen del enum compartido `HomeService` (una sola fuente).
@@ -15,11 +22,23 @@ struct HomeView: View {
     var body: some View {
         MainTabView(
             home: {
-                // Escanear / Recibir llegan con el hito de QR (M5).
-                DashboardView(services: services, onService: { item in
-                    // La navegación de cada servicio se añade con su hito; hasta entonces avisa.
-                    comingSoon = item.title
-                })
+                NavigationStack(path: $path) {
+                    // Escanear / Recibir llegan con el hito de QR (M5).
+                    DashboardView(services: services, onService: open)
+                        // El inicio dibuja su propia cabecera; `toolbarColorScheme` además pone la
+                        // barra de estado en blanco sobre el degradado.
+                        .toolbar(.hidden, for: .navigationBar)
+                        .toolbarColorScheme(.dark, for: .navigationBar)
+                        .navigationDestination(for: HomeRoute.self) { route in
+                            switch route {
+                            case .balance:
+                                BalanceView(cards: cards) {
+                                    // Eliminar / predeterminada / PIN / operaciones: llegan en su hito.
+                                    comingSoon = "Las acciones de la tarjeta estarán disponibles próximamente."
+                                }
+                            }
+                        }
+                }
             },
             profile: {
                 NavigationStack { ProfileView(profile: profile, onLogout: onLogout) }
@@ -31,7 +50,17 @@ struct HomeView: View {
         ) {
             Button("Entendido", role: .cancel) {}
         } message: {
-            Text("\(comingSoon ?? "") estará disponible próximamente.")
+            Text(comingSoon ?? "")
+        }
+    }
+
+    /// La navegación de cada servicio se añade con su hito; hasta entonces avisa.
+    private func open(_ item: EzServiceItem) {
+        let service = HomeServices.shared.all.first { $0.iconKey == item.id }
+        if service?.isAvailable == true {
+            if service?.name == "BALANCE" { path.append(.balance) }
+        } else {
+            comingSoon = "\(item.title) estará disponible próximamente."
         }
     }
 }

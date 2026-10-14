@@ -60,6 +60,7 @@ private fun AppRoot(vm: AuthViewModel, onLogin: () -> Unit) {
     when (state) {
         is AuthUiState.LoggedIn -> AppNavigation(
             accountVm = KoinHelper.accountViewModel,
+            cardsVm = KoinHelper.cardsViewModel,
             onLogout = vm::logout,
         )
         else -> LoginScreen(
