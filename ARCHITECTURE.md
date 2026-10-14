@@ -97,6 +97,45 @@ muere con ella.
 - Los textos de cara al usuario (p. ej. "Tu sesión expiró") los decide la capa de UI a partir
   de hechos del dominio (`LoggedOut(expired = true)`), no el dominio.
 
+### Logging (`core/logging`)
+
+API inspirada en `Microsoft.Extensions.Logging`, con Kermit como motor (Logcat en Android,
+`os_log` en iOS). El resto del código solo conoce `Logger`.
+
+```kotlin
+private val log = logger<SessionRepository>()          // categoría = nombre de la clase
+log.info("Tarjetas cargadas: {Cantidad}", n)           // plantilla con nombre, por posición
+log.error(e, "Falló {Operación}", op)                  // con excepción
+log.with("requestId" to id).debug("→ {Path}", path)    // logger hijo (en vez de BeginScope)
+log.info("token {T}", Sensitive(token))                // imprime ***
+```
+
+- Niveles: `TRACE, DEBUG, INFO, WARN, ERROR, CRITICAL`. Las plantillas solo se renderizan si el
+  nivel está activo; no hay sobrecarga con lambda a propósito (interpolar strings se saltaría
+  `Sensitive`). No hay `BeginScope`: es ambiental por hilo y no sirve con corrutinas.
+- `installLogging(debug)` se llama una vez, **antes de Koin** (Android: bandera `debuggable`;
+  iOS: `#if DEBUG`). Debug = desde `Debug`; release = desde `Info`. Sin configuración no se
+  escribe nada. `LogConfig` admite un nivel mínimo distinto por categoría.
+- `CRITICAL` viaja como `Error` con prefijo: el `Assert` de Kermit llama a `Log.wtf`, que según
+  el dispositivo puede terminar el proceso.
+- iOS: en debug los mensajes son públicos; en release `os_log` los oculta (`<private>`) fuera
+  del depurador, a propósito. Ver `log show --info --debug --predicate 'subsystem == "org.andrew.enzona"'`.
+- La categoría usa `T::class.simpleName`: si algún día se activa R8/minify se ofusca; entonces
+  hay que añadir una regla keep o usar `logger("Nombre")`.
+
+**Qué NUNCA se registra** (lo comprueba `SessionLogRedactionTest` y `NetworkLoggingTest`):
+tokens (`access`, `refresh`, `id`), `code`, `code_verifier` / `challenge`, el **username**,
+número/titular/contenido de tarjetas, cuerpos de respuesta, cabeceras ni la query de una URL.
+
+- Red (`RequestLogging`, categoría `Network`): en Info solo `método host → estado en N ms`
+  (+ `requestId`); la **ruta** solo en Debug, porque puede llevar el username
+  (`/card/username/{username}`).
+- Fallos sin respuesta (`apiCall`): el **tipo** de la excepción en Warn; su mensaje (puede traer
+  la URL) solo en Debug.
+- Los fallos se registran por su tipo (`Failure::class.simpleName`), no por su mensaje.
+- `Failure.Auth` del IdP ya no incluye el cuerpo de la respuesta: lo ve el usuario y lo leen los
+  logs, y un error del IdP puede repetir datos de la solicitud.
+
 ## 5. Autenticación (verificada contra producción)
 
 - **OAuth2 Authorization Code + PKCE** (cliente público, sin secreto) contra WSO2
