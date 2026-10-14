@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import org.koin.core.Koin
+import org.koin.core.parameter.ParametersDefinition
 
 /**
  * Dueño del ciclo de vida de un ViewModel para plataformas sin `ViewModelStoreOwner`
@@ -19,11 +20,13 @@ class ViewModelHolder<T : ViewModel> internal constructor(
     fun clear() = store.clear()
 }
 
-internal inline fun <reified T : ViewModel> viewModelHolder(noinline create: () -> T): ViewModelHolder<T> {
+internal inline fun <reified T : ViewModel> createViewModelHolder(noinline create: () -> T): ViewModelHolder<T> {
     val store = ViewModelStore()
     val factory = viewModelFactory { initializer { create() } }
     return ViewModelHolder(store, ViewModelProvider.create(store, factory)[T::class])
 }
 
-internal inline fun <reified T : ViewModel> Koin.viewModelHolder(): ViewModelHolder<T> =
-    viewModelHolder { get<T>() }
+internal inline fun <reified T : ViewModel> Koin.viewModelHolder(
+    noinline parameters: ParametersDefinition? = null,
+): ViewModelHolder<T> =
+    createViewModelHolder { get<T>(parameters = parameters) }

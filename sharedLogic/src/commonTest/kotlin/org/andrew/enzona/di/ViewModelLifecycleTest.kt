@@ -74,7 +74,7 @@ class ViewModelLifecycleTest {
     fun clearingTheHolderCancelsAnInFlightLoad() = runTest {
         val gate = CompletableDeferred<List<BankCard>>()
         val repo = PendingCards(gate)
-        val holder = viewModelHolder { CardsViewModel(GetCardsUseCase(repo, auth())) }
+        val holder = createViewModelHolder { CardsViewModel(GetCardsUseCase(repo, auth())) }
         val vm = holder.viewModel
 
         vm.load()

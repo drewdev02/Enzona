@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.andrew.enzona.core.di.PlainHttpClient
 import org.andrew.enzona.core.di.coreModule
+import org.andrew.enzona.core.result.EzResult
 import org.andrew.enzona.core.storage.SecureStorage
 import org.andrew.enzona.feature.account.accountModule
 import org.andrew.enzona.feature.account.presentation.AccountViewModel
@@ -17,10 +18,16 @@ import org.andrew.enzona.feature.auth.data.OAuthService
 import org.andrew.enzona.feature.auth.domain.SessionRepository
 import org.andrew.enzona.feature.auth.presentation.LoginViewModel
 import org.andrew.enzona.feature.cards.cardsModule
+import org.andrew.enzona.feature.cards.domain.BankCard
+import org.andrew.enzona.feature.cards.domain.CardActivity
+import org.andrew.enzona.feature.cards.domain.CardsRepository
+import org.andrew.enzona.feature.cards.presentation.CardDetailViewModel
 import org.andrew.enzona.feature.cards.presentation.CardsViewModel
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
 import kotlin.test.assertSame
@@ -60,6 +67,59 @@ class KoinGraphTest {
             assertNotNull(koin.get<OAuthService>())
             // Dos clientes distintos: el del IdP (sin auth) y el de la API (con Bearer + refresh).
             assertNotSame(koin.get<HttpClient>(), koin.get<HttpClient>(PlainHttpClient))
+
+            // CardDetailViewModel con parámetro: resoluciones distintas son instancias distintas
+            val detailVm1 = koin.get<CardDetailViewModel> { parametersOf("id-1") }
+            val detailVm2 = koin.get<CardDetailViewModel> { parametersOf("id-2") }
+            assertNotNull(detailVm1)
+            assertNotNull(detailVm2)
+            assertNotSame(detailVm1, detailVm2)
+        } finally {
+            Dispatchers.resetMain()
+        }
+    }
+
+    @Test
+    fun resolvesCardDetailViewModelWithParametersAndForwardsIdToRepository() = runTest {
+        Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
+        try {
+            var receivedCardId: String? = null
+            val fakeRepo = object : CardsRepository {
+                override suspend fun getCards(username: String): EzResult<List<BankCard>> = EzResult.Success(emptyList())
+                override suspend fun getActivity(cardId: String): EzResult<CardActivity> {
+                    receivedCardId = cardId
+                    return EzResult.Success(
+                        CardActivity(
+                            balance = null,
+                            available = null,
+                            currency = "CUP",
+                            operations = emptyList(),
+                            skippedOperations = 0,
+                        ),
+                    )
+                }
+            }
+            val koin = koinApplication {
+                allowOverride(true)
+                modules(
+                    cardsModule,
+                    module {
+                        single<CardsRepository> { fakeRepo }
+                    },
+                )
+            }.koin
+
+            val vm1 = koin.get<CardDetailViewModel> { parametersOf("card-alpha") }
+            val vm2 = koin.get<CardDetailViewModel> { parametersOf("card-beta") }
+            assertNotNull(vm1)
+            assertNotNull(vm2)
+            assertNotSame(vm1, vm2)
+
+            vm1.load()
+            assertEquals("card-alpha", receivedCardId)
+
+            vm2.load()
+            assertEquals("card-beta", receivedCardId)
         } finally {
             Dispatchers.resetMain()
         }
