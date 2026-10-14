@@ -13,13 +13,13 @@ struct DashboardView: View {
     var onReceive: () -> Void = {}
     var onRetry: () -> Void = {}
 
-    private let actionsHeight: CGFloat = 172
-    private let badgeSize: CGFloat = 80
-
     var body: some View {
         ZStack(alignment: .top) {
-            LinearGradient(colors: [Brand.blueLight, Brand.navy], startPoint: .leading, endPoint: .trailing)
-                .ignoresSafeArea()
+            LinearGradient(
+                colors: [Ez.Palette.brandBlueLight, Ez.Palette.brandNavy],
+                startPoint: .leading, endPoint: .trailing
+            )
+            .ignoresSafeArea()
 
             VStack(spacing: 0) {
                 HStack {
@@ -29,18 +29,18 @@ struct DashboardView: View {
                     action("Recibir", symbol: "qrcode", handler: onReceive)
                     Spacer()
                 }
-                .frame(height: actionsHeight)
-                .padding(.top, 12)
+                .frame(height: Ez.Size.heroActionsHeight)
+                .padding(.top, Ez.Space.md)
 
                 ZStack(alignment: .top) {
-                    UnevenRoundedRectangle(topLeadingRadius: 36, topTrailingRadius: 36)
-                        .fill(Color(.systemBackground))
+                    UnevenRoundedRectangle(topLeadingRadius: Ez.Radius.sheet, topTrailingRadius: Ez.Radius.sheet)
+                        .fill(Ez.Palette.surface)
                         .ignoresSafeArea(edges: .bottom)
                     sheetContent
-                        .padding(.top, badgeSize / 2 + 8)
-                        .padding(.horizontal, 24)
-                    BrandBadge(diameter: badgeSize)
-                        .offset(y: -badgeSize / 2)
+                        .padding(.top, Ez.Size.brandBadge / 2 + Ez.Space.sm)
+                        .padding(.horizontal, Ez.Space.xl)
+                    BrandBadge()
+                        .offset(y: -Ez.Size.brandBadge / 2)
                 }
             }
         }
@@ -48,9 +48,9 @@ struct DashboardView: View {
 
     private func action(_ title: String, symbol: String, handler: @escaping () -> Void) -> some View {
         Button(action: handler) {
-            VStack(spacing: 8) {
-                Image(systemName: symbol).font(.system(size: 64, weight: .light))
-                Text(title).font(.headline)
+            VStack(spacing: Ez.Space.sm) {
+                Image(systemName: symbol).font(.system(size: Ez.Size.heroGlyph, weight: .light))
+                Text(title).font(Ez.Typography.titleMedium)
             }
             .foregroundStyle(.white)
         }
@@ -61,23 +61,24 @@ struct DashboardView: View {
     private var sheetContent: some View {
         switch content {
         case .loading:
-            ProgressView().tint(Brand.blue).frame(maxHeight: .infinity)
+            EzLoadingState()
         case .greeting(let text):
-            VStack(alignment: .leading, spacing: 8) {
-                Text(text).font(.title2).bold()
-                Text("Tus tarjetas y movimientos aparecerán aquí.").foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: Ez.Space.sm) {
+                Text(text).font(Ez.Typography.headlineMedium).foregroundStyle(Ez.Palette.onSurface)
+                Text("Tus tarjetas y movimientos aparecerán aquí.")
+                    .font(Ez.Typography.bodyMedium)
+                    .foregroundStyle(Ez.Palette.onSurfaceVariant)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         case .error(let message):
-            VStack(spacing: 16) {
-                Text(message).foregroundStyle(.red).multilineTextAlignment(.center)
-                Button("Reintentar", action: onRetry).buttonStyle(.borderedProminent)
-            }
-            .frame(maxHeight: .infinity)
+            EzErrorState(message: message, onRetry: onRetry)
         }
     }
 }
 
 #Preview("Cargando") { DashboardView(content: .loading) }
 #Preview("Con contenido") { DashboardView(content: .greeting("Hola, Test User")) }
+#Preview("Con contenido (oscuro)") {
+    DashboardView(content: .greeting("Hola, Test User")).preferredColorScheme(.dark)
+}
 #Preview("Error") { DashboardView(content: .error("Sin conexión. Revisa tu red e inténtalo de nuevo.")) }

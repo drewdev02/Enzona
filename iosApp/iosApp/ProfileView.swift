@@ -9,15 +9,27 @@ struct ProfileView: View {
         Group {
             switch profile.phase {
             case .loading:
-                ProgressView()
+                EzLoadingState()
             case .error(let message):
-                VStack(spacing: 16) {
-                    Text(message).foregroundColor(.red).multilineTextAlignment(.center)
-                    Button("Reintentar") { profile.load() }.buttonStyle(.borderedProminent)
-                }
-                .padding()
+                EzErrorState(message: message, onRetry: { profile.load() })
             case .content(let account):
-                ProfileContent(account: account, onLogout: onLogout)
+                ProfileContent(
+                    fullName: account.fullName, username: account.username, initials: account.initials,
+                    rows: [
+                        ("Correo", account.email ?? "—"),
+                        ("Teléfono", account.phone ?? "—"),
+                        ("Moneda principal", account.primaryCurrency ?? "—"),
+                        ("Nivel de perfil", account.profileLevel.map { "\($0.intValue)" } ?? "—"),
+                    ],
+                    statusRows: [
+                        ("Cuenta verificada", account.isVerified ? "Sí" : "No"),
+                        ("Teléfono verificado", account.isPhoneVerified ? "Sí" : "No"),
+                        ("Contraseña de pago", account.hasPaymentPassword ? "Configurada" : "Sin configurar"),
+                        ("Biometría", account.biometricEnabled ? "Sí" : "No"),
+                        ("Cuenta de comercio", account.isMerchant ? "Sí" : "No"),
+                    ],
+                    onLogout: onLogout
+                )
             }
         }
         .navigationTitle("Mi perfil")
@@ -26,47 +38,48 @@ struct ProfileView: View {
     }
 }
 
-private struct ProfileContent: View {
-    let account: Account
+/// Sin dependencias del framework Kotlin: se puede previsualizar.
+struct ProfileContent: View {
+    let fullName: String
+    let username: String
+    let initials: String
+    let rows: [(String, String)]
+    let statusRows: [(String, String)]
     let onLogout: () -> Void
 
     var body: some View {
         List {
             Section {
-                VStack(spacing: 8) {
-                    // Iniciales: la foto remota (avatarUrl) llega con una carga de imágenes.
-                    Text(account.initials)
-                        .font(.largeTitle)
-                        .frame(width: 88, height: 88)
-                        .background(Circle().fill(Color.accentColor.opacity(0.2)))
-                    Text(account.fullName).font(.title2).bold()
-                    Text("@\(account.username)").foregroundColor(.secondary)
+                VStack(spacing: Ez.Space.sm) {
+                    EzAvatar(initials: initials, size: Ez.Size.avatarXl)
+                    Text(fullName).font(Ez.Typography.headlineSmall).foregroundStyle(Ez.Palette.onSurface)
+                    Text("@\(username)").font(Ez.Typography.bodyMedium).foregroundStyle(Ez.Palette.onSurfaceVariant)
                 }
                 .frame(maxWidth: .infinity)
                 .listRowBackground(Color.clear)
             }
+            Section { ForEach(rows, id: \.0) { EzListItem(overline: $0.0, title: $0.1) } }
+            Section { ForEach(statusRows, id: \.0) { EzListItem(overline: $0.0, title: $0.1) } }
             Section {
-                row("Correo", account.email)
-                row("Teléfono", account.phone)
-                row("Moneda principal", account.primaryCurrency)
-                row("Nivel de perfil", account.profileLevel.map { "\($0.intValue)" })
-            }
-            Section {
-                row("Cuenta verificada", yesNo(account.isVerified))
-                row("Teléfono verificado", yesNo(account.isPhoneVerified))
-                row("Contraseña de pago", account.hasPaymentPassword ? "Configurada" : "Sin configurar")
-                row("Biometría", yesNo(account.biometricEnabled))
-                row("Cuenta de comercio", yesNo(account.isMerchant))
-            }
-            Section {
-                Button("Cerrar sesión", role: .destructive, action: onLogout)
+                EzButton(title: "Cerrar sesión", kind: .secondary, action: onLogout)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets())
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Ez.Palette.background)
     }
+}
 
-    private func yesNo(_ value: Bool) -> String { value ? "Sí" : "No" }
-
-    private func row(_ label: String, _ value: String?) -> some View {
-        LabeledContent(label, value: value ?? "—")
+#Preview("Perfil") {
+    NavigationStack {
+        ProfileContent(
+            fullName: "Test User", username: "user1", initials: "TU",
+            rows: [("Correo", "test@example.com"), ("Teléfono", "55555555"), ("Moneda principal", "CUP"), ("Nivel de perfil", "8")],
+            statusRows: [("Cuenta verificada", "Sí"), ("Contraseña de pago", "Configurada"), ("Biometría", "No")],
+            onLogout: {}
+        )
+        .navigationTitle("Mi perfil")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

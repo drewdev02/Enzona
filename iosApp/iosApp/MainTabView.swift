@@ -10,35 +10,20 @@ struct MainTabView<Home: View, Profile: View>: View {
         TabView {
             Tab("Inicio", systemImage: "house") { home() }
             Tab("Avisos", systemImage: "bell") {
-                ComingSoonView(title: "Avisos", note: "Las notificaciones llegarán más adelante.")
+                EzEmptyState(title: "Avisos", message: "Las notificaciones llegarán más adelante.", systemImage: "bell")
             }
             Tab("Amigos", systemImage: "person.2") {
-                ComingSoonView(title: "Amigos", note: "Contactos y destinatarios llegarán más adelante.")
+                EzEmptyState(title: "Amigos", message: "Contactos y destinatarios llegarán más adelante.", systemImage: "person.2")
             }
             Tab("Perfil", systemImage: "person") { profile() }
         }
-        .tint(Brand.blue)
-    }
-}
-
-/// Pestaña cuyo contenido aún no existe en el roadmap actual.
-struct ComingSoonView: View {
-    let title: String
-    let note: String
-
-    var body: some View {
-        VStack(spacing: 8) {
-            Text(title).font(.title2).bold()
-            Text(note).foregroundStyle(.secondary).multilineTextAlignment(.center)
-        }
-        .padding(32)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .tint(Ez.Palette.primary)
     }
 }
 
 #Preview("Conjunto") {
     MainTabView(
         home: { DashboardView(content: .greeting("Hola, Test User")) },
-        profile: { ComingSoonView(title: "Perfil", note: "(vista previa)") }
+        profile: { EzEmptyState(title: "Perfil", message: "(vista previa)", systemImage: "person") }
     )
 }
