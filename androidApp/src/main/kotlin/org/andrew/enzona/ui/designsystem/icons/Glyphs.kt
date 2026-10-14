@@ -1,4 +1,4 @@
-package org.andrew.enzona.ui.components
+package org.andrew.enzona.ui.designsystem.icons
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import org.andrew.enzona.ui.theme.EnzonaColors
+import org.andrew.enzona.ui.designsystem.EnzonaTheme
 
 // Iconos dibujados con Canvas: los de material-icons-core no incluyen "escanear",
 // "QR" ni "grupo", y así no se añade la librería extendida (pesada) por tres glifos.
@@ -81,7 +81,7 @@ fun GroupGlyph(modifier: Modifier = Modifier, tint: Color = Color.White) {
  * logotipo propio. Es el único sitio que dibuja la marca.
  */
 @Composable
-fun BrandBadge(modifier: Modifier = Modifier, diameter: Dp = 80.dp) {
+fun BrandBadge(modifier: Modifier = Modifier, diameter: Dp = EnzonaTheme.sizes.brandBadge) {
     Box(
         modifier
             .size(diameter)
@@ -89,7 +89,7 @@ fun BrandBadge(modifier: Modifier = Modifier, diameter: Dp = 80.dp) {
             .background(Color.White)
             .padding(4.dp)
             .clip(CircleShape)
-            .background(EnzonaColors.Blue),
+            .background(EnzonaTheme.colors.brandBlue),
         contentAlignment = Alignment.Center,
     ) {
         Canvas(Modifier.size(diameter * 0.5f)) {

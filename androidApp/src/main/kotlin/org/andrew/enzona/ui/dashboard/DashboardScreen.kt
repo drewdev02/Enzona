@@ -15,9 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,19 +27,18 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andrew.enzona.feature.account.domain.Account
 import org.andrew.enzona.feature.account.presentation.AccountUiState
 import org.andrew.enzona.feature.account.presentation.AccountViewModel
-import org.andrew.enzona.ui.components.BrandBadge
-import org.andrew.enzona.ui.components.ReceiveGlyph
-import org.andrew.enzona.ui.components.ScanGlyph
-import org.andrew.enzona.ui.components.WhiteStatusBarIcons
-import org.andrew.enzona.ui.theme.EnzonaColors
-import org.andrew.enzona.ui.theme.EnzonaTheme
+import org.andrew.enzona.ui.designsystem.EnzonaTheme
+import org.andrew.enzona.ui.designsystem.WhiteStatusBarIcons
+import org.andrew.enzona.ui.designsystem.components.EzErrorState
+import org.andrew.enzona.ui.designsystem.components.EzLoadingState
+import org.andrew.enzona.ui.designsystem.icons.BrandBadge
+import org.andrew.enzona.ui.designsystem.icons.ReceiveGlyph
+import org.andrew.enzona.ui.designsystem.icons.ScanGlyph
 
 /** Conecta el ViewModel con la pantalla. La pantalla en sí no sabe nada de Koin. */
 @Composable
@@ -51,9 +47,6 @@ fun DashboardRoute(vm: AccountViewModel, onScan: () -> Unit, onReceive: () -> Un
     val state by vm.state.collectAsStateWithLifecycle()
     DashboardScreen(state, onScan, onReceive, onRetry = vm::load)
 }
-
-private val ActionsHeight = 172.dp
-private val BadgeSize = 80.dp
 
 @Composable
 fun DashboardScreen(
@@ -64,39 +57,44 @@ fun DashboardScreen(
     modifier: Modifier = Modifier,
 ) {
     WhiteStatusBarIcons()
+    val colors = EnzonaTheme.colors
+    val spacing = EnzonaTheme.spacing
+    val sizes = EnzonaTheme.sizes
     val statusBar = with(LocalDensity.current) { WindowInsets.statusBars.getTop(this).toDp() }
-    // La hoja blanca arranca bajo las acciones; la insignia queda centrada en su borde superior.
-    val sheetTop = statusBar + 20.dp + ActionsHeight
+    // La hoja arranca bajo las acciones; la insignia queda centrada en su borde superior.
+    val sheetTop = statusBar + spacing.xl + sizes.heroActionsHeight
 
     Box(
         modifier
             .fillMaxSize()
-            .background(Brush.horizontalGradient(listOf(EnzonaColors.BlueLight, EnzonaColors.Navy)))
+            .background(Brush.horizontalGradient(listOf(colors.brandBlueLight, colors.brandNavy)))
     ) {
         Row(
             Modifier
                 .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(top = 20.dp)
+                .padding(top = spacing.xl)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            HeaderAction("Escanear", onScan) { ScanGlyph(Modifier.size(76.dp)) }
-            HeaderAction("Recibir", onReceive) { ReceiveGlyph(Modifier.size(76.dp)) }
+            HeaderAction("Escanear", onScan) { ScanGlyph(Modifier.size(sizes.heroGlyph)) }
+            HeaderAction("Recibir", onReceive) { ReceiveGlyph(Modifier.size(sizes.heroGlyph)) }
         }
 
         Surface(
             modifier = Modifier.fillMaxSize().padding(top = sheetTop),
-            shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp),
-            color = Color.White,
+            shape = EnzonaTheme.shapes.sheet,
+            color = colors.surface,
         ) {
-            Box(Modifier.fillMaxSize().padding(top = BadgeSize / 2 + 8.dp, start = 24.dp, end = 24.dp)) {
-                SheetContent(state, onRetry)
-            }
+            Box(
+                Modifier.fillMaxSize().padding(
+                    top = sizes.brandBadge / 2 + spacing.sm, start = spacing.xl, end = spacing.xl,
+                )
+            ) { SheetContent(state, onRetry) }
         }
 
         BrandBadge(
-            Modifier.align(Alignment.TopCenter).offset(y = sheetTop - BadgeSize / 2),
-            diameter = BadgeSize,
+            Modifier.align(Alignment.TopCenter).offset(y = sheetTop - sizes.brandBadge / 2),
+            diameter = sizes.brandBadge,
         )
     }
 }
@@ -106,32 +104,28 @@ private fun HeaderAction(label: String, onClick: () -> Unit, glyph: @Composable 
     Column(
         Modifier
             .clickable(onClickLabel = label, role = Role.Button, onClick = onClick)
-            .padding(12.dp),
+            .padding(EnzonaTheme.spacing.md),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         glyph()
         Text(label, color = Color.White, style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 8.dp))
+            modifier = Modifier.padding(top = EnzonaTheme.spacing.sm))
     }
 }
 
 @Composable
 private fun BoxScope.SheetContent(state: AccountUiState, onRetry: () -> Unit) {
     when (state) {
-        is AccountUiState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
-        is AccountUiState.Error -> Column(
-            Modifier.align(Alignment.Center),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(state.message, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
-            Button(onClick = onRetry, modifier = Modifier.padding(top = 16.dp)) { Text("Reintentar") }
-        }
+        is AccountUiState.Loading -> EzLoadingState()
+        is AccountUiState.Error -> EzErrorState(state.message, onRetry)
         is AccountUiState.Content -> Column(Modifier.fillMaxWidth()) {
-            Text("Hola, ${state.account.fullName}", style = MaterialTheme.typography.titleLarge)
+            Text("Hola, ${state.account.fullName}", style = MaterialTheme.typography.titleLarge,
+                color = EnzonaTheme.colors.onSurface)
             Text(
                 "Tus tarjetas y movimientos aparecerán aquí.",
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 8.dp),
+                color = EnzonaTheme.colors.onSurfaceVariant,
+                modifier = Modifier.padding(top = EnzonaTheme.spacing.sm),
             )
         }
     }
@@ -148,18 +142,24 @@ private val sampleAccount = Account(
 
 @Preview(name = "Cargando", showBackground = true, widthDp = 360, heightDp = 780)
 @Composable
-private fun DashboardLoadingPreview() = EnzonaTheme {
+private fun DashboardLoadingPreview() = EnzonaTheme(darkTheme = false) {
     DashboardScreen(AccountUiState.Loading, {}, {}, {})
 }
 
 @Preview(name = "Con contenido", showBackground = true, widthDp = 360, heightDp = 780)
 @Composable
-private fun DashboardContentPreview() = EnzonaTheme {
+private fun DashboardContentPreview() = EnzonaTheme(darkTheme = false) {
+    DashboardScreen(AccountUiState.Content(sampleAccount), {}, {}, {})
+}
+
+@Preview(name = "Con contenido (oscuro)", showBackground = true, widthDp = 360, heightDp = 780)
+@Composable
+private fun DashboardContentDarkPreview() = EnzonaTheme(darkTheme = true) {
     DashboardScreen(AccountUiState.Content(sampleAccount), {}, {}, {})
 }
 
 @Preview(name = "Error", showBackground = true, widthDp = 360, heightDp = 780)
 @Composable
-private fun DashboardErrorPreview() = EnzonaTheme {
+private fun DashboardErrorPreview() = EnzonaTheme(darkTheme = false) {
     DashboardScreen(AccountUiState.Error("Sin conexión. Revisa tu red e inténtalo de nuevo."), {}, {}, {})
 }

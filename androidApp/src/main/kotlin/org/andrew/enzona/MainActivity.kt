@@ -14,7 +14,7 @@ import org.andrew.enzona.di.KoinHelper
 import org.andrew.enzona.feature.auth.presentation.AuthUiState
 import org.andrew.enzona.feature.auth.presentation.AuthViewModel
 import org.andrew.enzona.ui.nav.AppNavigation
-import org.andrew.enzona.ui.theme.EnzonaTheme
+import org.andrew.enzona.ui.designsystem.EnzonaTheme
 import org.andrew.enzona.ui.LoginScreen
 
 class MainActivity : ComponentActivity() {

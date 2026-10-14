@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
@@ -27,10 +26,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import org.andrew.enzona.ui.components.GroupGlyph
-import org.andrew.enzona.ui.theme.EnzonaColors
-import org.andrew.enzona.ui.theme.EnzonaTheme
+import org.andrew.enzona.ui.designsystem.EnzonaTheme
+import org.andrew.enzona.ui.designsystem.icons.GroupGlyph
 
 /** Destinos de primer nivel de la zona autenticada. */
 enum class TopLevel(val label: String, val route: Any) {
@@ -46,32 +43,35 @@ enum class TopLevel(val label: String, val route: Any) {
  */
 @Composable
 fun EnzonaBottomBar(selected: TopLevel, onSelect: (TopLevel) -> Unit, modifier: Modifier = Modifier) {
+    val spacing = EnzonaTheme.spacing
+    val sizes = EnzonaTheme.sizes
+    val pill = EnzonaTheme.shapes.pill
     Row(
         modifier
             .windowInsetsPadding(WindowInsets.navigationBars)
-            .padding(horizontal = 12.dp, vertical = 8.dp)
-            .shadow(6.dp, RoundedCornerShape(50))
-            .background(EnzonaColors.Blue, RoundedCornerShape(50))
+            .padding(horizontal = spacing.md, vertical = spacing.sm)
+            .shadow(EnzonaTheme.elevation.high, pill)
+            .background(EnzonaTheme.colors.brandBlue, pill)
             .fillMaxWidth()
-            .height(56.dp),
+            .height(sizes.bottomBarHeight),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         TopLevel.entries.forEach { item ->
             val isSelected = item == selected
-            val tint = if (isSelected) EnzonaColors.Navy else Color.White
+            val tint = if (isSelected) EnzonaTheme.colors.brandNavy else Color.White
             Box(
                 Modifier
                     .weight(1f)
-                    .height(56.dp)
+                    .height(sizes.bottomBarHeight)
                     .semantics { this.selected = isSelected; contentDescription = item.label }
                     .clickable(role = Role.Tab, onClickLabel = item.label) { onSelect(item) },
                 contentAlignment = Alignment.Center,
             ) {
                 when (item) {
-                    TopLevel.HOME -> Icon(Icons.Filled.Home, null, Modifier.size(28.dp), tint)
-                    TopLevel.NOTIFICATIONS -> Icon(Icons.Filled.Notifications, null, Modifier.size(28.dp), tint)
-                    TopLevel.FRIENDS -> GroupGlyph(Modifier.size(30.dp), tint)
-                    TopLevel.PROFILE -> Icon(Icons.Filled.Person, null, Modifier.size(28.dp), tint)
+                    TopLevel.HOME -> Icon(Icons.Filled.Home, null, Modifier.size(sizes.iconMd + spacing.xs), tint)
+                    TopLevel.NOTIFICATIONS -> Icon(Icons.Filled.Notifications, null, Modifier.size(sizes.iconMd + spacing.xs), tint)
+                    TopLevel.FRIENDS -> GroupGlyph(Modifier.size(sizes.iconLg - spacing.xxs), tint)
+                    TopLevel.PROFILE -> Icon(Icons.Filled.Person, null, Modifier.size(sizes.iconMd + spacing.xs), tint)
                 }
             }
         }
@@ -80,6 +80,6 @@ fun EnzonaBottomBar(selected: TopLevel, onSelect: (TopLevel) -> Unit, modifier: 
 
 @Preview(showBackground = true, widthDp = 360)
 @Composable
-private fun BottomBarPreview() = EnzonaTheme {
+private fun BottomBarPreview() = EnzonaTheme(darkTheme = false) {
     EnzonaBottomBar(selected = TopLevel.HOME, onSelect = {})
 }

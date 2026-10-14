@@ -1,4 +1,4 @@
-package org.andrew.enzona.ui.components
+package org.andrew.enzona.ui.designsystem
 
 import android.app.Activity
 import android.content.Context

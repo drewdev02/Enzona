@@ -1,52 +1,51 @@
 package org.andrew.enzona.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andrew.enzona.feature.account.domain.Account
 import org.andrew.enzona.feature.account.presentation.AccountUiState
 import org.andrew.enzona.feature.account.presentation.AccountViewModel
+import org.andrew.enzona.ui.designsystem.EnzonaTheme
+import org.andrew.enzona.ui.designsystem.components.EzAvatar
+import org.andrew.enzona.ui.designsystem.components.EzButton
+import org.andrew.enzona.ui.designsystem.components.EzButtonStyle
+import org.andrew.enzona.ui.designsystem.components.EzDivider
+import org.andrew.enzona.ui.designsystem.components.EzErrorState
+import org.andrew.enzona.ui.designsystem.components.EzListItem
+import org.andrew.enzona.ui.designsystem.components.EzLoadingState
+import org.andrew.enzona.ui.designsystem.components.EzTopAppBar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(vm: AccountViewModel, onLogout: () -> Unit) {
     LaunchedEffect(Unit) { vm.load() }
     val state by vm.state.collectAsStateWithLifecycle()
+    ProfileContentScreen(state, onRetry = vm::load, onLogout = onLogout)
+}
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Mi perfil") }) }) { padding ->
+/** Sin ViewModel: se puede previsualizar. */
+@Composable
+fun ProfileContentScreen(state: AccountUiState, onRetry: () -> Unit, onLogout: () -> Unit) {
+    Scaffold(topBar = { EzTopAppBar("Mi perfil") }) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
-            when (val s = state) {
-                is AccountUiState.Loading ->
-                    CircularProgressIndicator(Modifier.align(Alignment.Center))
-                is AccountUiState.Error -> ErrorBlock(s.message, onRetry = vm::load)
-                is AccountUiState.Content -> ProfileContent(s.account, onLogout)
+            when (state) {
+                is AccountUiState.Loading -> EzLoadingState()
+                is AccountUiState.Error -> EzErrorState(state.message, onRetry)
+                is AccountUiState.Content -> ProfileContent(state.account, onLogout)
             }
         }
     }
@@ -54,58 +53,61 @@ fun ProfileScreen(vm: AccountViewModel, onLogout: () -> Unit) {
 
 @Composable
 private fun ProfileContent(account: Account, onLogout: () -> Unit) {
+    val spacing = EnzonaTheme.spacing
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         Column(
-            Modifier.fillMaxWidth().padding(vertical = 24.dp),
+            Modifier.fillMaxWidth().padding(vertical = spacing.xl),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Iniciales: la foto remota (avatarUrl) llega cuando se añada una librería de imágenes.
-            Box(
-                Modifier.size(88.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(account.initials, style = MaterialTheme.typography.headlineMedium)
-            }
-            Text(account.fullName, style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(top = 12.dp))
-            Text("@${account.username}", style = MaterialTheme.typography.bodyMedium)
+            EzAvatar(account.initials, size = EnzonaTheme.sizes.avatarXl)
+            Text(account.fullName, style = MaterialTheme.typography.headlineSmall,
+                color = EnzonaTheme.colors.onSurface, modifier = Modifier.padding(top = spacing.md))
+            Text("@${account.username}", style = MaterialTheme.typography.bodyMedium,
+                color = EnzonaTheme.colors.onSurfaceVariant)
         }
-        HorizontalDivider()
-        Row("Correo", account.email)
-        Row("Teléfono", account.phone)
-        Row("Moneda principal", account.primaryCurrency)
-        Row("Nivel de perfil", account.profileLevel?.toString())
-        HorizontalDivider()
-        Row("Cuenta verificada", yesNo(account.isVerified))
-        Row("Teléfono verificado", yesNo(account.isPhoneVerified))
-        Row("Contraseña de pago", if (account.hasPaymentPassword) "Configurada" else "Sin configurar")
-        Row("Biometría", yesNo(account.biometricEnabled))
-        Row("Cuenta de comercio", yesNo(account.isMerchant))
-        OutlinedButton(
-            onClick = onLogout,
-            modifier = Modifier.fillMaxWidth().padding(24.dp),
-        ) { Text("Cerrar sesión") }
+        EzDivider()
+        EzListItem(overline = "Correo", title = account.email ?: "—")
+        EzListItem(overline = "Teléfono", title = account.phone ?: "—")
+        EzListItem(overline = "Moneda principal", title = account.primaryCurrency ?: "—")
+        EzListItem(overline = "Nivel de perfil", title = account.profileLevel?.toString() ?: "—")
+        EzDivider()
+        EzListItem(overline = "Cuenta verificada", title = yesNo(account.isVerified))
+        EzListItem(overline = "Teléfono verificado", title = yesNo(account.isPhoneVerified))
+        EzListItem(overline = "Contraseña de pago",
+            title = if (account.hasPaymentPassword) "Configurada" else "Sin configurar")
+        EzListItem(overline = "Biometría", title = yesNo(account.biometricEnabled))
+        EzListItem(overline = "Cuenta de comercio", title = yesNo(account.isMerchant))
+        EzButton(
+            "Cerrar sesión", onLogout,
+            Modifier.padding(spacing.xl),
+            style = EzButtonStyle.Secondary,
+        )
     }
 }
 
 private fun yesNo(value: Boolean) = if (value) "Sí" else "No"
 
+private val sampleAccount = Account(
+    uuid = "sample", username = "user1", firstName = "Test", lastName = "User",
+    email = "test@example.com", phone = "55555555", avatarUrl = null, primaryCurrency = "CUP",
+    profileLevel = 8, isVerified = true, isPhoneVerified = true, hasPaymentPassword = true,
+    biometricEnabled = false, isMerchant = false, createdAt = null,
+)
+
+@Preview(name = "Perfil", showBackground = true, heightDp = 900)
 @Composable
-private fun Row(label: String, value: String?) {
-    ListItem(
-        overlineContent = { Text(label) },
-        headlineContent = { Text(value ?: "—") },
-    )
+private fun ProfilePreview() = EnzonaTheme(darkTheme = false) {
+    ProfileContentScreen(AccountUiState.Content(sampleAccount), {}, {})
 }
 
+@Preview(name = "Perfil (oscuro)", showBackground = true, heightDp = 900)
 @Composable
-private fun ErrorBlock(message: String, onRetry: () -> Unit) {
-    Column(
-        Modifier.fillMaxSize().padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(message, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
-        Button(onClick = onRetry, modifier = Modifier.padding(top = 16.dp)) { Text("Reintentar") }
-    }
+private fun ProfileDarkPreview() = EnzonaTheme(darkTheme = true) {
+    ProfileContentScreen(AccountUiState.Content(sampleAccount), {}, {})
+}
+
+@Preview(name = "Perfil: error", showBackground = true)
+@Composable
+private fun ProfileErrorPreview() = EnzonaTheme(darkTheme = false) {
+    ProfileContentScreen(AccountUiState.Error("Sin conexión. Revisa tu red e inténtalo de nuevo."), {}, {})
 }
