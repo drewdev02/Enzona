@@ -8,26 +8,29 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 
 ---
 
-## M0 · Base del proyecto
+## M0 · Base del proyecto  ✅ HECHO (commit `196646e`)
 **Meta:** esqueleto limpio que compila en ambas plataformas, listo para features.
 
-- ☐ Retirar `sharedUI` (Compose MP) de `settings.gradle.kts` y del árbol; `androidApp` pasa a depender de `sharedLogic`.
-- ☐ Catálogo `libs.versions.toml`: añadir Ktor (core, content-negotiation, logging, json, OkHttp, Darwin), kotlinx-serialization-json, kotlinx-coroutines, kotlinx-datetime, multiplatform-settings, Napier, plugin **SKIE**.
-- ☐ `sharedLogic`: targets ya ok (android, iosArm64, iosSimulatorArm64); aplicar serialization y SKIE; exportar lo necesario al framework.
-- ☐ Paquetes base en `commonMain`: `core/{network,storage,crypto,di,result,logging}`, `data`, `domain`, `feature`.
-- ☐ `core/result`: `sealed Result<F, T>` + `Failure` (network, http, parse, auth, unknown).
-- ☐ `core/network`: `HttpClientFactory` (Ktor) con `Json { isLenient=true; ignoreUnknownKeys=true; coerceInputValues=true }`, base `https://api.enzona.net`, logging.
-- ☐ `expect/actual`: `SecureStorage` (Keystore/Keychain), `httpEngine` (OkHttp/Darwin).
-- ☐ Koin: `initKoin()` en `sharedLogic/di`; arrancar en `EnzonaApp` (Android) y en `iosApp`.
-- ☐ Config: `clientId`, hosts, `redirectUri` en un `EnzonaConfig` (usar **client_id propio**).
+- ☑ Retirar `sharedUI` (Compose MP) de `settings.gradle.kts` y del árbol; `androidApp` depende de `sharedLogic`.
+- ☑ Catálogo `libs.versions.toml`: Ktor (core, content-negotiation, logging, json, auth, OkHttp, Darwin), kotlinx-serialization-json, kotlinx-coroutines, kotlinx-datetime, multiplatform-settings, Napier. **(SKIE diferido a M1.)**
+- ☑ `sharedLogic`: targets android/iosArm64/iosSimulatorArm64; plugin serialization aplicado.
+- ☑ Paquetes base en `commonMain`: `core/{network,storage,di,result}` + `EnzonaConfig` (data/domain/feature se crean por feature desde M1).
+- ☑ `core/result`: `EzResult<T>` + `Failure` (network, http, parse, auth, unknown).
+- ☑ `core/network`: `HttpClientFactory` (Ktor) con Json laxo, base `api.enzona.net`, logging; engine `expect/actual` (OkHttp/Darwin).
+- ☑ `SecureStorage` (interface + Android SharedPreferences / iOS NSUserDefaults). ⚠ TODO M1: endurecer a Keystore/Keychain.
+- ☑ Koin: `coreModule` + `platformModule` (expect/actual) conectados a `initKoin()`; arranca en `EnzonaApp` (Android) e `iosApp`.
+- ☑ Config: `clientId`, hosts, `redirectUri` en `EnzonaConfig` (usar **client_id propio**).
+- ☐ **Pendiente movido a M1:** plugin **SKIE** (interop Flow→Swift).
 
-**Done cuando:** `./gradlew :androidApp:assembleDebug` compila y el framework iOS se construye; app arranca en blanco en ambas.
+**Done:** ✅ `./gradlew :androidApp:assembleDebug` y `:sharedLogic:compileKotlinIosSimulatorArm64` compilan; ambas apps arrancan con pantalla nativa que usa la lógica compartida.
 
 ---
 
 ## M1 · Autenticación (end-to-end)
 **Meta:** login real con OAuth/PKCE + sesión persistente, UI nativa en cada plataforma.
 
+- ☐ Añadir plugin **SKIE** a `sharedLogic` (interop Flow/suspend → Swift). *(movido desde M0)*
+- ☐ Endurecer `SecureStorage`: Keystore (Android) / Keychain (iOS) antes de guardar tokens reales. *(movido desde M0)*
 - ☐ `core/crypto`: `PKCE` (code_verifier + S256 challenge) en commonMain.
 - ☐ `feature/auth/data`: `OAuthService` (authorize URL, exchange code, refresh) con `grant_type=authorization_code|refresh_token`, `application/x-www-form-urlencoded`.
 - ☐ `feature/auth/data`: `TokenStore` sobre `SecureStorage` (access/refresh/id_token).
