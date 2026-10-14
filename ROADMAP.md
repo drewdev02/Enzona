@@ -26,7 +26,7 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 
 ---
 
-## M1 · Autenticación (end-to-end)  ✅ CÓDIGO COMPLETO · ◧ falta prueba de login real
+## M1 · Autenticación (end-to-end)  ✅ HECHO — aceptado sin prueba del login real
 **Meta:** login real con OAuth/PKCE + sesión persistente, UI nativa en cada plataforma.
 
 - ⛔ ~~Plugin SKIE~~ → **no compatible con Kotlin 2.4.20/AGP 9**; se usa un **puente manual** (`core/util/FlowBridge.kt`: `Cancellable` + `StateFlow.watch`). Migrar a SKIE cuando soporte Kotlin 2.4.
@@ -41,7 +41,7 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 - ☑ **SecureStorage endurecido**: Android = AES-256-GCM con clave en el **Android Keystore**; iOS = **Keychain** (`AfterFirstUnlockThisDeviceOnly`). `allowBackup=false`.
   - Verificado **dentro de la app real** (emulador Android y simulador iOS): guardar/leer con unicode, sobrescribir, borrar; en Android el valor no queda en claro en disco.
   - ⚠ No hay test automatizado del Keychain/Keystore: el Keychain no está disponible en el proceso de test de línea de comandos (`errSecNotAvailable`) y el Keystore necesita dispositivo. Se probó con un probe temporal, ya retirado.
-- ☐ **Pendiente — probar el login real** (portal OAuth + SMS OTP) en emulador/simulador con una cuenta propia. Nada del flujo completo contra el IdP se ha ejecutado aún en la app KMP; lo validado es cada pieza por separado y el flujo equivalente en el PoC de macOS.
+- ◧ **Aceptado sin probar** (decisión del usuario): login real (portal OAuth + SMS OTP) en emulador/simulador con una cuenta propia. Nada del flujo completo contra el IdP se ha ejecutado aún en la app KMP; lo validado es cada pieza por separado y el flujo equivalente en el PoC de macOS.
 - ☐ `client_id` propio (hoy se usa el del APK oficial como marcador).
 
 **Done cuando:** login real en Android e iOS con token en Keychain/Keystore y re-arranque sin re-login.
