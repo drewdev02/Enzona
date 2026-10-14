@@ -17,9 +17,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,33 +36,24 @@ import org.andrew.enzona.feature.account.presentation.AccountViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(vm: AccountViewModel, onBack: () -> Unit) {
+fun ProfileScreen(vm: AccountViewModel, onLogout: () -> Unit) {
     LaunchedEffect(Unit) { vm.load() }
     val state by vm.state.collectAsStateWithLifecycle()
 
-    MaterialTheme {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Mi perfil") },
-                    navigationIcon = { TextButton(onClick = onBack) { Text("Atrás") } },
-                )
-            },
-        ) { padding ->
-            Box(Modifier.fillMaxSize().padding(padding)) {
-                when (val s = state) {
-                    is AccountUiState.Loading ->
-                        CircularProgressIndicator(Modifier.align(Alignment.Center))
-                    is AccountUiState.Error -> ErrorBlock(s.message, onRetry = vm::load)
-                    is AccountUiState.Content -> ProfileContent(s.account)
-                }
+    Scaffold(topBar = { TopAppBar(title = { Text("Mi perfil") }) }) { padding ->
+        Box(Modifier.fillMaxSize().padding(padding)) {
+            when (val s = state) {
+                is AccountUiState.Loading ->
+                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                is AccountUiState.Error -> ErrorBlock(s.message, onRetry = vm::load)
+                is AccountUiState.Content -> ProfileContent(s.account, onLogout)
             }
         }
     }
 }
 
 @Composable
-private fun ProfileContent(account: Account) {
+private fun ProfileContent(account: Account, onLogout: () -> Unit) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         Column(
             Modifier.fillMaxWidth().padding(vertical = 24.dp),
@@ -90,6 +81,10 @@ private fun ProfileContent(account: Account) {
         Row("Contraseña de pago", if (account.hasPaymentPassword) "Configurada" else "Sin configurar")
         Row("Biometría", yesNo(account.biometricEnabled))
         Row("Cuenta de comercio", yesNo(account.isMerchant))
+        OutlinedButton(
+            onClick = onLogout,
+            modifier = Modifier.fillMaxWidth().padding(24.dp),
+        ) { Text("Cerrar sesión") }
     }
 }
 

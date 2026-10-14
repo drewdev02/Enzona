@@ -67,7 +67,12 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 
 ---
 
-## M3 · Tarjetas + Dashboard
+## M3 · Tarjetas + Dashboard  ◧ estructura visual hecha
+- ☑ **Estructura del dashboard** (según el mockup de la app original, con componentes nativos): cabecera con degradado + acciones Escanear/Recibir, hoja blanca con insignia, barra inferior de 4 pestañas (Inicio · Avisos · Amigos · Perfil). Android: Compose, píldora propia, iconos dibujados con Canvas. iOS: `TabView` nativo (cápsula flotante en iOS 26+), SF Symbols.
+- ☑ Pantallas sin estado con `@Preview` (Android) y `#Preview` (iOS); verificadas visualmente en emulador y simulador con datos inventados.
+- ☑ Perfil pasa a ser una pestaña y aloja "Cerrar sesión". Avisos y Amigos son pantallas "próximamente".
+- ⚠ Escanear y Recibir **no hacen nada aún** (llegan con M5). La insignia es un **placeholder neutro** (tres barras): usar el logotipo propio.
+- ⚠ No verificado en pantalla: que Perfil restaure los iconos oscuros de la barra de estado al salir del dashboard (la lógica lo hace, pero no lo vi).
 - ☐ `CardDto` + `CardRepository` (`GET /coremz/1.0.2/card/username/{username}`, envelope `{"card":[]}`).
 - ☐ Balance (`/coremz/1.0.2/api/balance/lastOperations/{uuid}`), tarjeta por defecto/principal.
 - ☐ `HomeViewModel` + dashboard (saldo, tarjetas, accesos rápidos).

@@ -26,6 +26,7 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.androidx.browser)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.compose.materialIconsCore)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.lifecycle.runtimeCompose)
 }

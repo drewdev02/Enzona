@@ -3,6 +3,7 @@ import SharedLogic
 
 struct ProfileView: View {
     @ObservedObject var profile: ProfileModel
+    let onLogout: () -> Void
 
     var body: some View {
         Group {
@@ -16,7 +17,7 @@ struct ProfileView: View {
                 }
                 .padding()
             case .content(let account):
-                ProfileContent(account: account)
+                ProfileContent(account: account, onLogout: onLogout)
             }
         }
         .navigationTitle("Mi perfil")
@@ -27,6 +28,7 @@ struct ProfileView: View {
 
 private struct ProfileContent: View {
     let account: Account
+    let onLogout: () -> Void
 
     var body: some View {
         List {
@@ -55,6 +57,9 @@ private struct ProfileContent: View {
                 row("Contraseña de pago", account.hasPaymentPassword ? "Configurada" : "Sin configurar")
                 row("Biometría", yesNo(account.biometricEnabled))
                 row("Cuenta de comercio", yesNo(account.isMerchant))
+            }
+            Section {
+                Button("Cerrar sesión", role: .destructive, action: onLogout)
             }
         }
     }

@@ -18,8 +18,7 @@ import org.andrew.enzona.feature.auth.presentation.AuthUiState
 
 @Composable
 fun LoginScreen(state: AuthUiState, onLogin: () -> Unit) {
-    MaterialTheme {
-        Scaffold { padding ->
+    Scaffold { padding ->
             Column(
                 modifier = Modifier.fillMaxSize().padding(padding).padding(24.dp),
                 verticalArrangement = Arrangement.Center,
@@ -48,5 +47,4 @@ fun LoginScreen(state: AuthUiState, onLogin: () -> Unit) {
                 }
             }
         }
-    }
 }
