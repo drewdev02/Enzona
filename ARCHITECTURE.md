@@ -104,7 +104,7 @@ muere con ella.
 - **Login multi-paso con MFA** (usuario/contraseña → **SMS OTP** → paso custom): lo renderiza
   el IdP como HTML → se abre en el **navegador del sistema**:
   - Android: **Custom Tabs**.
-  - iOS: **ASWebAuthenticationSession**.
+  - iOS: **WKWebView** embebido (ASWebAuthenticationSession no capta el redirect `http://`).
 - PKCE S256 se genera en `sharedLogic`; la UI nativa abre el navegador y devuelve el `code`
   del redirect `http://apk-callback?code=…` al `OAuthService` compartido, que canjea el token.
 - Token en **SecureStorage** (Keystore/Keychain) + **refresh_token** → sesión persistente;
@@ -114,6 +114,18 @@ muere con ella.
 > No es posible (ni deseable) saltarse el SMS OTP: ROPC (`grant_type=password`) no lo soporta
 > y el SP no lo expone. UI 100% nativa de login solo sería viable si EnZona/XETID habilitara
 > "API-based authentication" en su WSO2 para tu `client_id` (gestión con ellos).
+
+### Navegador persistente y dispositivo de confianza (abierto)
+
+- El WebView de iOS usa el almacén **persistente** de la app (`WKWebsiteDataStore.default()`);
+  antes era efímero, así que cada login empezaba sin cookies. Android usa Custom Tabs, que
+  comparten las cookies del navegador del usuario.
+- **Sin verificar**: cómo recuerda el IdP un dispositivo (¿cookie de `identity.enzona.net`?).
+  Se comprueba con un login real: el segundo login no debería pedir el SMS.
+- **Riesgo**: con cookies persistentes la sesión del IdP también sobrevive. Hoy "Cerrar sesión"
+  solo borra los tokens locales, así que quien toque "Iniciar sesión" después podría entrar sin
+  credenciales. Hay que decidir el cierre de sesión del IdP (`end_session_endpoint` de OIDC, si
+  este WSO2 lo expone; no se pudo consultar, el host no respondió) antes de auto-abrir el login.
 
 ## 6. Decisiones técnicas confirmadas por la ingeniería inversa
 
