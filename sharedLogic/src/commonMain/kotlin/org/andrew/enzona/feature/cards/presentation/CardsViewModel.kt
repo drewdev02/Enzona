@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.andrew.enzona.core.logging.logger
 import org.andrew.enzona.core.result.EzResult
 import org.andrew.enzona.core.result.userMessage
 import org.andrew.enzona.core.util.Cancellable
@@ -24,6 +25,7 @@ sealed interface CardsUiState {
 class CardsViewModel(
     private val getCards: GetCardsUseCase,
 ) : ViewModel() {
+    private val log = logger<CardsViewModel>()
     private val _state = MutableStateFlow<CardsUiState>(CardsUiState.Loading)
     val state: StateFlow<CardsUiState> = _state.asStateFlow()
 
@@ -32,9 +34,14 @@ class CardsViewModel(
         if (_state.value !is CardsUiState.Content) _state.value = CardsUiState.Loading
         viewModelScope.launch {
             _state.value = when (val r = getCards()) {
-                is EzResult.Success ->
+                is EzResult.Success -> {
+                    log.info("Tarjetas cargadas: {Cantidad}", r.value.size)
                     if (r.value.isEmpty()) CardsUiState.Empty else CardsUiState.Content(r.value)
-                is EzResult.Error -> CardsUiState.Error(r.failure.userMessage())
+                }
+                is EzResult.Error -> {
+                    log.warn("No se pudieron cargar las tarjetas: {Fallo}", r.failure::class.simpleName)
+                    CardsUiState.Error(r.failure.userMessage())
+                }
             }
         }
     }
