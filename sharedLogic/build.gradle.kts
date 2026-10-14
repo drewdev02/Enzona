@@ -47,6 +47,7 @@ kotlin {
             implementation(libs.ktor.client.auth)
             implementation(libs.multiplatform.settings)
             implementation(libs.napier)
+            implementation(libs.okio)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
