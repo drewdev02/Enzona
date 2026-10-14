@@ -2,6 +2,7 @@ package org.andrew.enzona.ui.designsystem.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
@@ -29,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.TextStyle
@@ -86,6 +88,9 @@ fun EzBankCard(
     fallbackTitle: String? = null,
     /** Dónde empieza el número, en fracción del ancho (algunos skins traen un adorno a la izquierda). */
     numberInset: Float = EzBankCardDefaults.StartInset,
+    /** Toque sobre la tarjeta (el menú tiene el suyo). `null` la deja sin acción, como en las previews. */
+    onClick: (() -> Unit)? = null,
+    onClickLabel: String? = null,
 ) {
     val d = EzBankCardDefaults
     BoxWithConstraints(modifier.fillMaxWidth().aspectRatio(1f / d.HeightRatio)) {
@@ -95,7 +100,13 @@ fun EzBankCard(
         val density = LocalDensity.current
         fun size(fraction: Float) = with(density) { (w * fraction).toSp() }
 
-        Box(Modifier.fillMaxSize().shadow(EnzonaTheme.elevation.medium, shape).clip(shape)) {
+        Box(
+            Modifier.fillMaxSize().shadow(EnzonaTheme.elevation.medium, shape).clip(shape)
+                .then(
+                    if (onClick != null) Modifier.clickable(onClickLabel = onClickLabel, role = Role.Button, onClick = onClick)
+                    else Modifier
+                ),
+        ) {
             if (background != null) {
                 Image(background, contentDescription = null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
             } else {
