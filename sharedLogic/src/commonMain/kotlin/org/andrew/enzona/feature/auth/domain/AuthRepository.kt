@@ -7,6 +7,7 @@ import org.andrew.enzona.core.crypto.Pkce
 import org.andrew.enzona.core.result.EzResult
 import org.andrew.enzona.core.result.Failure
 import org.andrew.enzona.core.result.map
+import org.andrew.enzona.feature.auth.data.JwtClaims
 import org.andrew.enzona.feature.auth.data.OAuthService
 import org.andrew.enzona.feature.auth.data.TokenStore
 
@@ -59,6 +60,9 @@ class AuthRepository(
     fun isLoggedIn(): Boolean = tokenStore.hasSession()
 
     fun idToken(): String? = tokenStore.idToken()
+
+    /** Username de la sesión: claim `sub` del id_token (verificado contra el backend real). */
+    fun username(): String? = tokenStore.idToken()?.let { JwtClaims.string(it, "sub") }
 
     fun logout() = tokenStore.clear()
 }

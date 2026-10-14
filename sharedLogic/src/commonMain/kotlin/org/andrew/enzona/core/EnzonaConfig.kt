@@ -7,6 +7,7 @@ package org.andrew.enzona.core
 object EnzonaConfig {
     const val API_BASE = "https://api.enzona.net"
     const val IDENTITY_BASE = "https://identity.enzona.net"
+    const val MEDIA_BASE = "https://media.enzona.net/"
 
     // ⚠ Reemplazar por tu client_id registrado en EnZona/XETID.
     const val CLIENT_ID = "ofr3Wz9nnfZaFd18OewdZYvuTaEa"

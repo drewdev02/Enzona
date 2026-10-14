@@ -7,6 +7,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.http.URLBuilder
+import kotlinx.coroutines.CancellationException
 import org.andrew.enzona.core.EnzonaConfig
 import org.andrew.enzona.core.crypto.Pkce
 import org.andrew.enzona.core.result.EzResult
@@ -62,6 +63,8 @@ class OAuthService(private val client: HttpClient) {
         } else {
             EzResult.Error(Failure.Auth("Token HTTP ${resp.status.value}: ${resp.bodyAsText()}"))
         }
+    } catch (e: CancellationException) {
+        throw e
     } catch (e: Exception) {
         EzResult.Error(Failure.Network(e.message))
     }

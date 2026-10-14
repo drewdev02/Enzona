@@ -3,6 +3,7 @@ package org.andrew.enzona.di
 import org.andrew.enzona.Greeting
 import org.andrew.enzona.core.di.coreModule
 import org.andrew.enzona.core.di.platformModule
+import org.andrew.enzona.feature.account.accountModule
 import org.andrew.enzona.feature.auth.authModule
 import org.koin.core.KoinApplication
 import org.koin.core.component.KoinComponent
@@ -19,7 +20,7 @@ val commonModule: Module = module {
 fun initKoin(appDeclaration: KoinAppDeclaration = {}): KoinApplication =
     startKoin {
         appDeclaration()
-        modules(commonModule, coreModule, platformModule(), authModule)
+        modules(commonModule, coreModule, platformModule(), authModule, accountModule)
     }
 
 // Helper for iOS invocation from Swift
@@ -30,4 +31,5 @@ fun initKoinIos(): KoinApplication = initKoin {}
 object KoinHelper : KoinComponent {
     val greeting: Greeting by inject()
     val authViewModel: org.andrew.enzona.feature.auth.presentation.AuthViewModel by inject()
+    val accountViewModel: org.andrew.enzona.feature.account.presentation.AccountViewModel by inject()
 }
