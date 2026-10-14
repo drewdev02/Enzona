@@ -35,7 +35,8 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 - ☑ `feature/auth/data/TokenStore` sobre `SecureStorage`.
 - ☑ **Refresh automático ante 401**: interceptor `HttpSend` (no el plugin `Auth` de Ktor, que cachea tokens). Un cliente sin auth para el IdP y otro para la API; refresh serializado con mutex; un solo reintento; el token solo viaja al host de la API. 5 tests (Android + iOS).
 - ☑ Sesión caducada: si el servidor rechaza el refresh se borran los tokens y se vuelve al login con aviso; un fallo de red **no** cierra la sesión.
-- ☑ `AuthViewModel` + `AuthUiState` (StateFlow) + intents; restaurar sesión al arranque.
+- ☑ `SessionRepository` (dueño de la sesión, vida de la app): `SessionState` (StateFlow), PKCE pendiente, restaurar sesión al construirse. `LoginViewModel` (pantalla) solo guarda el estado del intento de login.
+- ☑ **Ciclo de vida**: `AccountViewModel` / `CardsViewModel` son ViewModels KMP por pantalla (`viewModelScope`, Koin `viewModel { }`); al cerrar sesión se destruyen y no queda nada del usuario anterior. Ver ARCHITECTURE §4. Tests: `ViewModelLifecycleTest`, `SessionRepositoryTest`, `LoginViewModelTest`.
 - ☑ Android: **Custom Tabs** + deep link `apk-callback`; pantallas Compose.
 - ☑ iOS: **WKWebView** (ASWebAuthenticationSession no capta `http://`); pantallas SwiftUI. **El Swift compila** contra el framework real (`xcodebuild`).
 - ☑ **SecureStorage endurecido**: Android = AES-256-GCM con clave en el **Android Keystore**; iOS = **Keychain** (`AfterFirstUnlockThisDeviceOnly`). `allowBackup=false`.

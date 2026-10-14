@@ -4,7 +4,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.andrew.enzona.core.network.TokenProvider
 import org.andrew.enzona.core.result.EzResult
-import org.andrew.enzona.feature.auth.domain.AuthRepository
+import org.andrew.enzona.feature.auth.domain.SessionRepository
 
 /**
  * Une el cliente HTTP con la sesión. Serializa los refresh: si varias peticiones reciben
@@ -13,7 +13,7 @@ import org.andrew.enzona.feature.auth.domain.AuthRepository
  */
 class SessionTokenProvider(
     private val tokenStore: TokenStore,
-    private val repo: AuthRepository,
+    private val repo: SessionRepository,
 ) : TokenProvider {
     private val mutex = Mutex()
 

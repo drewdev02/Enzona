@@ -1,8 +1,7 @@
 package org.andrew.enzona.feature.cards.presentation
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,17 +20,17 @@ sealed interface CardsUiState {
     data class Error(val message: String) : CardsUiState
 }
 
+/** Vive lo que vive su pantalla: `viewModelScope` cancela las cargas en vuelo al destruirse. */
 class CardsViewModel(
     private val getCards: GetCardsUseCase,
-    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main),
-) {
+) : ViewModel() {
     private val _state = MutableStateFlow<CardsUiState>(CardsUiState.Loading)
     val state: StateFlow<CardsUiState> = _state.asStateFlow()
 
     /** Carga (o recarga). Mantiene el contenido previo visible hasta tener el nuevo. */
     fun load() {
         if (_state.value !is CardsUiState.Content) _state.value = CardsUiState.Loading
-        scope.launch {
+        viewModelScope.launch {
             _state.value = when (val r = getCards()) {
                 is EzResult.Success ->
                     if (r.value.isEmpty()) CardsUiState.Empty else CardsUiState.Content(r.value)

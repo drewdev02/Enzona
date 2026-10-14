@@ -18,8 +18,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import org.andrew.enzona.feature.account.presentation.AccountViewModel
-import org.andrew.enzona.feature.cards.presentation.CardsViewModel
 import org.andrew.enzona.feature.home.domain.HomeService
 import org.andrew.enzona.ui.cards.BalanceRoute
 import org.andrew.enzona.ui.ComingSoonScreen
@@ -34,9 +32,9 @@ import org.andrew.enzona.ui.dashboard.DashboardRoute
 /** Segundo nivel (no es una pestaña): se abre desde la casilla "Balance" del inicio. */
 @Serializable data object Balance
 
-/** Navegación de la zona autenticada. El paso login <-> app lo decide AuthUiState, no este grafo. */
+/** Navegación de la zona autenticada. El paso login <-> app lo decide SessionState, no este grafo. */
 @Composable
-fun AppNavigation(accountVm: AccountViewModel, cardsVm: CardsViewModel, onLogout: () -> Unit) {
+fun AppNavigation(onLogout: () -> Unit) {
     val nav = rememberNavController()
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -87,10 +85,9 @@ fun AppNavigation(accountVm: AccountViewModel, cardsVm: CardsViewModel, onLogout
             composable<Friends> {
                 ComingSoonScreen("Amigos", "Contactos y destinatarios llegarán más adelante.")
             }
-            composable<Profile> { ProfileScreen(accountVm, onLogout) }
+            composable<Profile> { ProfileScreen(onLogout) }
             composable<Balance> {
                 BalanceRoute(
-                    vm = cardsVm,
                     onBack = { nav.popBackStack() },
                     // Eliminar / predeterminada / PIN / operaciones son operaciones nuevas: llegan en su hito.
                     onCardMenu = { showMessage("Las acciones de la tarjeta estarán disponibles próximamente.") },

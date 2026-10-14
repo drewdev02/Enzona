@@ -42,16 +42,21 @@ final class CardsModel: ObservableObject {
 
     @Published var phase: Phase = .loading
 
-    private let vm = KoinHelper.shared.cardsViewModel
+    /// Un ViewModel por pantalla: `deinit` lo limpia y cancela sus cargas en vuelo.
+    private let holder = KoinHelper.shared.cardsViewModelHolder()
+    private var vm: CardsViewModel { holder.viewModel }
     private var subscription: Cancellable?
 
     init() {
-        subscription = vm.watchState { [weak self] state in
+        subscription = holder.viewModel.watchState { [weak self] state in
             self?.apply(state)
         }
     }
 
-    deinit { subscription?.cancel() }
+    deinit {
+        subscription?.cancel()
+        holder.clear()
+    }
 
     private func apply(_ state: CardsUiState) {
         switch state {

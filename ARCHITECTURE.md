@@ -68,10 +68,34 @@ Mientras tanto, un **puente manual ligero** expone los `StateFlow` a SwiftUI:
 - `core/util/FlowBridge.kt`: `Cancellable` + `StateFlow.watch(onEach)`.
 - El ViewModel expone `watchState(onEach:): Cancellable`, consumible directo desde Swift.
 - SwiftUI envuelve el ViewModel en un `ObservableObject` que actualiza `@Published` desde
-  el callback (ver `iosApp/AuthModel.swift`).
-- Los `sealed interface` de Kotlin se chequean en Swift con `case is AuthUiStateLoggedIn`.
+  el callback (ver `iosApp/LoginModel.swift`, `SessionModel.swift`).
+- Los `sealed interface` de Kotlin se chequean en Swift con `case is LoginUiStateAuthenticating`.
 
 Migrar a SKIE después = cambiar solo esta capa de observación iOS; la lógica no se toca.
+
+### Ciclo de vida: quién es dueño de qué
+
+Regla (guía de capa de datos de Android): el estado que **sobrevive a las pantallas** vive en la
+capa de datos con vida de aplicación; el estado de **una pantalla** vive en un `ViewModel` que
+muere con ella.
+
+| Pieza | Vida | Por qué |
+|---|---|---|
+| `SessionRepository` (Koin `single`) | La app | Dueño de tokens, `SessionState` y el PKCE del login en curso. El redirect OAuth llega fuera de cualquier pantalla. |
+| `LoginViewModel` | Pantalla de login (Android: la Activity, porque recibe el redirect) | Solo estado de UI: `Idle / Authenticating / Error`. |
+| `AccountViewModel`, `CardsViewModel` | Su pantalla | Datos de un usuario: no deben sobrevivir al logout ni al cambio de usuario. |
+
+- La raíz de cada app observa `SessionState` (`LoggedIn` / `LoggedOut(expired)`). Al salir de
+  `LoggedIn` la zona autenticada deja de existir y sus ViewModels se destruyen con ella
+  (`viewModelScope` cancela las cargas en vuelo).
+- Los ViewModels son `androidx.lifecycle.ViewModel` (KMP) registrados con Koin `viewModel { }`.
+  Android los resuelve con `koinViewModel()` por entrada de navegación.
+- iOS no tiene `ViewModelStoreOwner`: `ViewModelHolder` (`di/ViewModelHolder.kt`) posee un
+  `ViewModelStore`; el modelo Swift de la pantalla lo crea (`KoinHelper.*ViewModelHolder()`) y
+  llama a `clear()` en `deinit`. `HomeView` sostiene los modelos de cuenta y tarjetas mientras
+  haya sesión, así que mueren con ella.
+- Los textos de cara al usuario (p. ej. "Tu sesión expiró") los decide la capa de UI a partir
+  de hechos del dominio (`LoggedOut(expired = true)`), no el dominio.
 
 ## 5. Autenticación (verificada contra producción)
 
@@ -126,7 +150,7 @@ Migrar a SKIE después = cambiar solo esta capa de observación iOS; la lógica 
 | Hito | Entrega | Contenido |
 |---|---|---|
 | **M0 · Base** | Esqueleto limpio que compila | Retirar `sharedUI`; añadir Ktor/serialization/coroutines/SKIE/settings al catálogo; paquetes `core/data/domain/feature`; Koin en ambos apps |
-| **M1 · Auth** | Login real end-to-end (Android + iOS) | PKCE + OAuthService + token store + refresh + `AuthViewModel`; Custom Tabs / ASWebAuthenticationSession; sesión persistente |
+| **M1 · Auth** | Login real end-to-end (Android + iOS) | PKCE + OAuthService + token store + refresh + `SessionRepository` / `LoginViewModel`; Custom Tabs / ASWebAuthenticationSession; sesión persistente |
 | **M2 · Perfil** | Pantalla cuenta en ambas apps | `AccountRepository` + `AccountViewModel`; Compose + SwiftUI sobre el mismo estado (valida el patrón UI nativa) |
 | **M3 · Tarjetas + Dashboard** | Home funcional | Cards + balance + home |
 | **M4 · Transacciones** | Historial paginado | `operations` + `PaginationModel` + lista nativa |

@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.compose.uiToolingPreview)
     debugImplementation(libs.compose.uiTooling)
     implementation(libs.koin.android)
+    implementation(libs.koin.compose.viewmodel)
     implementation(libs.androidx.browser)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.materialIconsCore)

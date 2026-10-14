@@ -14,7 +14,8 @@ import org.andrew.enzona.feature.account.accountModule
 import org.andrew.enzona.feature.account.presentation.AccountViewModel
 import org.andrew.enzona.feature.auth.authModule
 import org.andrew.enzona.feature.auth.data.OAuthService
-import org.andrew.enzona.feature.auth.presentation.AuthViewModel
+import org.andrew.enzona.feature.auth.domain.SessionRepository
+import org.andrew.enzona.feature.auth.presentation.LoginViewModel
 import org.andrew.enzona.feature.cards.cardsModule
 import org.andrew.enzona.feature.cards.presentation.CardsViewModel
 import org.koin.dsl.koinApplication
@@ -22,6 +23,7 @@ import org.koin.dsl.module
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
+import kotlin.test.assertSame
 
 private class MemoryStorage : SecureStorage {
     private val map = mutableMapOf<String, String>()
@@ -46,9 +48,15 @@ class KoinGraphTest {
                 modules(coreModule, authModule, accountModule, cardsModule, module { single<SecureStorage> { MemoryStorage() } })
             }.koin
 
-            assertNotNull(koin.get<AuthViewModel>())
+            // La sesión es de la app (una sola); la pantalla de login, no.
+            assertSame(koin.get<SessionRepository>(), koin.get<SessionRepository>())
+            assertNotSame(koin.get<LoginViewModel>(), koin.get<LoginViewModel>())
             assertNotNull(koin.get<AccountViewModel>())
             assertNotNull(koin.get<CardsViewModel>())
+            // Estado por pantalla: cada pantalla recibe su propia instancia, así nada del
+            // usuario anterior sobrevive a un logout.
+            assertNotSame(koin.get<AccountViewModel>(), koin.get<AccountViewModel>())
+            assertNotSame(koin.get<CardsViewModel>(), koin.get<CardsViewModel>())
             assertNotNull(koin.get<OAuthService>())
             // Dos clientes distintos: el del IdP (sin auth) y el de la API (con Bearer + refresh).
             assertNotSame(koin.get<HttpClient>(), koin.get<HttpClient>(PlainHttpClient))

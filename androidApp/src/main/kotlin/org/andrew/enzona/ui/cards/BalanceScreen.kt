@@ -23,10 +23,11 @@ import org.andrew.enzona.ui.designsystem.components.EzEmptyState
 import org.andrew.enzona.ui.designsystem.components.EzErrorState
 import org.andrew.enzona.ui.designsystem.components.EzGradientTopAppBar
 import org.andrew.enzona.ui.designsystem.components.EzLoadingState
+import org.koin.compose.viewmodel.koinViewModel
 
 /** Conecta el ViewModel con la pantalla. La pantalla en sí no sabe nada de Koin. */
 @Composable
-fun BalanceRoute(vm: CardsViewModel, onBack: () -> Unit, onCardMenu: () -> Unit) {
+fun BalanceRoute(onBack: () -> Unit, onCardMenu: () -> Unit, vm: CardsViewModel = koinViewModel()) {
     LaunchedEffect(Unit) { vm.load() }
     val state by vm.state.collectAsStateWithLifecycle()
     BalanceScreen(state, onBack, onRetry = vm::load, onCardMenu = onCardMenu)
