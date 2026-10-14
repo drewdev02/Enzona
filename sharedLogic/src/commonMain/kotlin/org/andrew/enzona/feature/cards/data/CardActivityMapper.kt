@@ -1,0 +1,139 @@
+package org.andrew.enzona.feature.cards.data
+
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.decodeFromJsonElement
+import org.andrew.enzona.core.money.Money
+import org.andrew.enzona.core.money.parseMinorUnits
+import org.andrew.enzona.core.network.enzonaJson
+import org.andrew.enzona.feature.cards.domain.CardActivity
+import org.andrew.enzona.feature.cards.domain.CardOperation
+import org.andrew.enzona.feature.cards.domain.OperationDirection
+import org.andrew.enzona.feature.cards.domain.classifyOperation
+
+/**
+ * Convierte un [JsonElement] a texto limpio:
+ * Solo son ausentes (null): null, JsonNull, booleanos JSON sin comillas (false/true),
+ * objetos y arrays. Un string se conserva tal cual (tras trim, si quedó vacío -> null),
+ * incluidos "True" o "false" como valores textuales.
+ */
+internal fun JsonElement?.asCleanText(): String? {
+    if (this == null || this is JsonNull) return null
+    if (this is JsonPrimitive) {
+        if (this.isString) {
+            val s = this.content.trim()
+            return s.ifEmpty { null }
+        }
+        // Primitivo no-string: descartar booleanos JSON sin comillas
+        if (this.booleanOrNull != null) {
+            return null
+        }
+        val s = this.content.trim()
+        return s.ifEmpty { null }
+    }
+    return null
+}
+
+/**
+ * Determina si el campo `fault` representa un error real del backend:
+ * ausente, null o booleano false se consideran sin error.
+ */
+internal fun JsonElement?.hasFault(): Boolean {
+    if (this == null || this is JsonNull) return false
+    if (this is JsonPrimitive) {
+        if (this.booleanOrNull == false) return false
+        val s = this.content.trim()
+        if (s.isEmpty() || s.equals("false", ignoreCase = true)) return false
+    }
+    return true
+}
+
+/**
+ * Transforma [CardActivityDto] al modelo de dominio [CardActivity].
+ *
+ * Si `operation` es un array JSON, decodifica cada elemento individualmente.
+ * Los elementos que no sean objetos o que fallen al decodificarse cuentan como
+ * operaciones omitidas. Las operaciones con importe ilegible también se omiten.
+ * Si `operation` no es un array (es null, booleano, objeto, etc.), la lista de
+ * operaciones es vacía y las operaciones omitidas son 0.
+ *
+ * Los saldos ilegibles se mapean a null sin invalidar la actividad completa.
+ */
+internal fun CardActivityDto.toDomain(): CardActivity {
+    val rawCurrency = currency.asCleanText().orEmpty()
+
+    val balanceMoney = parseMinorUnits(balance.asCleanText())?.let {
+        Money(minorUnits = it, currency = rawCurrency)
+    }
+    val availableMoney = parseMinorUnits(balanceAvailable.asCleanText())?.let {
+        Money(minorUnits = it, currency = rawCurrency)
+    }
+
+    val validOperations = mutableListOf<CardOperation>()
+    var skippedCount = 0
+
+    val operationElement = operation
+    if (operationElement is JsonArray) {
+        for (item in operationElement) {
+            val op = if (item is JsonObject) {
+                try {
+                    enzonaJson.decodeFromJsonElement<OperationDto>(item)
+                } catch (e: Exception) {
+                    null
+                }
+            } else {
+                null
+            }
+
+            if (op == null) {
+                skippedCount++
+                continue
+            }
+
+            val amountText = op.amount.asCleanText()
+            val minorUnits = parseMinorUnits(amountText)
+            if (minorUnits == null) {
+                skippedCount++
+                continue
+            }
+
+            val rawAlias = op.alias.asCleanText()
+            val merchantAlias = if (rawAlias == null || rawAlias.isBlank() || rawAlias.equals("null", ignoreCase = true)) {
+                null
+            } else {
+                rawAlias
+            }
+
+            val dateText = op.operationDate.asCleanText().orEmpty()
+            val action = op.action.asCleanText().orEmpty()
+            val channel = op.channel.asCleanText().orEmpty()
+            val description = op.description.asCleanText().orEmpty()
+
+            val direction = if (action == "DB") OperationDirection.DEBIT else OperationDirection.CREDIT
+            val kind = classifyOperation(description = description, channel = channel, action = action)
+            val amountMoney = Money(minorUnits = minorUnits, currency = rawCurrency)
+
+            validOperations.add(
+                CardOperation(
+                    kind = kind,
+                    direction = direction,
+                    amount = amountMoney,
+                    merchantAlias = merchantAlias,
+                    dateText = dateText,
+                )
+            )
+        }
+    }
+
+    return CardActivity(
+        balance = balanceMoney,
+        available = availableMoney,
+        currency = rawCurrency,
+        operations = validOperations,
+        skippedOperations = skippedCount,
+    )
+}
