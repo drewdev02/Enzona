@@ -1,147 +1,205 @@
 {
   "origin": "APK oficial de EnZona (cu.xetid.apk.enzona)",
   "apk_sha256": "9125313c01eb522522c2a1e312c62ad09a81193bc5b427a36b34114c701a4c0c",
-  "note": "Arte de EnZona/XETID; incluye marcas de terceros (Cupet, ONAT, Etecsa, Correos, PCC). Importado por decisión del titular del proyecto.",
-  "items": [
+  "note": "Arte de EnZona/XETID; incluye marcas de terceros (Cupet, ONAT, Etecsa, Correos, PCC, bancos y la red 'red'). Importado por decisión del titular del proyecto.",
+  "services": [
     {
-      "order": 0,
-      "label": "Transferir",
-      "key": "transfer",
       "resource": "service_transfer",
       "source": "assets/flutter_assets/assets/images/items/Transferir.png",
       "width": 210,
       "height": 210,
-      "sha256": "16687f0dbc637f84ba7f35702792576ba672c1e36406c9204567a2d609a66cd2"
+      "sha256": "16687f0dbc637f84ba7f35702792576ba672c1e36406c9204567a2d609a66cd2",
+      "order": 0,
+      "label": "Transferir",
+      "key": "transfer"
     },
     {
-      "order": 1,
-      "label": "Balance",
-      "key": "balance",
       "resource": "service_balance",
       "source": "assets/flutter_assets/assets/images/items/Saldo.png",
       "width": 210,
       "height": 210,
-      "sha256": "8b83a71ebf2456ff69cbdfff6bd8f03a3936cf9c254b80f181949c8e5b4331e0"
+      "sha256": "8b83a71ebf2456ff69cbdfff6bd8f03a3936cf9c254b80f181949c8e5b4331e0",
+      "order": 1,
+      "label": "Balance",
+      "key": "balance"
     },
     {
-      "order": 2,
-      "label": "Bulevar",
-      "key": "bulevar",
       "resource": "service_bulevar",
       "source": "assets/flutter_assets/assets/images/items/Mis%20compras.png",
       "width": 210,
       "height": 210,
-      "sha256": "d0256b20f870a454628ad36d5de89d1a7054ca0a9514e1f5365efcb432937394"
+      "sha256": "d0256b20f870a454628ad36d5de89d1a7054ca0a9514e1f5365efcb432937394",
+      "order": 2,
+      "label": "Bulevar",
+      "key": "bulevar"
     },
     {
-      "order": 3,
-      "label": "Regalo",
-      "key": "gift",
       "resource": "service_gift",
       "source": "assets/flutter_assets/assets/images/items/Regalos.png",
       "width": 210,
       "height": 210,
-      "sha256": "67c09e71b14c0c272b0a82ce5eb489f6ce30660fb2d232cc8712e347cf165cd0"
+      "sha256": "67c09e71b14c0c272b0a82ce5eb489f6ce30660fb2d232cc8712e347cf165cd0",
+      "order": 3,
+      "label": "Regalo",
+      "key": "gift"
     },
     {
-      "order": 4,
-      "label": "Donar",
-      "key": "donate",
       "resource": "service_donate",
       "source": "assets/flutter_assets/assets/images/items/Donar.png",
       "width": 210,
       "height": 210,
-      "sha256": "5b599da6c0232664f812fe0397b4fe9d23d023995fee8268abfb848e8cce078f"
+      "sha256": "5b599da6c0232664f812fe0397b4fe9d23d023995fee8268abfb848e8cce078f",
+      "order": 4,
+      "label": "Donar",
+      "key": "donate"
     },
     {
-      "order": 5,
-      "label": "Electricidad",
-      "key": "electricity",
       "resource": "service_electricity",
       "source": "assets/flutter_assets/assets/images/items/Electricidad.png",
       "width": 210,
       "height": 210,
-      "sha256": "6a86b909ceb1a9ddd4344ece2514dc5c94f2efa7c160642c637ceacfa264be42"
+      "sha256": "6a86b909ceb1a9ddd4344ece2514dc5c94f2efa7c160642c637ceacfa264be42",
+      "order": 5,
+      "label": "Electricidad",
+      "key": "electricity"
     },
     {
-      "order": 6,
-      "label": "Etecsa",
-      "key": "etecsa",
       "resource": "service_etecsa",
       "source": "assets/flutter_assets/assets/images/items/Etecsa.png",
       "width": 210,
       "height": 210,
-      "sha256": "a8792e53a70806dc59b84a1677ab6d8c27e06e48d08f81ee8e55cbf9092f143a"
+      "sha256": "a8792e53a70806dc59b84a1677ab6d8c27e06e48d08f81ee8e55cbf9092f143a",
+      "order": 6,
+      "label": "Etecsa",
+      "key": "etecsa"
     },
     {
-      "order": 7,
-      "label": "Impuestos",
-      "key": "taxes",
       "resource": "service_taxes",
       "source": "assets/flutter_assets/assets/images/items/Construccion%202.png",
       "width": 210,
       "height": 210,
-      "sha256": "6725dde59d8cf608e098c23250c72b263111b5aba20a942afc547db2e0d71be8"
+      "sha256": "6725dde59d8cf608e098c23250c72b263111b5aba20a942afc547db2e0d71be8",
+      "order": 7,
+      "label": "Impuestos",
+      "key": "taxes"
     },
     {
-      "order": 8,
-      "label": "Gas",
-      "key": "gas",
       "resource": "service_gas",
       "source": "assets/flutter_assets/assets/images/items/Cupet.png",
       "width": 210,
       "height": 210,
-      "sha256": "2aadda189e68b4ab1adc5d51677c54c2f3fac5763d2bfe229713981e259ab5c9"
+      "sha256": "2aadda189e68b4ab1adc5d51677c54c2f3fac5763d2bfe229713981e259ab5c9",
+      "order": 8,
+      "label": "Gas",
+      "key": "gas"
     },
     {
-      "order": 9,
-      "label": "Correos",
-      "key": "mail",
       "resource": "service_mail",
       "source": "assets/flutter_assets/assets/images/items/Correo.png",
       "width": 210,
       "height": 210,
-      "sha256": "4465bbfb10538c94f1e148712ebe353534518204f88269032ac61b7d881eae81"
+      "sha256": "4465bbfb10538c94f1e148712ebe353534518204f88269032ac61b7d881eae81",
+      "order": 9,
+      "label": "Correos",
+      "key": "mail"
     },
     {
-      "order": 10,
-      "label": "Caja extra",
-      "key": "extra_cash",
       "resource": "service_extra_cash",
       "source": "assets/flutter_assets/assets/images/items/Efectivo.png",
       "width": 210,
       "height": 210,
-      "sha256": "a39f88ec9250849cca51ef3eb453655af8ed0e3e805a92d7d9d7b2723f34eca3"
+      "sha256": "a39f88ec9250849cca51ef3eb453655af8ed0e3e805a92d7d9d7b2723f34eca3",
+      "order": 10,
+      "label": "Caja extra",
+      "key": "extra_cash"
     },
     {
-      "order": 11,
-      "label": "Mis compras",
-      "key": "purchases",
       "resource": "service_purchases",
       "source": "assets/flutter_assets/assets/images/items/Bulevar.png",
       "width": 210,
       "height": 210,
-      "sha256": "537eabc8f9faef5b174913125e7a9a62ebf734e52cf8e3e13f4142a2f943a023"
+      "sha256": "537eabc8f9faef5b174913125e7a9a62ebf734e52cf8e3e13f4142a2f943a023",
+      "order": 11,
+      "label": "Mis compras",
+      "key": "purchases"
     },
     {
-      "order": 12,
-      "label": "Crear cuenta",
-      "key": "create_account",
       "resource": "service_create_account",
       "source": "assets/flutter_assets/assets/images/items/Crear%20Cuenta.png",
       "width": 210,
       "height": 210,
-      "sha256": "c362b14c82c6cb55136e3ef440f15a1ab5c77dc7786c1ca27632dea24a2ab0f1"
+      "sha256": "c362b14c82c6cb55136e3ef440f15a1ab5c77dc7786c1ca27632dea24a2ab0f1",
+      "order": 12,
+      "label": "Crear cuenta",
+      "key": "create_account"
     },
     {
-      "order": 13,
-      "label": "Organizaciones",
-      "key": "organizations",
       "resource": "service_organizations",
       "source": "assets/flutter_assets/assets/images/PCC.png",
       "width": 175,
       "height": 175,
-      "sha256": "a41abe591d04e0a9a6d5afa0040adadf39fad221952c30a0f93cf0202dfc2f9e"
+      "sha256": "a41abe591d04e0a9a6d5afa0040adadf39fad221952c30a0f93cf0202dfc2f9e",
+      "order": 13,
+      "label": "Organizaciones",
+      "key": "organizations"
+    }
+  ],
+  "card_skins": [
+    {
+      "resource": "card_skin_ais",
+      "source": "assets/flutter_assets/assets/images/card/tarjeta_ais.png",
+      "width": 630,
+      "height": 332,
+      "sha256": "c5360770ef9b9fe58f9bac6fc4223ba8fca5888b2cb94dff40c93a3c854a7c56",
+      "key": "ais"
+    },
+    {
+      "resource": "card_skin_bandec",
+      "source": "assets/flutter_assets/assets/images/card/tarjeta_bandec.png",
+      "width": 630,
+      "height": 332,
+      "sha256": "90fc1fad6f22a39fe754c2692826138b41dd56b475ea52edbd5fed34a001ddeb",
+      "key": "bandec"
+    },
+    {
+      "resource": "card_skin_bandec_usd",
+      "source": "assets/flutter_assets/assets/images/card/tarjeta_bandec_usd.png",
+      "width": 630,
+      "height": 332,
+      "sha256": "5952e95278800baeedb92b03c79ace394ec28c9cb234e741e8494fe56199d3b3",
+      "key": "bandec_usd"
+    },
+    {
+      "resource": "card_skin_banmet",
+      "source": "assets/flutter_assets/assets/images/card/tarjeta_banmet.png",
+      "width": 630,
+      "height": 332,
+      "sha256": "8a51709718645f8491de611c4c0d495187d4a7b7fc6e198afc4ca37a4b2beece",
+      "key": "banmet"
+    },
+    {
+      "resource": "card_skin_bicsa",
+      "source": "assets/flutter_assets/assets/images/card/tarjeta_bicsa.png",
+      "width": 630,
+      "height": 332,
+      "sha256": "51982aa6e5d091ac3d9d5e52c62b04f32394aec4820f13f4cae4b1dfed09b501",
+      "key": "bicsa"
+    },
+    {
+      "resource": "card_skin_bpa",
+      "source": "assets/flutter_assets/assets/images/card/tarjeta_bpa.png",
+      "width": 630,
+      "height": 332,
+      "sha256": "8b4c66374d328b07596a2826085214895afd58a43764b9cb9c1402d1e429a26b",
+      "key": "bpa"
+    },
+    {
+      "resource": "card_skin_clasica",
+      "source": "assets/flutter_assets/assets/images/card/tarjeta_clasica.png",
+      "width": 630,
+      "height": 332,
+      "sha256": "35d94180f382852b41abd3d69196981c514090df7f00a85da72328fe3d35618d",
+      "key": "clasica"
     }
   ]
 }
