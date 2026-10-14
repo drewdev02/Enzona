@@ -50,7 +50,7 @@ kotlin {
             implementation(libs.ktor.serialization.json)
             implementation(libs.ktor.client.logging)
             implementation(libs.multiplatform.settings)
-            implementation(libs.napier)
+            implementation(libs.kermit)
             implementation(libs.okio)
         }
         androidMain.dependencies {
