@@ -15,6 +15,8 @@ import org.andrew.enzona.feature.account.presentation.AccountViewModel
 import org.andrew.enzona.feature.auth.authModule
 import org.andrew.enzona.feature.auth.data.OAuthService
 import org.andrew.enzona.feature.auth.presentation.AuthViewModel
+import org.andrew.enzona.feature.cards.cardsModule
+import org.andrew.enzona.feature.cards.presentation.CardsViewModel
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 import kotlin.test.Test
@@ -41,11 +43,12 @@ class KoinGraphTest {
         Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
         try {
             val koin = koinApplication {
-                modules(coreModule, authModule, accountModule, module { single<SecureStorage> { MemoryStorage() } })
+                modules(coreModule, authModule, accountModule, cardsModule, module { single<SecureStorage> { MemoryStorage() } })
             }.koin
 
             assertNotNull(koin.get<AuthViewModel>())
             assertNotNull(koin.get<AccountViewModel>())
+            assertNotNull(koin.get<CardsViewModel>())
             assertNotNull(koin.get<OAuthService>())
             // Dos clientes distintos: el del IdP (sin auth) y el de la API (con Bearer + refresh).
             assertNotSame(koin.get<HttpClient>(), koin.get<HttpClient>(PlainHttpClient))

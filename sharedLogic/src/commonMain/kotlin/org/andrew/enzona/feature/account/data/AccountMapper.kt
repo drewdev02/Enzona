@@ -3,10 +3,8 @@ package org.andrew.enzona.feature.account.data
 import org.andrew.enzona.core.EnzonaConfig
 import org.andrew.enzona.core.result.EzResult
 import org.andrew.enzona.core.result.Failure
+import org.andrew.enzona.core.util.asFlag
 import org.andrew.enzona.feature.account.domain.Account
-
-/** "1" / "true" -> true. El backend mezcla ambas formas (y `false`/ausente para "no"). */
-internal fun String?.asFlag(): Boolean = this == "1" || this.equals("true", ignoreCase = true)
 
 /** `false` llega como texto en campos de texto no aplicables: se trata como ausente. */
 private fun String?.textOrNull(): String? =
