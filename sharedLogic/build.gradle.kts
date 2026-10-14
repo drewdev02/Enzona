@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.kotlinxSerialization)
+    // SKIE: en pausa — no soporta Kotlin 2.4.20 (AGP 9.1.1 fuerza >= 2.2.10).
+    // alias(libs.plugins.skie)
 }
 
 kotlin {

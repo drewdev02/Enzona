@@ -6,4 +6,5 @@ plugins {
     alias(libs.plugins.composeMultiplatform) apply false
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
+    // alias(libs.plugins.skie) apply false  // en pausa: incompatible con Kotlin 2.4.20
 }

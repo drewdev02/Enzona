@@ -26,21 +26,24 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 
 ---
 
-## M1 · Autenticación (end-to-end)
+## M1 · Autenticación (end-to-end)  ◧ EN CURSO
 **Meta:** login real con OAuth/PKCE + sesión persistente, UI nativa en cada plataforma.
 
-- ☐ Añadir plugin **SKIE** a `sharedLogic` (interop Flow/suspend → Swift). *(movido desde M0)*
-- ☐ Endurecer `SecureStorage`: Keystore (Android) / Keychain (iOS) antes de guardar tokens reales. *(movido desde M0)*
-- ☐ `core/crypto`: `PKCE` (code_verifier + S256 challenge) en commonMain.
-- ☐ `feature/auth/data`: `OAuthService` (authorize URL, exchange code, refresh) con `grant_type=authorization_code|refresh_token`, `application/x-www-form-urlencoded`.
-- ☐ `feature/auth/data`: `TokenStore` sobre `SecureStorage` (access/refresh/id_token).
-- ☐ `core/network`: plugin de auth con **refresh automático** ante 401.
-- ☐ `feature/auth/presentation`: `AuthViewModel` + `AuthUiState` (StateFlow) + intents (login, logout).
-- ☐ Android: **Custom Tabs** para abrir authorize; capturar redirect `apk-callback` (deep link / intent) → devolver `code` al ViewModel.
-- ☐ iOS: **ASWebAuthenticationSession**; devolver `code` al ViewModel (vía SKIE).
-- ☐ Restaurar sesión al arranque; renovar con refresh_token.
+- ⛔ ~~Plugin SKIE~~ → **no compatible con Kotlin 2.4.20/AGP 9**; se usa un **puente manual** (`core/util/FlowBridge.kt`: `Cancellable` + `StateFlow.watch`). Migrar a SKIE cuando soporte Kotlin 2.4.
+- ☐ Endurecer `SecureStorage`: Keystore (Android) / Keychain (iOS) antes de guardar tokens reales. *(pendiente)*
+- ☑ `core/crypto/Pkce`: code_verifier + S256 challenge (okio).
+- ☑ `feature/auth/data/OAuthService`: authorize URL + exchange + refresh (form-urlencoded).
+- ☑ `feature/auth/data/TokenStore` sobre `SecureStorage` (access/refresh/id_token).
+- ☐ `core/network`: plugin de auth con **refresh automático** ante 401. *(pendiente — M1 cont.)*
+- ☑ `feature/auth/presentation/AuthViewModel` + `AuthUiState` (StateFlow) + intents.
+- ☑ Android: **Custom Tabs** + deep link `apk-callback` (intent-filter + onNewIntent) → `onRedirectCode`.
+- ☑ iOS: **WKWebView** (ASWebAuthenticationSession no capta `http://`) + observación vía `watchState`.
+- ☑ Restaurar sesión al arranque (`restore()`).
+- ☐ Renovar con refresh_token de forma automática. *(pendiente — junto al plugin de auth)*
 
-**Done cuando:** login real en Android e iOS, token en Keychain/Keystore, re-arranque sin re-login. (El login es multi-paso con **SMS OTP**: se honra, no se evita.)
+**Done cuando:** login real en Android e iOS, token en Keychain/Keystore, re-arranque sin re-login.
+(Login multi-paso con **SMS OTP**: se honra, no se evita.) · Builds verdes: Android `assembleDebug`,
+framework iOS linkeado; app iOS se compila en Xcode.
 
 ---
 
@@ -51,7 +54,7 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 - ☐ `data`: `AccountDto` (campos verificados), `AccountRemoteDataSource` (`GET /account/v1.0.0/account?username=<sub>`, envelope `{"account":{}}`), `AccountRepositoryImpl`.
 - ☐ `feature/account/presentation`: `AccountViewModel` + `AccountUiState`.
 - ☐ Android: pantalla perfil en **Compose** (`collectAsState`).
-- ☐ iOS: pantalla perfil en **SwiftUI** (observa StateFlow vía SKIE).
+- ☐ iOS: pantalla perfil en **SwiftUI** (observa StateFlow vía el puente `watchState`).
 
 **Done cuando:** ambas apps muestran el perfil real del usuario logueado desde el mismo ViewModel.
 

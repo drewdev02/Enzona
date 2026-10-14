@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.andrew.enzona.core.crypto.Pkce
 import org.andrew.enzona.core.result.EzResult
+import org.andrew.enzona.core.util.Cancellable
+import org.andrew.enzona.core.util.watch
 import org.andrew.enzona.feature.auth.domain.AuthRepository
 
 /** Estado de autenticación que la UI nativa observa. */
@@ -71,4 +73,10 @@ class AuthViewModel(
         repo.logout()
         _state.value = AuthUiState.LoggedOut
     }
+
+    /** Estado actual (útil para Swift/UIKit en el primer render). */
+    fun currentState(): AuthUiState = _state.value
+
+    /** Observa el estado desde Swift; devuelve una suscripción cancelable. */
+    fun watchState(onEach: (AuthUiState) -> Unit): Cancellable = state.watch(onEach)
 }

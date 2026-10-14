@@ -29,4 +29,5 @@ fun initKoinIos(): KoinApplication = initKoin {}
 // Helper for iOS / Swift to access Koin-managed dependencies directly
 object KoinHelper : KoinComponent {
     val greeting: Greeting by inject()
+    val authViewModel: org.andrew.enzona.feature.auth.presentation.AuthViewModel by inject()
 }

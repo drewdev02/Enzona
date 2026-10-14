@@ -1,60 +1,66 @@
 package org.andrew.enzona
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andrew.enzona.di.KoinHelper
+import org.andrew.enzona.feature.auth.presentation.AuthUiState
+import org.andrew.enzona.feature.auth.presentation.AuthViewModel
+import org.andrew.enzona.ui.HomeScreen
+import org.andrew.enzona.ui.LoginScreen
 
 class MainActivity : ComponentActivity() {
+
+    private val authViewModel: AuthViewModel get() = KoinHelper.authViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        setContent { HomeScreen() }
-    }
-}
+        authViewModel.restore()
+        handleRedirect(intent)
 
-@Composable
-fun HomeScreen() {
-    MaterialTheme {
-        Scaffold { padding ->
-            Column(
-                modifier = Modifier.fillMaxSize().padding(padding).padding(24.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text("EnZona KMP", style = MaterialTheme.typography.headlineMedium)
-                Text(
-                    "Lógica compartida · UI nativa (M0)",
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 8.dp),
-                )
-                Text(
-                    KoinHelper.greeting.greet(),
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(top = 16.dp),
-                )
-            }
+        setContent { AppRoot(authViewModel, ::openLogin) }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleRedirect(intent)
+    }
+
+    /** Abre el portal OAuth en Custom Tabs (navegador del sistema). */
+    private fun openLogin() {
+        val url = authViewModel.buildAuthorizeUrl()
+        CustomTabsIntent.Builder().build().launchUrl(this, Uri.parse(url))
+    }
+
+    /** Captura el redirect http://apk-callback?code=... y entrega el code al ViewModel. */
+    private fun handleRedirect(intent: Intent?) {
+        val data = intent?.data ?: return
+        if (data.scheme == "http" && data.host == "apk-callback") {
+            val code = data.getQueryParameter("code")
+            if (code != null) authViewModel.onRedirectCode(code)
+            else authViewModel.onAuthFailed(
+                data.getQueryParameter("oauthErrorMsg") ?: "Login cancelado"
+            )
         }
     }
 }
 
-@Preview
 @Composable
-fun HomeScreenPreview() {
-    HomeScreen()
+private fun AppRoot(vm: AuthViewModel, onLogin: () -> Unit) {
+    val state by vm.state.collectAsStateWithLifecycle()
+    when (state) {
+        is AuthUiState.LoggedIn -> HomeScreen(onLogout = vm::logout)
+        else -> LoginScreen(
+            state = state,
+            onLogin = onLogin,
+        )
+    }
 }

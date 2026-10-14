@@ -58,16 +58,20 @@ api.enzona.net / identity.enzona.net
 - `Result<Failure, T>` (sealed) atraviesa las capas (análogo al `Either/dartz` del original).
 - Mapeo `Dto` (data) → `Entity` (domain) en el `RepositoryImpl`.
 
-## 4. El puente Swift — SKIE (pieza clave)
+## 4. El puente Swift — puente manual (SKIE en pausa)
 
-Para que SwiftUI consuma `StateFlow` y `suspend` de forma natural (`async/await`,
-observación) se usa **SKIE** (Touchlab) en el framework de `sharedLogic`:
-- `StateFlow<UiState>` → observable desde SwiftUI (`for await` / wrapper `@Observable`).
-- `enum` sellados de Kotlin → enums Swift exhaustivos.
-- `suspend fun` → `async` de Swift con cancelación.
+> ⚠️ **SKIE no es compatible con este toolchain**: soporta Kotlin hasta 2.1.10, y el proyecto
+> usa Kotlin 2.4.20 (además AGP 9.1.1 fuerza ≥ 2.2.10). Usarlo exigiría bajar AGP a 8.x y
+> reescribir el DSL Android KMP. Se adoptará cuando SKIE publique soporte para Kotlin 2.4.
 
-Sin SKIE, exponer Flows a Swift es doloroso; con SKIE, el patrón "ViewModel compartido +
-SwiftUI" es directo.
+Mientras tanto, un **puente manual ligero** expone los `StateFlow` a SwiftUI:
+- `core/util/FlowBridge.kt`: `Cancellable` + `StateFlow.watch(onEach)`.
+- El ViewModel expone `watchState(onEach:): Cancellable`, consumible directo desde Swift.
+- SwiftUI envuelve el ViewModel en un `ObservableObject` que actualiza `@Published` desde
+  el callback (ver `iosApp/AuthModel.swift`).
+- Los `sealed interface` de Kotlin se chequean en Swift con `case is AuthUiStateLoggedIn`.
+
+Migrar a SKIE después = cambiar solo esta capa de observación iOS; la lógica no se toca.
 
 ## 5. Autenticación (verificada contra producción)
 
