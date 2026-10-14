@@ -10,7 +10,10 @@ struct AuthWebView: UIViewRepresentable {
 
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
-        config.websiteDataStore = .nonPersistent()
+        // Persistente (almacén propio de la app, no el de Safari): si el IdP marca el dispositivo
+        // como de confianza con una cookie, sobrevive entre logins y no se pide el SMS cada vez.
+        // Ojo: la sesión del IdP también persiste; ver cierre de sesión en ARCHITECTURE.md.
+        config.websiteDataStore = .default()
         let web = WKWebView(frame: .zero, configuration: config)
         web.navigationDelegate = context.coordinator
         web.load(URLRequest(url: url))
