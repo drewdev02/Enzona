@@ -17,7 +17,7 @@ import org.andrew.enzona.core.storage.SecureStorage
 import org.andrew.enzona.feature.auth.data.OAuthService
 import org.andrew.enzona.feature.auth.data.TokenStore
 import org.andrew.enzona.feature.auth.data.dto.TokenDto
-import org.andrew.enzona.feature.auth.domain.AuthRepository
+import org.andrew.enzona.feature.auth.domain.SessionRepository
 import org.andrew.enzona.feature.cards.domain.BankCard
 import org.andrew.enzona.feature.cards.domain.CardsRepository
 import org.andrew.enzona.feature.cards.domain.GetCardsUseCase
@@ -58,11 +58,11 @@ class ViewModelLifecycleTest {
     @BeforeTest fun setUp() = Dispatchers.setMain(UnconfinedTestDispatcher())
     @AfterTest fun tearDown() = Dispatchers.resetMain()
 
-    private fun auth(): AuthRepository {
+    private fun auth(): SessionRepository {
         val store = TokenStore(MemoryStore())
         store.save(TokenDto(accessToken = "tok", idToken = ID_TOKEN))
         val idp = HttpClient(MockEngine { respond("{}", HttpStatusCode.OK) })
-        return AuthRepository(OAuthService(idp), store)
+        return SessionRepository(OAuthService(idp), store)
     }
 
     @Test

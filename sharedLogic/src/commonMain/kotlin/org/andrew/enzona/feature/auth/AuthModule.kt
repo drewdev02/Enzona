@@ -7,16 +7,17 @@ import org.andrew.enzona.core.network.createApiHttpClient
 import org.andrew.enzona.feature.auth.data.OAuthService
 import org.andrew.enzona.feature.auth.data.SessionTokenProvider
 import org.andrew.enzona.feature.auth.data.TokenStore
-import org.andrew.enzona.feature.auth.domain.AuthRepository
-import org.andrew.enzona.feature.auth.presentation.AuthViewModel
+import org.andrew.enzona.feature.auth.domain.SessionRepository
+import org.andrew.enzona.feature.auth.presentation.LoginViewModel
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val authModule: Module = module {
     single { OAuthService(get(PlainHttpClient)) }
     single { TokenStore(get()) }
-    single { AuthRepository(get(), get()) }
-    single { AuthViewModel(get()) }
+    single { SessionRepository(get(), get()) }
+    viewModel { LoginViewModel(get()) }
 
     single<TokenProvider> { SessionTokenProvider(get(), get()) }
     // Cliente que usarán las features: `get<HttpClient>()`.

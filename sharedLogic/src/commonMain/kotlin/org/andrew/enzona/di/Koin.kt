@@ -3,6 +3,10 @@ package org.andrew.enzona.di
 import org.andrew.enzona.Greeting
 import org.andrew.enzona.core.di.coreModule
 import org.andrew.enzona.core.di.platformModule
+import org.andrew.enzona.core.util.Cancellable
+import org.andrew.enzona.core.util.watch
+import org.andrew.enzona.feature.auth.domain.SessionRepository
+import org.andrew.enzona.feature.auth.domain.SessionState
 import org.andrew.enzona.feature.account.accountModule
 import org.andrew.enzona.feature.auth.authModule
 import org.andrew.enzona.feature.cards.cardsModule
@@ -31,9 +35,15 @@ fun initKoinIos(): KoinApplication = initKoin {}
 // Helper for iOS / Swift to access Koin-managed dependencies directly
 object KoinHelper : KoinComponent {
     val greeting: Greeting by inject()
-    val authViewModel: org.andrew.enzona.feature.auth.presentation.AuthViewModel by inject()
+    val session: SessionRepository by inject()
+
+    /** Observa la sesión desde Swift (puente manual en lugar de SKIE). */
+    fun watchSession(onEach: (SessionState) -> Unit): Cancellable = session.state.watch(onEach)
 
     /** Un ViewModel nuevo por pantalla; quien lo pide llama a `clear()` al destruirla. */
+    fun loginViewModelHolder(): ViewModelHolder<org.andrew.enzona.feature.auth.presentation.LoginViewModel> =
+        getKoin().viewModelHolder()
+
     fun accountViewModelHolder(): ViewModelHolder<org.andrew.enzona.feature.account.presentation.AccountViewModel> =
         getKoin().viewModelHolder()
 

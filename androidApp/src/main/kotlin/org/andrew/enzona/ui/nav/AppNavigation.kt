@@ -32,7 +32,7 @@ import org.andrew.enzona.ui.dashboard.DashboardRoute
 /** Segundo nivel (no es una pestaña): se abre desde la casilla "Balance" del inicio. */
 @Serializable data object Balance
 
-/** Navegación de la zona autenticada. El paso login <-> app lo decide AuthUiState, no este grafo. */
+/** Navegación de la zona autenticada. El paso login <-> app lo decide SessionState, no este grafo. */
 @Composable
 fun AppNavigation(onLogout: () -> Unit) {
     val nav = rememberNavController()

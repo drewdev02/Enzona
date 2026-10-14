@@ -2,39 +2,49 @@ import SwiftUI
 import SharedLogic
 
 struct ContentView: View {
-    @StateObject private var auth = AuthModel()
+    @StateObject private var session = SessionModel()
 
     var body: some View {
-        Group {
-            switch auth.phase {
-            case .loggedIn:
-                HomeView(onLogout: { auth.logout() })
-            default:
-                LoginView(auth: auth)
-            }
-        }
-        .sheet(isPresented: $auth.showSheet) {
-            if let url = auth.authorizeURL {
-                AuthSheet(
-                    url: url,
-                    onCode: { auth.onCode($0) },
-                    onError: { auth.onError($0) },
-                    onCancel: { auth.onError("Login cancelado") }
-                )
-            }
+        // La sesión decide qué se muestra. Al cerrarla, HomeView sale del árbol y sus
+        // modelos (cuenta, tarjetas) se destruyen: no queda nada del usuario anterior.
+        switch session.phase {
+        case .loggedIn:
+            HomeView(onLogout: { session.logout() })
+        case .loggedOut(let expired):
+            LoginView(sessionExpired: expired)
         }
     }
 }
 
 struct LoginView: View {
-    @ObservedObject var auth: AuthModel
+    let sessionExpired: Bool
+    @StateObject private var login = LoginModel()
 
     var body: some View {
         LoginContent(
-            isLoading: { if case .authenticating = auth.phase { return true } else { return false } }(),
-            errorMessage: { if case .error(let message) = auth.phase { return message } else { return nil } }(),
-            onLogin: { auth.login() }
+            isLoading: { if case .authenticating = login.phase { return true } else { return false } }(),
+            errorMessage: notice,
+            onLogin: { login.login() }
         )
+        .sheet(isPresented: $login.showSheet) {
+            if let url = login.authorizeURL {
+                AuthSheet(
+                    url: url,
+                    onCode: { login.onCode($0) },
+                    onError: { login.onError($0) },
+                    onCancel: { login.onError("Login cancelado") }
+                )
+            }
+        }
+    }
+
+    /// Un error del intento actual tiene prioridad sobre el aviso de sesión caducada.
+    private var notice: String? {
+        switch login.phase {
+        case .error(let message): return message
+        case .idle where sessionExpired: return "Tu sesión expiró. Inicia sesión de nuevo."
+        default: return nil
+        }
     }
 }
 
