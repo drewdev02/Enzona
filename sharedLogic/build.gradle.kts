@@ -46,7 +46,6 @@ kotlin {
             implementation(libs.ktor.client.contentNegotiation)
             implementation(libs.ktor.serialization.json)
             implementation(libs.ktor.client.logging)
-            implementation(libs.ktor.client.auth)
             implementation(libs.multiplatform.settings)
             implementation(libs.napier)
             implementation(libs.okio)
@@ -54,6 +53,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.koin.android)
+            implementation(libs.kotlinx.coroutines.android)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -62,6 +62,8 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.koin.test)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.ktor.client.mock)
         }
     }
 }

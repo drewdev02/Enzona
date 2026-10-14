@@ -34,6 +34,15 @@ class AuthViewModel(
 
     private var pendingPkce: Pkce? = null
 
+    init {
+        // Si el refresh_token deja de servir, volvemos al login con un aviso.
+        scope.launch {
+            repo.sessionExpired.collect {
+                _state.value = AuthUiState.Error("Tu sesión expiró. Inicia sesión de nuevo.")
+            }
+        }
+    }
+
     /** Restaura sesión guardada al arrancar. */
     fun restore() {
         if (repo.isLoggedIn()) _state.value = AuthUiState.LoggedIn

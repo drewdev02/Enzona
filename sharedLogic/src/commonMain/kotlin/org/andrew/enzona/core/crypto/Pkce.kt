@@ -10,9 +10,12 @@ data class Pkce(val verifier: String, val challenge: String) {
         fun generate(): Pkce {
             val bytes = Random.nextBytes(32)
             val verifier = bytes.toByteString().base64Url().trimPadding()
-            val challenge = verifier.encodeUtf8().sha256().base64Url().trimPadding()
-            return Pkce(verifier, challenge)
+            return Pkce(verifier, challengeFor(verifier))
         }
+
+        /** code_challenge S256 = base64url(sha256(verifier)) sin padding (RFC 7636 §4.2). */
+        fun challengeFor(verifier: String): String =
+            verifier.encodeUtf8().sha256().base64Url().trimPadding()
 
         private fun String.trimPadding(): String = trimEnd('=')
     }
