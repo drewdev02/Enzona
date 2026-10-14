@@ -2,26 +2,20 @@ import SwiftUI
 import SharedLogic
 
 struct ContentView: View {
-    @State private var showContent = false
     var body: some View {
-        VStack {
-            Button("Click me!") {
-                withAnimation {
-                    showContent = !showContent
-                }
-            }
-
-            if showContent {
-                VStack(spacing: 16) {
-                    Image(systemName: "swift")
-                        .font(.system(size: 200))
-                        .foregroundColor(.accentColor)
-                    Text("SwiftUI: \(KoinHelper.shared.greeting.greet())")
-                }
-                .transition(.move(edge: .top).combined(with: .opacity))
-            }
+        VStack(spacing: 8) {
+            Text("EnZona KMP")
+                .font(.largeTitle).bold()
+            Text("Lógica compartida · UI nativa (M0)")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+            Text(KoinHelper.shared.greeting.greet())
+                .font(.footnote)
+                .foregroundColor(.secondary)
+                .padding(.top, 12)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
     }
 }
