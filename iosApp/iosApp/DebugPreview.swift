@@ -42,7 +42,7 @@ enum DebugPreview {
             case "transfer-history-empty":
                 TransferHistoryContent(
                     phase: .content(TransferHistoryData(rows: [], skipped: 0, hasMore: false, isLoadingMore: false, moreError: nil)),
-                    filter: TransferFilterModel(startDay: "2026-10-01", endDay: nil, statusCode: 2224))
+                    filter: TransferFilterModel(startDay: "2026-10-01", endDay: nil, status: .failed))
             case "find-account":
                 FindAccountContent(phase: .found(PersonModel.samples[0]))
             case "find-account-notfound":

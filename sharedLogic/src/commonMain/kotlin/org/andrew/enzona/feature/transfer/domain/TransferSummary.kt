@@ -13,7 +13,12 @@ enum class TransferStatus(val code: Int?) {
     ACCEPTED(2222),
     PENDING(2242),
     FAILED(2224),
-    OTHER(null),
+    OTHER(null);
+
+    companion object {
+        /** Los estados por los que el historial puede filtrar (los que tienen código), en el orden del original. */
+        val filterable: List<TransferStatus> = listOf(ACCEPTED, PENDING, FAILED)
+    }
 }
 
 /** Sentido según el SIGNO que trae el importe (`-1400.00` al enviar, `+500.00` al recibir). Sin signo es [UNKNOWN]. */
@@ -71,14 +76,14 @@ data class TransferFilter(
         val None = TransferFilter()
 
         /**
-         * Para Swift, que no puede construir un `LocalDate`: los días llegan como `yyyy-MM-dd` y [statusCode] es el
-         * `status_code` del filtro. Un día ilegible o un código que no es de un filtro se trata como "sin filtro"
-         * en ese campo, nunca como otro valor.
+         * Para Swift, que no puede construir un `LocalDate`: los días llegan como `yyyy-MM-dd`. Un día ilegible se
+         * trata como "sin filtro" en ese campo, nunca como otro valor. Un [status] que no se puede filtrar (sin código,
+         * como `OTHER`) también se descarta: el dominio es el único que conoce los códigos.
          */
-        fun fromIso(startDay: String?, endDay: String?, statusCode: Int?): TransferFilter = TransferFilter(
+        fun fromIso(startDay: String?, endDay: String?, status: TransferStatus?): TransferFilter = TransferFilter(
             startDate = startDay?.let { runCatching { LocalDate.parse(it) }.getOrNull() },
             endDate = endDay?.let { runCatching { LocalDate.parse(it) }.getOrNull() },
-            status = statusCode?.let { code -> TransferStatus.entries.firstOrNull { it.code == code } },
+            status = status?.takeIf { it.code != null },
         )
     }
 }

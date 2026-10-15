@@ -8,7 +8,9 @@ import org.andrew.enzona.feature.transfer.domain.AmountProblem
 import org.andrew.enzona.feature.transfer.domain.NotSentReason
 import org.andrew.enzona.feature.transfer.domain.RejectionCause
 import org.andrew.enzona.feature.transfer.domain.TransferOutcome
+import org.andrew.enzona.feature.transfer.domain.TransferResultKind
 import org.andrew.enzona.feature.transfer.domain.TransferStatus
+import org.andrew.enzona.feature.transfer.domain.kind
 import org.andrew.enzona.feature.transfer.presentation.OwnCardTransferUiState
 import org.andrew.enzona.ui.cards.detailLabel
 import org.andrew.enzona.ui.cards.displayCurrency
@@ -45,26 +47,24 @@ fun NotSentReason.message(): String = when (this) {
     else -> "No se pudo enviar la transferencia. Revisa los datos."
 }
 
-enum class ResultKind { Success, Pending, Failed, Unknown }
-
-/** Cómo se cuenta el desenlace al usuario. [detail] puede traer texto del servidor. */
-data class ResultText(val kind: ResultKind, val title: String, val detail: String?)
+/** Cómo se cuenta el desenlace al usuario. [kind] lo decide el dominio; aquí solo las palabras. [detail] puede traer texto del servidor. */
+data class ResultText(val kind: TransferResultKind, val title: String, val detail: String?)
 
 fun TransferOutcome.resultText(): ResultText = when (this) {
     is TransferOutcome.Accepted -> when (receipt.status) {
-        TransferStatus.ACCEPTED -> ResultText(ResultKind.Success, "Transferencia confirmada", null)
+        TransferStatus.ACCEPTED -> ResultText(kind, "Transferencia confirmada", null)
         TransferStatus.PENDING -> ResultText(
-            ResultKind.Pending, "Transferencia pendiente",
+            kind, "Transferencia pendiente",
             "El servicio la recibió y la está procesando. Revisa su estado en el historial.",
         )
         else -> ResultText(
-            ResultKind.Pending, "Transferencia recibida",
+            kind, "Transferencia recibida",
             "El servicio la aceptó" + (receipt.statusText?.let { " (estado: $it)" } ?: "") +
                 ". Confírmala en el historial.",
         )
     }
     is TransferOutcome.Rejected -> ResultText(
-        ResultKind.Failed, "Transferencia fallida",
+        kind, "Transferencia fallida",
         when {
             cause == RejectionCause.SESSION_EXPIRED -> "Tu sesión expiró. Inicia sesión de nuevo. No se movió dinero."
             serverMessage != null -> "$serverMessage\nNo se movió dinero."
@@ -74,11 +74,11 @@ fun TransferOutcome.resultText(): ResultText = when (this) {
         },
     )
     is TransferOutcome.Unknown -> ResultText(
-        ResultKind.Unknown, "No sabemos si se realizó",
+        kind, "No sabemos si se realizó",
         "No repitas la transferencia hasta revisar el historial: puede que ya se haya hecho.",
     )
     // El formulario nunca llega aquí (vuelve a confirmar), pero el `when` es exhaustivo.
-    is TransferOutcome.NotSent -> ResultText(ResultKind.Failed, "No se envió", reason.message())
+    is TransferOutcome.NotSent -> ResultText(kind, "No se envió", reason.message())
 }
 
 /**
@@ -86,7 +86,7 @@ fun TransferOutcome.resultText(): ResultText = when (this) {
  * importe, fecha, filas, la tarjeta de origen y el QR. Pura y sin Compose: se prueba como cualquier función.
  */
 data class TransferDetail(
-    val kind: ResultKind,
+    val kind: TransferResultKind,
     val statusTitle: String,
     /** Aviso bajo el estado (pendiente, fallida, desconocida). La transferencia confirmada no lleva. */
     val note: String?,

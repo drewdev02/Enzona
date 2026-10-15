@@ -1,9 +1,50 @@
 package org.andrew.enzona.feature.cards
 
+import org.andrew.enzona.feature.cards.data.parseOperationAction
+import org.andrew.enzona.feature.cards.data.parseOperationChannel
+import org.andrew.enzona.feature.cards.domain.OperationAction
+import org.andrew.enzona.feature.cards.domain.OperationChannel
+import org.andrew.enzona.feature.cards.domain.OperationDirection
 import org.andrew.enzona.feature.cards.domain.OperationKind
-import org.andrew.enzona.feature.cards.domain.classifyOperation
+import org.andrew.enzona.feature.cards.domain.direction
 import kotlin.test.Test
 import kotlin.test.assertEquals
+
+/** Los casos se escriben con los textos del backend; pasan por los mismos parsers que usa el mapper. */
+private fun classifyOperation(description: String, channel: String, action: String): OperationKind =
+    org.andrew.enzona.feature.cards.domain.classifyOperation(
+        description = description, channel = parseOperationChannel(channel), action = parseOperationAction(action),
+    )
+
+class OperationCodesTest {
+    @Test
+    fun parsesTheKnownActionsAndChannelsExactly() {
+        assertEquals(OperationAction.Debit, parseOperationAction("DB"))
+        assertEquals(OperationAction.Credit, parseOperationAction("CR"))
+        assertEquals(OperationChannel.Reversal, parseOperationChannel("REV"))
+        assertEquals(OperationChannel.Event, parseOperationChannel("EV"))
+        assertEquals(OperationChannel.Pos, parseOperationChannel("POS"))
+        assertEquals(OperationChannel.Enzona, parseOperationChannel("ENZ"))
+    }
+
+    @Test
+    fun anythingElseKeepsItsRawTextInsteadOfBeingGuessed() {
+        assertEquals(OperationAction.Other("db"), parseOperationAction("db"), "sensible a mayúsculas, como el original")
+        assertEquals(OperationAction.Other(""), parseOperationAction(""))
+        assertEquals(OperationAction.Other("XX"), parseOperationAction("XX"))
+        assertEquals(OperationChannel.Other("ATM"), parseOperationChannel("ATM"))
+        assertEquals(OperationChannel.Other("pos"), parseOperationChannel("pos"))
+        assertEquals(OperationChannel.Other(""), parseOperationChannel(""))
+    }
+
+    @Test
+    fun onlyAnExplicitDebitIsADebit() {
+        assertEquals(OperationDirection.DEBIT, OperationAction.Debit.direction)
+        assertEquals(OperationDirection.CREDIT, OperationAction.Credit.direction)
+        assertEquals(OperationDirection.CREDIT, OperationAction.Other("").direction, "ausente: se muestra como crédito")
+        assertEquals(OperationDirection.CREDIT, OperationAction.Other("db").direction)
+    }
+}
 
 class OperationClassifierTest {
 

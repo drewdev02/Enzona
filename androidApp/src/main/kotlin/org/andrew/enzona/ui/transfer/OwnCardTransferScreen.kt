@@ -49,6 +49,7 @@ import org.andrew.enzona.R
 import org.andrew.enzona.feature.cards.domain.BankBrand
 import org.andrew.enzona.feature.cards.domain.BankCard
 import org.andrew.enzona.feature.cards.domain.bankBrandOf
+import org.andrew.enzona.feature.transfer.domain.TransferResultKind
 import org.andrew.enzona.feature.transfer.presentation.OwnCardTransferUiState
 import org.andrew.enzona.feature.transfer.presentation.OwnCardTransferViewModel
 import org.andrew.enzona.ui.cards.detailLabel
@@ -288,9 +289,9 @@ private fun DetailContent(detail: TransferDetail, actions: OwnCardTransferAction
     val spacing = EnzonaTheme.spacing
     val colors = EnzonaTheme.colors
     val statusColor = when (detail.kind) {
-        ResultKind.Success -> colors.success
-        ResultKind.Failed -> colors.error
-        ResultKind.Pending, ResultKind.Unknown -> colors.onWarningContainer
+        TransferResultKind.SUCCESS -> colors.success
+        TransferResultKind.FAILED, TransferResultKind.NOT_SENT -> colors.error
+        TransferResultKind.PENDING, TransferResultKind.UNKNOWN -> colors.onWarningContainer
     }
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = spacing.lg, vertical = spacing.xl),
@@ -319,14 +320,16 @@ private fun DetailContent(detail: TransferDetail, actions: OwnCardTransferAction
         SourceCardRow(detail)
         detail.qrContent?.let { QrBlock(it) }
         when (detail.kind) {
-            ResultKind.Success -> Unit
+            TransferResultKind.SUCCESS -> Unit
             // El dinero no se movió: se puede corregir y volver a intentar.
-            ResultKind.Failed -> {
+            TransferResultKind.FAILED -> {
                 EzButton("Corregir", onClick = actions.onEditAgain)
                 EzButton("Cerrar", onClick = actions.onClose, style = EzButtonStyle.Tertiary)
             }
+            // Nunca se muestra aquí (un intento que no salió vuelve a confirmar), pero el `when` es exhaustivo.
+            TransferResultKind.NOT_SENT -> EzButton("Cerrar", onClick = actions.onClose, style = EzButtonStyle.Tertiary)
             // Pendiente o desconocido: puede que sí se movió, así que nada de reintentar; primero el historial.
-            ResultKind.Pending, ResultKind.Unknown -> {
+            TransferResultKind.PENDING, TransferResultKind.UNKNOWN -> {
                 EzButton("Ver historial", onClick = actions.onOpenHistory)
                 EzButton("Cerrar", onClick = actions.onClose, style = EzButtonStyle.Tertiary)
             }

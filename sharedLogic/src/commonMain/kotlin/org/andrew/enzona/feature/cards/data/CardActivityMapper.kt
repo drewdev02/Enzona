@@ -9,8 +9,26 @@ import org.andrew.enzona.core.money.parseMinorUnits
 import org.andrew.enzona.core.network.enzonaJson
 import org.andrew.enzona.feature.cards.domain.CardActivity
 import org.andrew.enzona.feature.cards.domain.CardOperation
-import org.andrew.enzona.feature.cards.domain.OperationDirection
+import org.andrew.enzona.feature.cards.domain.OperationAction
+import org.andrew.enzona.feature.cards.domain.OperationChannel
 import org.andrew.enzona.feature.cards.domain.classifyOperation
+import org.andrew.enzona.feature.cards.domain.direction
+
+/** `DB` / `CR`, sensibles a mayúsculas como en el original; cualquier otro valor conserva su texto. */
+internal fun parseOperationAction(raw: String): OperationAction = when (raw) {
+    "DB" -> OperationAction.Debit
+    "CR" -> OperationAction.Credit
+    else -> OperationAction.Other(raw)
+}
+
+/** `REV` / `EV` / `POS` / `ENZ`, sensibles a mayúsculas como en el original; cualquier otro valor conserva su texto. */
+internal fun parseOperationChannel(raw: String): OperationChannel = when (raw) {
+    "REV" -> OperationChannel.Reversal
+    "EV" -> OperationChannel.Event
+    "POS" -> OperationChannel.Pos
+    "ENZ" -> OperationChannel.Enzona
+    else -> OperationChannel.Other(raw)
+}
 
 /**
  * Transforma [CardActivityDto] al modelo de dominio [CardActivity].
@@ -69,11 +87,12 @@ internal fun CardActivityDto.toDomain(): CardActivity {
             }
 
             val dateText = op.operationDate.asCleanText().orEmpty()
-            val action = op.action.asCleanText().orEmpty()
-            val channel = op.channel.asCleanText().orEmpty()
+            // El texto del backend se interpreta aquí, una sola vez: el dominio recibe valores tipados.
+            val action = parseOperationAction(op.action.asCleanText().orEmpty())
+            val channel = parseOperationChannel(op.channel.asCleanText().orEmpty())
             val description = op.description.asCleanText().orEmpty()
 
-            val direction = if (action == "DB") OperationDirection.DEBIT else OperationDirection.CREDIT
+            val direction = action.direction
             val kind = classifyOperation(description = description, channel = channel, action = action)
             val amountMoney = Money(minorUnits = minorUnits, currency = rawCurrency)
 

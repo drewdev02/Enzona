@@ -34,13 +34,30 @@ extension TransferSummary {
 
 extension TransferFilterModel {
     var domain: TransferFilter {
-        TransferFilter.companion.fromIso(startDay: startDay, endDay: endDay, statusCode: statusCode.map { KotlinInt(int: Int32($0)) })
+        TransferFilter.companion.fromIso(startDay: startDay, endDay: endDay, status: status?.kotlin)
     }
 
     init(_ filter: TransferFilter) {
         self.init(
             startDay: filter.startDate.map { "\($0)" }, endDay: filter.endDate.map { "\($0)" },
-            statusCode: filter.status?.code.map { $0.intValue })
+            status: filter.status.flatMap { TransferStatusFilter(kotlin: $0) })
+    }
+}
+
+/// La única traducción entre el estado filtrable de la UI y el `TransferStatus` de Kotlin.
+private extension TransferStatusFilter {
+    var kotlin: TransferStatus {
+        switch self {
+        case .accepted: return TransferStatus.accepted
+        case .pending: return TransferStatus.pending
+        case .failed: return TransferStatus.failed
+        }
+    }
+
+    /// `nil` si el estado de Kotlin no se puede filtrar (`OTHER`).
+    init?(kotlin status: TransferStatus) {
+        guard let match = TransferStatusFilter.allCases.first(where: { $0.kotlin == status }) else { return nil }
+        self = match
     }
 }
 

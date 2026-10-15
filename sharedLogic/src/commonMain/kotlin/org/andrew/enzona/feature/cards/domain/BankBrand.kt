@@ -11,6 +11,10 @@ enum class BankBrand {
     UNKNOWN,
 }
 
+/**
+ * LA tabla de códigos de banco (leída del despachador del original): 02 AIS · 03 Clásica · 04 BICSA · 05 y 95
+ * Metropolitano · 06 Bandec · 12 BPA. Es la única: los skins de tarjeta se derivan de aquí ([skinFor]).
+ */
 private val CODES = mapOf(
     "02" to BankBrand.AIS,
     "03" to BankBrand.CLASICA,
@@ -21,15 +25,21 @@ private val CODES = mapOf(
     "12" to BankBrand.BPA,
 )
 
+/** Los códigos que la tabla reconoce, para comprobar (en tests) que todo lo que se dibuja sale de ella. */
+internal val KNOWN_BANK_CODES: Set<String> get() = CODES.keys
+
+/** El banco a partir de SOLO su código (`95`), sin intentar leer etiquetas ni nombres. [BankBrand.UNKNOWN] si no está. */
+fun bankBrandOfCode(code: String?): BankBrand = CODES[code?.trim()] ?: BankBrand.UNKNOWN
+
 /**
  * El banco a partir del texto que da el backend: el código (`95`), la etiqueta (`BANMET`) o el nombre
- * (`Banco Metropolitano S.A`); no se ha visto cuál de los tres llega en las transferencias. Mismos códigos que
- * la tabla de skins de tarjeta. Si no se reconoce es [BankBrand.UNKNOWN]: no se adivina.
+ * (`Banco Metropolitano S.A`); no se ha visto cuál de los tres llega en las transferencias. Los códigos salen de la
+ * misma tabla que usan los skins de tarjeta. Si no se reconoce es [BankBrand.UNKNOWN]: no se adivina.
  */
 fun bankBrandOf(bank: String?): BankBrand {
     val text = bank?.trim().orEmpty()
     if (text.isEmpty()) return BankBrand.UNKNOWN
-    CODES[text]?.let { return it }
+    bankBrandOfCode(text).takeIf { it != BankBrand.UNKNOWN }?.let { return it }
     val upper = text.uppercase().map { ACCENTS[it] ?: it }.joinToString("")
     // Siglas cortas como palabra entera: "AIS" o "BPA" no deben coincidir dentro de otra palabra.
     val words = upper.split(Regex("[^A-Z0-9]+")).filter { it.isNotEmpty() }.toSet()

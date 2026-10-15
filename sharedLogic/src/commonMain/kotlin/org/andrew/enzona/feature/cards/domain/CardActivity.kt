@@ -54,20 +54,20 @@ private val TELEPHONY_CODES = listOf(
  * esos pagos (incluido "CAD") no contienen códigos de telefonía y caen en MERCHANT_PAYMENT
  * (mostrando su alias de comercio), por lo que no se modelan como variantes separadas de OperationKind.
  */
-fun classifyOperation(description: String, channel: String, action: String): OperationKind {
+fun classifyOperation(description: String, channel: OperationChannel, action: OperationAction): OperationKind {
     val d = description
     if (d.isEmpty()) {
         return when {
-            channel == "REV" -> OperationKind.REVERSAL
-            channel == "EV" && action == "CR" -> OperationKind.PAYROLL
-            action == "DB" && channel == "POS" -> OperationKind.POS_PAYMENT
-            action == "DB" -> OperationKind.WITHDRAWAL
+            channel == OperationChannel.Reversal -> OperationKind.REVERSAL
+            channel == OperationChannel.Event && action == OperationAction.Credit -> OperationKind.PAYROLL
+            action == OperationAction.Debit && channel == OperationChannel.Pos -> OperationKind.POS_PAYMENT
+            action == OperationAction.Debit -> OperationKind.WITHDRAWAL
             else -> OperationKind.CREDIT
         }
     }
 
     if (d == "TRF" || d == "TRAN") return OperationKind.TRANSFER
-    if (channel == "ENZ" && d.contains("TR EZ")) return OperationKind.CARD_ACTIVATION
+    if (channel == OperationChannel.Enzona && d.contains("TR EZ")) return OperationKind.CARD_ACTIVATION
 
     if (TELEPHONY_CODES.none { d.contains(it) }) return OperationKind.MERCHANT_PAYMENT
 

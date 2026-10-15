@@ -18,11 +18,25 @@ struct TransferRowModel: Identifiable, Equatable {
     let spoken: String
 }
 
-/// Filtros del historial tal como los edita la UI: días `yyyy-MM-dd` y `status_code` (2222/2242/2224).
+/// Los estados por los que el historial puede filtrar. Espejo de `TransferStatus.filterable` (Kotlin): los códigos
+/// del servidor los conoce solo el dominio, aquí no hay números.
+enum TransferStatusFilter: CaseIterable, Equatable {
+    case accepted, pending, failed
+
+    var label: String {
+        switch self {
+        case .accepted: return "Aceptadas"
+        case .pending: return "Pendientes"
+        case .failed: return "Fallidas"
+        }
+    }
+}
+
+/// Filtros del historial tal como los edita la UI: días `yyyy-MM-dd` y estado.
 struct TransferFilterModel: Equatable {
     var startDay: String?
     var endDay: String?
-    var statusCode: Int?
+    var status: TransferStatusFilter?
 
     static let none = TransferFilterModel()
 }

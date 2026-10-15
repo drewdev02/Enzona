@@ -10,6 +10,7 @@ import org.andrew.enzona.feature.transfer.domain.RejectionCause
 import org.andrew.enzona.feature.transfer.domain.TransferOutcome
 import org.andrew.enzona.feature.transfer.domain.TransferReceipt
 import org.andrew.enzona.feature.transfer.domain.TransferRequest
+import org.andrew.enzona.feature.transfer.domain.TransferResultKind
 import org.andrew.enzona.feature.transfer.domain.TransferStatus
 import org.andrew.enzona.feature.transfer.domain.UnknownCause
 import org.andrew.enzona.feature.transfer.presentation.OwnCardTransferUiState
@@ -66,17 +67,17 @@ class OwnCardTransferPresentationTest {
 
     @Test
     fun anAcceptedTransferIsDoneAPendingOneIsNot() {
-        assertEquals(ResultKind.Success, accepted(TransferStatus.ACCEPTED).resultText().kind)
-        assertEquals(ResultKind.Pending, accepted(TransferStatus.PENDING).resultText().kind)
+        assertEquals(TransferResultKind.SUCCESS, accepted(TransferStatus.ACCEPTED).resultText().kind)
+        assertEquals(TransferResultKind.PENDING, accepted(TransferStatus.PENDING).resultText().kind)
         val other = accepted(TransferStatus.OTHER, "Procesando").resultText()
-        assertEquals(ResultKind.Pending, other.kind)
+        assertEquals(TransferResultKind.PENDING, other.kind)
         assertTrue("Procesando" in other.detail!!)
     }
 
     @Test
     fun aRejectionSaysMoneyDidNotMoveAndKeepsTheServerText() {
         val withText = TransferOutcome.Rejected(RejectionCause.REFUSED, 400, "Saldo insuficiente").resultText()
-        assertEquals(ResultKind.Failed, withText.kind)
+        assertEquals(TransferResultKind.FAILED, withText.kind)
         assertTrue("Saldo insuficiente" in withText.detail!!)
         assertTrue("No se movió dinero" in withText.detail!!)
 
@@ -92,7 +93,7 @@ class OwnCardTransferPresentationTest {
     fun anUnknownOutcomeNeverClaimsFailureAndTellsNotToRepeat() {
         for (cause in UnknownCause.entries) {
             val text = TransferOutcome.Unknown(cause).resultText()
-            assertEquals(ResultKind.Unknown, text.kind)
+            assertEquals(TransferResultKind.UNKNOWN, text.kind)
             assertFalse("fallida" in text.title.lowercase())
             assertTrue("No repitas" in text.detail!!)
         }
@@ -115,7 +116,7 @@ class OwnCardTransferPresentationTest {
             "2026-09-11T11:30:00.000-04:00", "SIG-1",
         )
         val detail = finished(TransferOutcome.Accepted(receipt)).toDetail()
-        assertEquals(ResultKind.Success, detail.kind)
+        assertEquals(TransferResultKind.SUCCESS, detail.kind)
         assertEquals("Transferencia confirmada", detail.statusTitle)
         assertNull(detail.note)
         assertEquals("BANDEC 1234", detail.mainText)

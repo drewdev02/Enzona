@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.andrew.enzona.core.logging.logger
 import org.andrew.enzona.core.money.Money
+import org.andrew.enzona.core.money.sameCurrency
 import org.andrew.enzona.core.result.EzResult
 import org.andrew.enzona.core.result.userMessage
 import org.andrew.enzona.core.util.Cancellable
@@ -170,7 +171,7 @@ class OwnCardTransferViewModel(
             ),
             source = source,
             destination = destination,
-            exchangeApplies = !source.currency.trim().equals(destination.currency.trim(), ignoreCase = true),
+            exchangeApplies = !sameCurrency(source.currency, destination.currency),
         )
     }
 

@@ -114,6 +114,22 @@ sealed interface TransferOutcome {
     data class Unknown(val cause: UnknownCause, val httpStatus: Int? = null) : TransferOutcome
 }
 
+/**
+ * Cómo se clasifica un [TransferOutcome] de cara al usuario. Es un hecho del dominio (qué se sabe del dinero): cada
+ * plataforma solo pone las palabras. [SUCCESS] es la única que dice "confirmada"; [PENDING] es aceptada pero sin
+ * confirmar; [FAILED] garantiza que no se movió dinero; [UNKNOWN] puede haberse movido; [NOT_SENT] no salió nada.
+ */
+enum class TransferResultKind { SUCCESS, PENDING, FAILED, UNKNOWN, NOT_SENT }
+
+val TransferOutcome.kind: TransferResultKind
+    get() = when (this) {
+        is TransferOutcome.Accepted ->
+            if (receipt.status == TransferStatus.ACCEPTED) TransferResultKind.SUCCESS else TransferResultKind.PENDING
+        is TransferOutcome.Rejected -> TransferResultKind.FAILED
+        is TransferOutcome.Unknown -> TransferResultKind.UNKNOWN
+        is TransferOutcome.NotSent -> TransferResultKind.NOT_SENT
+    }
+
 /** Envía una transferencia ya validada, con la contraseña ya cifrada. Un solo intento: nunca reintenta. */
 interface TransferGateway {
     suspend fun submit(request: TransferRequest, encryptedPassword: String): TransferOutcome

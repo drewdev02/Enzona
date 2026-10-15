@@ -1,5 +1,7 @@
 package org.andrew.enzona.feature.cards.domain
 
+import org.andrew.enzona.core.money.sameCurrency
+
 /** Color de tinta de un texto sobre un skin. Cada plataforma lo traduce a su color. */
 enum class CardInk { BLACK, SOFT_BLACK, WHITE }
 
@@ -47,18 +49,18 @@ enum class CardSkin(
 }
 
 /**
- * Skin según el código de banco (tabla leída del despachador del original):
- * 02 AIS · 03 Clásica · 04 BICSA · 05 y 95 Metropolitano · 06 Bandec · 12 BPA.
+ * Skin según el código de banco. Los códigos salen de la tabla única de [bankBrandOfCode]; aquí solo se elige la
+ * imagen de cada banco.
  *
  * Bandec tiene dos skins; el original decide con una bandera calculada fuera del despachador
  * (se infiere que es la moneda: en los datos reales las Bandec son CUP y USD).
  */
-fun skinFor(bankCode: String?, currency: String?): CardSkin = when (bankCode?.trim()) {
-    "02" -> CardSkin.AIS
-    "03" -> CardSkin.CLASICA
-    "04" -> CardSkin.BICSA
-    "05", "95" -> CardSkin.BANMET
-    "06" -> if (currency.equals("usd", ignoreCase = true)) CardSkin.BANDEC_USD else CardSkin.BANDEC
-    "12" -> CardSkin.BPA
-    else -> CardSkin.GENERIC
+fun skinFor(bankCode: String?, currency: String?): CardSkin = when (bankBrandOfCode(bankCode)) {
+    BankBrand.AIS -> CardSkin.AIS
+    BankBrand.CLASICA -> CardSkin.CLASICA
+    BankBrand.BICSA -> CardSkin.BICSA
+    BankBrand.BANMET -> CardSkin.BANMET
+    BankBrand.BANDEC -> if (sameCurrency(currency, "USD")) CardSkin.BANDEC_USD else CardSkin.BANDEC
+    BankBrand.BPA -> CardSkin.BPA
+    BankBrand.UNKNOWN -> CardSkin.GENERIC
 }

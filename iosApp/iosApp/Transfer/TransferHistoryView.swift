@@ -19,9 +19,9 @@ private enum DateField: Identifiable {
     var id: Self { self }
 }
 
-private let statusChoices: [(code: Int?, label: String)] = [
-    (nil, "Todas"), (2222, "Aceptadas"), (2242, "Pendientes"), (2224, "Fallidas"),
-]
+/// "Todas" (sin filtro) y luego los estados filtrables, en el orden del original.
+private let statusChoices: [(status: TransferStatusFilter?, label: String)] =
+    [(nil, "Todas")] + TransferStatusFilter.allCases.map { ($0, $0.label) }
 
 struct TransferHistoryContent: View {
     let phase: TransferHistoryPhase
@@ -63,9 +63,9 @@ struct TransferHistoryContent: View {
         VStack(alignment: .leading, spacing: Ez.Space.sm) {
             chipRow {
                 ForEach(statusChoices, id: \.label) { choice in
-                    chip(choice.label, selected: filter.statusCode == choice.code) {
+                    chip(choice.label, selected: filter.status == choice.status) {
                         var next = filter
-                        next.statusCode = choice.code
+                        next.status = choice.status
                         onFilter(next)
                     }
                 }
@@ -192,6 +192,6 @@ private struct DayPickerSheet: View {
     NavigationStack {
         TransferHistoryContent(
             phase: .content(TransferHistoryData(rows: [], skipped: 0, hasMore: false, isLoadingMore: false, moreError: nil)),
-            filter: TransferFilterModel(startDay: "2026-10-01", endDay: nil, statusCode: 2224))
+            filter: TransferFilterModel(startDay: "2026-10-01", endDay: nil, status: .failed))
     }
 }

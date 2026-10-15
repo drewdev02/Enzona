@@ -111,3 +111,9 @@ fun Money.toDecimalText(): String {
     val text = digits.dropLast(2) + "." + digits.takeLast(2)
     return if (negative) "-$text" else text
 }
+
+/**
+ * Las monedas llegan como texto libre (`cup`, `CUP `): se comparan sin distinguir mayúsculas ni espacios en los
+ * extremos. Es la ÚNICA comparación de monedas: no repetir `equals(..., ignoreCase = true)` por el código.
+ */
+fun sameCurrency(a: String?, b: String?): Boolean = a.orEmpty().trim().equals(b.orEmpty().trim(), ignoreCase = true)

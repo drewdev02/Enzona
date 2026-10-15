@@ -54,12 +54,17 @@ fun TransferHistoryRoute(onBack: () -> Unit, vm: TransferHistoryViewModel = koin
     TransferHistoryScreen(state, onBack, onRetry = vm::load, onFilter = vm::applyFilter, onLoadMore = vm::loadMore)
 }
 
-private val STATUS_CHOICES = listOf(
-    null to "Todas",
-    TransferStatus.ACCEPTED to "Aceptadas",
-    TransferStatus.PENDING to "Pendientes",
-    TransferStatus.FAILED to "Fallidas",
-)
+/** "Todas" (sin filtro) y luego los estados por los que el dominio permite filtrar, con su etiqueta en plural. */
+private val STATUS_CHOICES: List<Pair<TransferStatus?, String>> =
+    listOf<TransferStatus?>(null).plus(TransferStatus.filterable).map { it to it.filterLabel() }
+
+private fun TransferStatus?.filterLabel(): String = when (this) {
+    null -> "Todas"
+    TransferStatus.ACCEPTED -> "Aceptadas"
+    TransferStatus.PENDING -> "Pendientes"
+    TransferStatus.FAILED -> "Fallidas"
+    TransferStatus.OTHER -> "Otras"
+}
 
 /** Fecha como la muestra el filtro: `dd/MM/yyyy`. */
 internal fun LocalDate.display(): String =
