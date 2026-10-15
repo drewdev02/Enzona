@@ -26,6 +26,8 @@ Las respuestas de operaciones envuelven el resultado con metadatos de estado:
 - `transaction_signature`: firma de la transacción devuelta por el backend (presente en
   tarjetas, transferencias, facturas, QR y transacciones — es un campo transversal de integridad).
 
+> Envelopes de **error** reales (catálogo completo, con capturas): [`11-capturas-live.md`](11-capturas-live.md) §3.
+
 ## Autenticación — `TokenModel`
 
 Respuesta estándar OAuth2 de `identity.enzona.net/oauth2/token`:
@@ -50,6 +52,11 @@ data class TokenDto(
 > endpoint correcto es `GET /account/v1.0.0/account?username=<sub>` donde `<sub>` es el claim
 > `sub` del id_token. `payment_password` se devuelve como booleano ("true" = configurada).
 > No aparecen en la respuesta (condicionales): `account_id`, `reseted`, `totpCode`, `type`, `birthday`.
+>
+> ✅ **Ampliación en vivo (2026-10-15, [`11`](11-capturas-live.md))**: los flags y números llegan como
+> **string** (`"public_phone":"false"`, `"verified":"1"`, `"profile_level":"8"`, `"fingerprint":"true"`,
+> `"payment_password":"true"`); `avatar` es ruta relativa (`images/user/avatar/<user>.png`, no URL completa);
+> `merchants` llega como `[{}]`. Sin `username` el endpoint responde 500 `{"Fault":null}` (F mayúscula).
 
 Campos JSON reales:
 
@@ -119,6 +126,14 @@ bank_code, bank_name, bank_certificate, cadenaEncript
 > - `status` y `verified` llegan como **número** (`1`), no string/bool → deserializa laxo.
 > - En el listado NO vienen (condicionales/seguridad): `pan`, `card_uuid`, `funding_source_id`,
 >   `deleted`, `bank_certificate`.
+>
+> ✅ **Ampliación en vivo (2026-10-15, [`11`](11-capturas-live.md))**: el listado confirma
+> `create_at`/`update_at` (formato `"2022-03-01 14:42:43.0"`) con `last4`/`expdate`/`bin` como
+> **string** (`"5800"`, `"0232"`, `"922706999"`). En cambio, `GET /cards/v1.0.0/cards/first` (200)
+> devuelve la misma tarjeta con `created_at`/`updated_at` ISO, `last4`/`expdate` **numéricos**
+> (`5800`, `3202`) y extras (`bank_certificate` PEM base64, `C1`/`C2`/`P1`/`P2`);
+> `GET /cards/v1.0.0/cards/default` da 500. BINs reales observados: 922706999, 923506999,
+> 922795987, 976003122 — ninguno coincide con el BIN Tropical `924006999`.
 
 Campos reales en el listado: `funding_source_uuid`, `last4`, `cardholder`, `expdate`,
 `create_at`, `update_at`, `status`, `currency`, `primary_source`, `bank_name`, `bank_code`,
@@ -146,11 +161,14 @@ data class CardDto(
 
 ## Saldo + últimas operaciones de una tarjeta — `BalanceModel` / `OperationModel`
 
-> 🔎 **Verificado por decompilación estática (Blutter, pantalla `ConsultarSaldoView`); NO validado
-> en vivo.** Los tipos y formatos marcados con ⚠ se deben confirmar con una respuesta real.
+> ✅ **Verificado en vivo (2026-10-15, [`11`](11-capturas-live.md)) y por decompilación estática
+> (Blutter, pantalla `ConsultarSaldoView`)** — incluido `respCode`. `balance`/`balance_available`
+> numéricos; `amount` de cada operación string; `operationDate` mezcla `dd/MM/yy` y `dd/MM/yyyy`;
+> `currency` alterna `cup`/`usd`/`USD`. El endpoint es **flojo**: a veces responde 500 transitorio
+> (`fault` 303001, backend SUSPENDED) o se cuelga — el reintento devuelve 200.
 
 **Un solo endpoint** sirve saldo y operaciones: `GET /coremz/1.0.2/api/balance/lastOperations/{funding_source_uuid}`
-(sin paginación ni parámetros; cabecera `token`/Bearer). Los datasources de saldo y de operaciones
+(sin paginación ni parámetros; **solo `Authorization: Bearer`** — la cabecera `token` da 401). Los datasources de saldo y de operaciones
 llaman a la misma URL y leen partes distintas de la misma respuesta. Un error llega como `{"fault":{…}}`.
 
 Respuesta **plana** (`BalanceModel.fromJson(json)`):
@@ -293,6 +311,10 @@ transaction_status, transaction_description
 > - La extracción estática solo había capturado ~13 campos; el backend real devuelve **muchos
 >   más** (abajo). Tipos **laxos**: campos opcionales llegan como `false` (p. ej. `total_amount:false`,
 >   `client_id:false`, `invoice:false`) cuando no aplican, y algunos códigos como número.
+> - ✅ **Ampliación (2026-10-15, [`11`](11-capturas-live.md))**: `pagination` real solo trae
+>   `first`/`prev`/`next`/`last`/`total` (sin `offset`/`limit`), con URLs absolutas al host interno
+>   `api.enzona.xetid.cu` y path `/operations/transactions`; `amount` es **número** (`1400.0`; en
+>   saldo llega string); `funding_recipient_verified` puede traer espacios/saltos (`"\n\t\t…0\n"`).
 
 Campos reales de cada transacción (verificados):
 ```
@@ -311,8 +333,9 @@ recipient: { funding_recipient_avatar, funding_recipient_name, funding_recipient
 
 Envelope de paginación `pagination`:
 ```
-offset, limit, total, first, prev, next, last
+total, first, prev, next, last
 ```
+> ⚠ La captura real **no** trae `offset`/`limit` (la extracción estática los listaba).
 
 ```kotlin
 @Serializable
@@ -375,6 +398,13 @@ servidor (`tipo_cambio`, `discount`, `totalAmount`, `montoReal` en la respuesta)
 `pan`, `created_at`, `fault` si falla.
 **Lista (Recientes/Historial)** — forma decodificada de `TransferList.fromJson` / `TransferModel.fromJson` (la app NO lee
 paginación; pide `limit=10` y al llegar al final pide más con `offset += limit`, `getMoreInvoice`):
+
+> ✅ **Verificado en vivo (2026-10-15, [`11`](11-capturas-live.md))**: `GET /transfer/v1.0.0/transfer?limit=10&offset=0`
+> → 200 `{"avatars":{"avatars":null},"transfer":[…]}` (el mapa `avatars` llega **anidado y nulo**). Items reales:
+> `uuid, transaction_code, transaction_signature, status_code, status_denom, description, amount` (**número** aquí, no
+> string con signo), `created_at, currency, source{username, funding_source_amount, verified, last4, bank},
+> recipient{last4, bank}`. Sin `limit`/`offset` → 500 CXF (`bpsTransfer?wsdl`); la primera llamada del día devolvió
+> **202 con JSON inválido** (`"avatars":,`) — comportamiento transitorio a tolerar (reintentar).
 ```
 { "transfer": [ TransferModel… ],          # el array
   "avatars":  { … },                       # mapa (la app lo exige: si falta, el cast a Map lanza); semántica sin confirmar
@@ -426,8 +456,32 @@ Presentación original de cada fila (`GenericListTranferWidget`, `setTitle/setAm
 - "**Destinatarios**" (`recipent/1.0.1/recipient/{add,setRecipient,remove}` + listado) son beneficiarios de tarjeta guardados
   (`pan, userName, phone, last4, bankCode, currency, description, uuid`): el icono de tarjeta junto a "No. Tarjeta" abre ese selector.
 
-⚠ Sin verificar: forma real de la lista y de `fault`, qué valores admite `status_filter`, si la contraseña mal escrita
-bloquea la cuenta, y límites de importe.
+⚠ Sin verificar: qué valores admite `status_filter`, si la contraseña mal escrita
+bloquea la cuenta, y límites de importe (la **forma real de la lista** sí quedó capturada el 2026-10-15: ver [`11`](11-capturas-live.md)).
+
+## Otras verificaciones en vivo (2026-10-15)
+
+Resumen de lo capturado para los modelos que no tienen sección propia arriba — detalle, envelopes de error
+y enlaces a cada `.json`: [`11-capturas-live.md`](11-capturas-live.md).
+
+| Modelo / endpoint | Forma real (✅ salvo ⚠) |
+|---|---|
+| `GET /contact/1.0/api/account/user-name?user_name=` | `{"account":[{userName, avatar, uuid, name, verified}]}` — subcadena (≤10); por teléfono, exacto |
+| `GET /contact/1.0/api/account/contacts/{uuid\|username}` | `{"contacts":[…]}` |
+| `GET /contact/1.0/api/account/all-contact-request/{uuid\|username}` | `{"sendingRequest":[…],"receivedRequest":[…]}` |
+| `GET /recipent/1.0.1/recipient/allByUserName?userName=` | `{"Destinatarios":[{uuid,userName,createdAt,updatedAt,pan,description,phone,last4,bankCode,currency}]}` (⚠ devuelve PAN completo) |
+| `GET /nyfy/1.0/ntfy/list/{username}` | array directo `[{idNtfy,icon,message,user,priority,createdAt,updatedAt,active}]` |
+| `GET /giftapi/v1.0.0/gift/category` · `/gift?userName=` | `{"category":[…]}` (9, uuid de relleno) · `{"avatars":null,"gift":[]}` |
+| `GET /invoice/v1.0.0/invoice?offset&limit` | `{"invoice":{…},"pagination":{…}}` — `invoice` es un **objeto**, no lista |
+| `GET /cubanemail/v1.0.0/cubanemail/ci/{ci}` | `{"response":"<base64>"}` → dentro `{"total":0,"data":[]}` |
+| `GET /coremz/1.0.2/fiscal_account/allProvince` · `/municipe?province_code=` · `/branch?code_dpa=` | `{"Province":[…]}` · `{"municipe":[…]}` (clave `codDpa`) · `{"branch":[…]}` |
+| `GET /bulevar/1.0/tiendas/allTiendas` | Page de Spring (`content…`); 608 tiendas `{uuid,nombreTienda,url,provincia}` |
+| `GET /coremz/1.0.2/help/contacts` | `{"phones":[…],"whatsApp":[…],"email":[…],"socialNetworks":[…]}` |
+| `GET identity.enzona.net/oauth2/userinfo` | claims OIDC (birthday, address, zone, folio, tomo, secondFactor…) |
+| ⚠ `GET /qr/v1.0.0/qr/account` | 404/fault 4016 («La Moneda no está configurada…»): es POST |
+| ⚠ `GET /invoice/v1.0.0/client-id` · `/coremz/1.0.2/uidc/info` · `/coremz/1.0.2/utils/check-updates` | 404 del gateway: revisar verbo/path en la app |
+| ⚠ `GET /onat/v1.0.0/tax-payer?taxPayer=` | 400 fault 4128 (ONAT no disponible: parámetros sin confirmar) |
+| ⚠ `GET /coremz/1.0.2/fiscal_account/is_contribuyente?account_uuid=` | timeout ×2 |
 
 ### Archivo bruto
 La extracción completa de campos por cada modelo está en

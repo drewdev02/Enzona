@@ -5,6 +5,9 @@
 > request/response no se recuperan del AOT**: se infieren del nombre del endpoint, del use
 > case que lo invoca y de las entidades del módulo (ver `04-modelo-datos.md`). Trátalos
 > como contrato aproximado a confirmar contra el backend con credenciales válidas.
+>
+> ✅ Pasada de verificación en vivo (solo GET, 2026-10-15, sesión propia): 64 capturas
+> y correcciones en [`11-capturas-live.md`](11-capturas-live.md).
 
 ## 0. Autenticación — OAuth2 Authorization Code + PKCE
 
@@ -72,7 +75,7 @@ Relacionados (otros servicios usados por el módulo account):
 
 | Método | Path | Use case |
 |---|---|---|
-| GET | `/qr/v1.0.0/qr/account` | Generar QR de cobro propio |
+| POST | `/qr/v1.0.0/qr/account` | Generar QR de cobro propio (⚠ GET da 404/fault 4016) |
 | GET | `/payment/v1.0.0/payments/vendor/code` | Obtener código de vendedor (`get_vendor_id_code_use_case`) |
 | POST | `/invoice/v1.0.0/invoice/payment` | Pagar factura/orden |
 | GET | `/invoice/v1.0.0/client-id` | Client-id de factura |

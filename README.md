@@ -18,6 +18,11 @@ ViewModel; architecture and decisions live in [ARCHITECTURE.md](./ARCHITECTURE.m
   update it in the same change. `python3 tools/checks/check_docs.py` checks its links and hygiene. The original APK and the
   decompiler output are never committed.
 
+  The docs also include a live-verification pass (GET-only, 2026-10-15, owner's own account):
+  see [11-capturas-live.md](./docs/reverse-engineering/11-capturas-live.md) and the raw JSON captures under
+  `sharedLogic/src/commonTest/resources/capturas-live/`. Those captures contain **real personal data
+  unmasked** — this repository must stay private, and the folder must not be moved into `commonMain`.
+
 ### Running the apps
 
 Use the run configurations provided by the run widget in your IDE's toolbar. You can also use these commands and options:

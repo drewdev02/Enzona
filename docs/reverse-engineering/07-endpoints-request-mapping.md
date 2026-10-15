@@ -86,6 +86,16 @@ POST https://identity.enzona.net/oauth2/token
 >   `transaction_type_filter`). Respuesta `{"transaction":[…], "pagination":{offset,limit,total,first,prev,next,last}}`.
 > - ⚠ **Tipos laxos**: el backend devuelve `false` para campos no aplicables y mezcla
 >   número/string/bool para flags. Deserializa con tolerancia (ver `06 §Tipos laxos`).
+>
+> ✅ **Segunda pasada en vivo (2026-10-15, solo GET)** — catálogo completo, capturas y discrepancias en
+> [`11-capturas-live.md`](11-capturas-live.md): `user-name` exige `user_name` (devuelve `{"account":[…]}`);
+> `contacts/{uuid|username}` → `{"contacts":[…]}`; `all-contact-request/{…}` →
+> `{"sendingRequest":[],"receivedRequest":[]}`; destinatarios: parámetro `userName`, envelope `Destinatarios`;
+> `/cards/v1.0.0/cards/first` 200 (con `created_at`/`updated_at`) y `/cards/v1.0.0/cards/default` 500;
+> balance `lastOperations` 200 (ver `06 §Saldo`); `transfer?limit&offset` 200; `invoice?offset&limit` 200
+> (`invoice` es un objeto); `fiscal_account/all/` 404; `uidc/info` y `utils/check-updates` 404;
+> `qr/account` por GET → 404/fault 4016; `help/contacts`, `gift/*`, `ntfy/list/{username}`, `allTiendas` y
+> los catálogos `nomenclator`/`fiscal_account` 200.
 
 ## 2. security
 | POST | `/oauth2/token` (identity) | ver §0 |

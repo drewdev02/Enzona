@@ -18,6 +18,7 @@ Analizado con REA + extracción de cadenas del snapshot Dart AOT (`libapp.so`).
 9. [`08-seguridad-y-cripto.md`](08-seguridad-y-cripto.md) — Auth, firma, cifrado RSA, secure storage, biometría: **no hace falta ningún secreto**.
 9b. [`09-resumen-endpoints.md`](09-resumen-endpoints.md) — **Resumen rápido**: cada endpoint → qué envías / qué hace / qué recibes.
 9c. [`10-metodologia.md`](10-metodologia.md) — **Cómo se extrajo todo**: herramientas y comandos paso a paso (reproducible por otros agentes).
+9d. [`11-capturas-live.md`](11-capturas-live.md) — **Capturas en vivo (2026-10-15)**: 64 respuestas GET reales (`✅`), envelopes de error, tipos laxos y **discrepancias a revisar en tests y app**. Los `.json` crudos viven en [`sharedLogic/src/commonTest/resources/capturas-live/`](../../sharedLogic/src/commonTest/resources/capturas-live/_LEEME.md) ⚠ con datos personales reales: repo privado.
 10. [`APENDICE-campos-por-modelo.txt`](APENDICE-campos-por-modelo.txt) — Volcado bruto de campos de **todos** los modelos.
 11. [`APENDICE-endpoints-por-datasource.txt`](APENDICE-endpoints-por-datasource.txt) — Volcado bruto de endpoints por datasource.
 

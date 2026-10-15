@@ -3,6 +3,8 @@
 > Vista rápida de cada endpoint: **qué se envía**, **qué acción realiza** y **qué se recibe**.
 > Todas las llamadas a `api.enzona.net` llevan `Authorization: Bearer <access_token>` (salvo el login).
 > Detalle de campos en [`06-esquemas-exactos.md`](06-esquemas-exactos.md) y [`07-endpoints-request-mapping.md`](07-endpoints-request-mapping.md).
+> ✅ Pasada completa de verificación en vivo (solo GET, 2026-10-15) en [`11-capturas-live.md`](11-capturas-live.md):
+> 64 capturas, envelopes de error y **discrepancias** a revisar.
 
 ## Autenticación (`identity.enzona.net`)
 
@@ -33,7 +35,7 @@
 | `POST` añadir tarjeta | `cadenaEncript` (pan+expdate **cifrados**) | Asociar tarjeta | tarjeta + `transaction_signature` |
 | `GET /cards/v1.0.0/cards/default` | — | Tarjeta por defecto | CardModel |
 | `POST /coremz/1.0.2/card/card/activate/pin` | PIN | Activar tarjeta | estado |
-| `GET /coremz/1.0.2/api/balance/lastOperations/{funding_source_uuid}` 🔎 | uuid de la tarjeta | Saldo **y** últimas operaciones (un solo endpoint) | `balance`, `balance_available`, `currency`, `bank_account`, `operation[]` (ver `06 §Saldo`). Verificado por decompilación, no en vivo |
+| `GET /coremz/1.0.2/api/balance/lastOperations/{funding_source_uuid}` ✅ | uuid de la tarjeta | Saldo **y** últimas operaciones (un solo endpoint) | `balance`, `balance_available`, `currency`, `bank_account`, `operation[]` (ver `06 §Saldo`). Verificado en vivo el 2026-10-15; a veces da 500 transitorio → reintentar |
 
 ## Transferencias (`transfer/v1.0.0`, `coremz/1.0.2`)
 
@@ -49,7 +51,7 @@
 
 | Endpoint | Envías | Acción | Recibes |
 |---|---|---|---|
-| `GET /qr/v1.0.0/qr/account` | — | Generar **tu** QR de cobro | `qr_code`, `vendor_identity_code`, `merchant_uuid` |
+| `POST /qr/v1.0.0/qr/account` (⚠ GET da 404) | — | Generar **tu** QR de cobro | `qr_code`, `vendor_identity_code`, `merchant_uuid` |
 | `POST /qr/v1.0.0/qr/…` | `qr_code`, `merchant_uuid`, `payment_password` | Pagar a comercio escaneado | `transaction_status`, `transaction_signature` |
 | `GET/POST /payment/v1.0.0/payments/vendor/code` | `vendor_identity_code` | Resolver código de vendedor | datos del comercio (`merchant_alias`, `require_password`) |
 | `POST service-core.enzona.net/atm` | `qr_code`, `cash_advance` | Extracción en ATM por QR | comprobante |
