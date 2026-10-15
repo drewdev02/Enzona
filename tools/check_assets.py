@@ -152,5 +152,11 @@ check_mapping(
     ANDROID_UI / "cards/OperationIcons.kt", IOS_UI / "Cards/OperationPresentation.swift", "static let icons",
 )
 
+check_mapping(
+    "bancos", SHARED / "cards/domain/BankBrand.kt", "BankBrand", "bank_",
+    ANDROID_UI / "transfer/BankLogos.kt", IOS_UI / "Transfer/TransferPresentation.swift", "static let bankLogos",
+    exempt={"UNKNOWN"},
+)
+
 print("OK" if not problems else "\n".join("FALLA: " + p for p in problems))
 sys.exit(1 if problems else 0)

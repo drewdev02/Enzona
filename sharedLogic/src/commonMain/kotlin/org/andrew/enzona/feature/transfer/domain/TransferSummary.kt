@@ -69,5 +69,16 @@ data class TransferFilter(
 
     companion object {
         val None = TransferFilter()
+
+        /**
+         * Para Swift, que no puede construir un `LocalDate`: los días llegan como `yyyy-MM-dd` y [statusCode] es el
+         * `status_code` del filtro. Un día ilegible o un código que no es de un filtro se trata como "sin filtro"
+         * en ese campo, nunca como otro valor.
+         */
+        fun fromIso(startDay: String?, endDay: String?, statusCode: Int?): TransferFilter = TransferFilter(
+            startDate = startDay?.let { runCatching { LocalDate.parse(it) }.getOrNull() },
+            endDate = endDay?.let { runCatching { LocalDate.parse(it) }.getOrNull() },
+            status = statusCode?.let { code -> TransferStatus.entries.firstOrNull { it.code == code } },
+        )
     }
 }

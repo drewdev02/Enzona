@@ -1,7 +1,15 @@
 package org.andrew.enzona.feature.cards.domain
 
 /** Un banco que reconocemos. Cada plataforma decide qué logo le corresponde; el dominio solo dice cuál es. */
-enum class BankBrand { BANMET, BANDEC, BPA, BICSA, CLASICA, AIS, UNKNOWN }
+enum class BankBrand {
+    BANMET,
+    BANDEC,
+    BPA,
+    BICSA,
+    CLASICA,
+    AIS,
+    UNKNOWN,
+}
 
 private val CODES = mapOf(
     "02" to BankBrand.AIS,

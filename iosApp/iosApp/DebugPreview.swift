@@ -7,7 +7,8 @@ import SwiftUI
 ///   xcrun simctl ui booted content_size accessibility-extra-large
 ///
 ///   xcrun simctl launch booted <bundle id> -ezPreview <nombre>
-/// Nombres: detail (por defecto), detail-empty, detail-partial, detail-loading, detail-error, balance.
+/// Nombres: detail (por defecto), detail-empty, detail-partial, detail-loading, detail-error, balance,
+/// transfer-menu, transfer-menu-empty, transfer-history, transfer-history-empty, find-account, find-account-notfound, friends.
 enum DebugPreview {
     static var requested: String? {
         let args = ProcessInfo.processInfo.arguments
@@ -29,6 +30,24 @@ enum DebugPreview {
             case "detail-error":
                 CardDetailContent(phase: .error("Sin conexión. Revisa tu red e inténtalo de nuevo."), cardLabel: label)
                     .balanceNavigationChrome()
+            case "transfer-menu":
+                TransferMenuContent(phase: .content(Array(TransferRowModel.samples.prefix(5)), skipped: 0))
+            case "transfer-menu-empty":
+                TransferMenuContent(phase: .content([], skipped: 0))
+            case "transfer-history":
+                TransferHistoryContent(
+                    phase: .content(TransferHistoryData(rows: TransferRowModel.samples, skipped: 1, hasMore: false, isLoadingMore: false, moreError: nil)),
+                    filter: .none)
+            case "transfer-history-empty":
+                TransferHistoryContent(
+                    phase: .content(TransferHistoryData(rows: [], skipped: 0, hasMore: false, isLoadingMore: false, moreError: nil)),
+                    filter: TransferFilterModel(startDay: "2026-10-01", endDay: nil, statusCode: 2224))
+            case "find-account":
+                FindAccountContent(phase: .found(PersonModel.samples[0]))
+            case "find-account-notfound":
+                FindAccountContent(phase: .notFound)
+            case "friends":
+                TransferFriendsContent(phase: .content(PersonModel.samples))
             case "balance":
                 BalanceContent(phase: .content(EzBankCardModel.samples)).balanceNavigationChrome()
             default:

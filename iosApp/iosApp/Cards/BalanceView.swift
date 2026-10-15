@@ -31,9 +31,12 @@ extension View {
     /// degradado se queda en un color plano), y la hora y los iconos de la barra de estado siguen
     /// negros aunque se pida esquema oscuro; sobre el azul de marca esos iconos cumplen contraste
     /// (~6:1), pero sobre el marino del degradado no. Por eso el color es plano.
-    func balanceNavigationChrome() -> some View {
+    func balanceNavigationChrome() -> some View { brandNavigationChrome(title: "Balance") }
+
+    /// La misma barra para cualquier pantalla de segundo nivel.
+    func brandNavigationChrome(title: String) -> some View {
         self
-            .navigationTitle("Balance")
+            .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(Ez.Palette.brandBlueLight, for: .navigationBar)
             .toolbarBackgroundVisibility(.visible, for: .navigationBar)

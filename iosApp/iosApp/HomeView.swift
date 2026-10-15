@@ -6,6 +6,11 @@ enum HomeRoute: Hashable {
     case balance
     /// Tercer nivel: saldo y operaciones de una tarjeta. `label` es la fila "Tarjeta" ("BANMET 6856").
     case cardDetail(id: String, label: String)
+    /// Menú "Transferir" y sus pantallas de apoyo.
+    case transferMenu
+    case transferHistory
+    case transferFindAccount
+    case transferFriends
 }
 
 /// Raíz de la zona autenticada: conecta los ViewModels y el modelo compartido con las pantallas.
@@ -46,6 +51,28 @@ struct HomeView: View {
                                 )
                             case .cardDetail(let id, let label):
                                 CardDetailView(cardId: id, cardLabel: label)
+                            case .transferMenu:
+                                TransferMenuView(
+                                    onOption: { option in
+                                        switch option {
+                                        case .account: path.append(.transferFindAccount)
+                                        case .friend: path.append(.transferFriends)
+                                        // Los formularios que mueven dinero llegan en su hito.
+                                        case .card, .ownCard: comingSoon = "\(option.label) estará disponible próximamente."
+                                        }
+                                    },
+                                    onHistory: { path.append(.transferHistory) }
+                                )
+                            case .transferHistory:
+                                TransferHistoryView()
+                            case .transferFindAccount:
+                                FindAccountView(onRecipient: { _ in
+                                    comingSoon = "Transferir a una cuenta estará disponible próximamente."
+                                })
+                            case .transferFriends:
+                                TransferFriendsView(onFriend: { _ in
+                                    comingSoon = "Transferir a un amigo estará disponible próximamente."
+                                })
                             }
                         }
                 }
@@ -68,7 +95,11 @@ struct HomeView: View {
     private func open(_ item: EzServiceItem) {
         let service = HomeServices.shared.all.first { $0.iconKey == item.id }
         if service?.isAvailable == true {
-            if service?.name == "BALANCE" { path.append(.balance) }
+            switch service?.name {
+            case "BALANCE": path.append(.balance)
+            case "TRANSFER": path.append(.transferMenu)
+            default: break
+            }
         } else {
             comingSoon = "\(item.title) estará disponible próximamente."
         }
