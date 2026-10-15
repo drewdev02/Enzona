@@ -1,4 +1,4 @@
-package org.andrew.enzona.ui
+package org.andrew.enzona.ui.account
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
