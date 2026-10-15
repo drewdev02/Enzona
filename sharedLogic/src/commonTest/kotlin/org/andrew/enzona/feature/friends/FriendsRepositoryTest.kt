@@ -102,6 +102,8 @@ class FriendsRepositoryTest {
         val friend = Friend("f-1", "alice", "Alice Perez", "images/a.png", null, null)
         assertEquals(TransferRecipient("f-1", "alice", "Alice Perez", "images/a.png"), friend.asRecipient())
         assertNull(Friend("f-2", "bob", null, null, null, null).asRecipient().avatar)
+        assertNull(friend.asRecipient().currency, "sin moneda no se afirma ninguna")
+        assertEquals("usd", Friend("f-3", "carol", null, null, null, "usd").asRecipient().currency)
     }
 
     @Test

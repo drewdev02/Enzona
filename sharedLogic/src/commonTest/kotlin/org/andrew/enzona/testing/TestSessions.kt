@@ -34,8 +34,9 @@ fun testAccount(
     first: String = "Alice",
     last: String = "Perez",
     avatar: String? = "images/a.png",
+    currency: String? = null,
 ) = Account(
     uuid = uuid, username = username, firstName = first, lastName = last, email = null, phone = null, avatarUrl = avatar,
-    primaryCurrency = null, profileLevel = null, isVerified = false, isPhoneVerified = false,
+    primaryCurrency = currency, profileLevel = null, isVerified = false, isPhoneVerified = false,
     hasPaymentPassword = false, biometricEnabled = false, isMerchant = false, createdAt = null,
 )

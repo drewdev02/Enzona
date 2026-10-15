@@ -13,7 +13,9 @@ import org.andrew.enzona.feature.cards.cardsModule
 import org.andrew.enzona.feature.friends.friendsModule
 import org.andrew.enzona.feature.friends.presentation.FriendsViewModel
 import org.andrew.enzona.feature.transfer.presentation.FindRecipientViewModel
+import org.andrew.enzona.feature.transfer.domain.TransferRecipient
 import org.andrew.enzona.feature.transfer.presentation.OwnCardTransferViewModel
+import org.andrew.enzona.feature.transfer.presentation.RecipientTransferViewModel
 import org.andrew.enzona.feature.transfer.presentation.TransferHistoryViewModel
 import org.andrew.enzona.feature.transfer.presentation.TransferMenuViewModel
 import org.andrew.enzona.feature.transfer.transferModule
@@ -73,5 +75,9 @@ object KoinHelper : KoinComponent {
     fun friendsViewModelHolder(): ViewModelHolder<FriendsViewModel> = getKoin().viewModelHolder()
 
     fun ownCardTransferViewModelHolder(): ViewModelHolder<OwnCardTransferViewModel> = getKoin().viewModelHolder()
+
+    /** "A una cuenta" y "A un amigo": el destinatario ya verificado lo pone quien abre la pantalla. */
+    fun recipientTransferViewModelHolder(recipient: TransferRecipient): ViewModelHolder<RecipientTransferViewModel> =
+        getKoin().viewModelHolder { parametersOf(recipient) }
 }
 

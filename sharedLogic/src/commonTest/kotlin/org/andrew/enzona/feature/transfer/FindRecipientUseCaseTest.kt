@@ -29,6 +29,14 @@ class FindRecipientUseCaseTest {
     }
 
     @Test
+    fun theAccountsCurrencyTravelsWithTheRecipientAndAbsentStaysUnknown() = runTest {
+        val withCurrency = useCase(FakeAccounts { EzResult.Success(account(currency = "usd")) })("alice")
+        assertEquals("usd", (withCurrency as FindRecipientResult.Found).recipient.currency)
+        val without = useCase(FakeAccounts { EzResult.Success(account()) })("alice")
+        assertEquals(null, (without as FindRecipientResult.Found).recipient.currency)
+    }
+
+    @Test
     fun theQueryIsTrimmedAndTheServerIsAskedForExactlyThat() = runTest {
         val accounts = FakeAccounts { EzResult.Success(account()) }
         useCase(accounts)("  alice \n")

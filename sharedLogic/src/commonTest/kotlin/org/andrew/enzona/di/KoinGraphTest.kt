@@ -30,7 +30,9 @@ import org.andrew.enzona.feature.friends.presentation.FriendsViewModel
 import org.andrew.enzona.feature.transfer.domain.SubmitTransferUseCase
 import org.andrew.enzona.feature.transfer.domain.TransferRepository
 import org.andrew.enzona.feature.transfer.presentation.FindRecipientViewModel
+import org.andrew.enzona.feature.transfer.domain.TransferRecipient
 import org.andrew.enzona.feature.transfer.presentation.OwnCardTransferViewModel
+import org.andrew.enzona.feature.transfer.presentation.RecipientTransferViewModel
 import org.andrew.enzona.feature.transfer.presentation.TransferHistoryViewModel
 import org.andrew.enzona.feature.transfer.presentation.TransferMenuViewModel
 import org.andrew.enzona.feature.transfer.transferModule
@@ -80,6 +82,10 @@ class KoinGraphTest {
             // El formulario es por pantalla; el caso de uso de envío es UNO (su Mutex impide dos pagos a la vez).
             assertNotSame(koin.get<OwnCardTransferViewModel>(), koin.get<OwnCardTransferViewModel>())
             assertSame(koin.get<SubmitTransferUseCase>(), koin.get<SubmitTransferUseCase>())
+            // A una cuenta / a un amigo: el destinatario verificado entra por parámetro y es por pantalla.
+            val ana = TransferRecipient("acc-1", "ana", "Ana", null, "cup")
+            val first = koin.get<RecipientTransferViewModel> { parametersOf(ana) }
+            assertNotSame(first, koin.get<RecipientTransferViewModel> { parametersOf(ana) })
 
             // El cifrador de la contraseña de pago es uno para toda la app y ya trae la clave de EnZona.
             assertSame(koin.get<PaymentPasswordEncryptor>(), koin.get<PaymentPasswordEncryptor>())

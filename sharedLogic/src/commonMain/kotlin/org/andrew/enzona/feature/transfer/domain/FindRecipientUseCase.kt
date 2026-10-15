@@ -37,7 +37,9 @@ class FindRecipientUseCase(
                     account.uuid.isBlank() ->
                         FindRecipientResult.Failed(Failure.Parse("La cuenta encontrada no trae identificador."))
                     else -> FindRecipientResult.Found(
-                        TransferRecipient(account.uuid, account.username, account.fullName, account.avatarUrl),
+                        TransferRecipient(
+                            account.uuid, account.username, account.fullName, account.avatarUrl, account.primaryCurrency,
+                        ),
                     )
                 }
             }

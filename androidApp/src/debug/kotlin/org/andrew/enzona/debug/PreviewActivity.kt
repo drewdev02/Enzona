@@ -20,6 +20,10 @@ import org.andrew.enzona.ui.transfer.FindAccountScreen
 import org.andrew.enzona.ui.transfer.OwnCardTransferActions
 import org.andrew.enzona.ui.transfer.OwnCardTransferPreviewData
 import org.andrew.enzona.ui.transfer.OwnCardTransferScreen
+import org.andrew.enzona.ui.transfer.RecipientKind
+import org.andrew.enzona.ui.transfer.RecipientTransferActions
+import org.andrew.enzona.ui.transfer.RecipientTransferPreviewData
+import org.andrew.enzona.ui.transfer.RecipientTransferScreen
 import org.andrew.enzona.ui.transfer.TransferFriendsScreen
 import org.andrew.enzona.ui.transfer.TransferHistoryScreen
 import org.andrew.enzona.ui.transfer.TransferMenuScreen
@@ -33,7 +37,8 @@ import org.andrew.enzona.ui.transfer.TransferPreviewData
  *   adb shell am start -n org.andrew.enzona/.debug.PreviewActivity --es screen <nombre>
  * Nombres: detail (por defecto), detail-empty, detail-partial, detail-loading, detail-error, balance,
  * transfer-menu, transfer-menu-empty, transfer-history, transfer-history-empty, transfer-history-error, find-account, find-account-notfound, friends,
- * own-form, own-errors, own-confirm, own-sending, own-accepted, own-rejected, own-unknown.
+ * own-form, own-errors, own-confirm, own-sending, own-accepted, own-rejected, own-unknown,
+ * acct-form, acct-problem, acct-confirm, friend-exchange, acct-sending, acct-receipt, acct-rejected, acct-unknown.
  */
 class PreviewActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +74,14 @@ class PreviewActivity : ComponentActivity() {
                     "own-confirm" -> OwnCardTransferScreen(OwnCardTransferPreviewData.confirming, OwnCardTransferActions())
                     "own-sending" -> OwnCardTransferScreen(OwnCardTransferPreviewData.submitting, OwnCardTransferActions())
                     "own-accepted" -> OwnCardTransferScreen(OwnCardTransferPreviewData.accepted, OwnCardTransferActions())
+                    "acct-form" -> RecipientTransferScreen(RecipientTransferPreviewData.editing, RecipientKind.ACCOUNT, RecipientTransferActions())
+                    "acct-problem" -> RecipientTransferScreen(RecipientTransferPreviewData.withProblem, RecipientKind.ACCOUNT, RecipientTransferActions())
+                    "acct-confirm" -> RecipientTransferScreen(RecipientTransferPreviewData.confirming, RecipientKind.ACCOUNT, RecipientTransferActions())
+                    "friend-exchange" -> RecipientTransferScreen(RecipientTransferPreviewData.confirmingWithExchange, RecipientKind.FRIEND, RecipientTransferActions())
+                    "acct-sending" -> RecipientTransferScreen(RecipientTransferPreviewData.submitting, RecipientKind.ACCOUNT, RecipientTransferActions())
+                    "acct-receipt" -> RecipientTransferScreen(RecipientTransferPreviewData.accepted, RecipientKind.ACCOUNT, RecipientTransferActions())
+                    "acct-rejected" -> RecipientTransferScreen(RecipientTransferPreviewData.rejected, RecipientKind.FRIEND, RecipientTransferActions())
+                    "acct-unknown" -> RecipientTransferScreen(RecipientTransferPreviewData.unknown, RecipientKind.ACCOUNT, RecipientTransferActions())
                     "own-pending" -> OwnCardTransferScreen(OwnCardTransferPreviewData.pending, OwnCardTransferActions())
                     "own-rejected" -> OwnCardTransferScreen(OwnCardTransferPreviewData.rejected, OwnCardTransferActions())
                     "own-unknown" -> OwnCardTransferScreen(OwnCardTransferPreviewData.unknown, OwnCardTransferActions())

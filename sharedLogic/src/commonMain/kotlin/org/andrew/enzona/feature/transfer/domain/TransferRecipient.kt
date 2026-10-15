@@ -15,6 +15,11 @@ data class TransferRecipient(
     val username: String,
     val displayName: String,
     val avatar: String?,
+    /**
+     * Moneda principal de la cuenta del destinatario, si el servidor la dio. Solo sirve para avisar de que se aplicará
+     * el cambio de moneda cuando difiere de la de la tarjeta de origen; si es `null` no se afirma nada.
+     */
+    val currency: String? = null,
 )
 
 /** Resultado de buscar una cuenta por su nombre de usuario. */

@@ -18,7 +18,7 @@ data class Friend(
      * El destinatario de "A un amigo". Su `uuid` es el que la app original manda como `funding_recipient_uuid`
      * (inferido: no se ha visto una respuesta real de `contacts`; ver `docs/enzona-kmp/06`).
      */
-    fun asRecipient(): TransferRecipient = TransferRecipient(uuid, username, displayName, avatar)
+    fun asRecipient(): TransferRecipient = TransferRecipient(uuid, username, displayName, avatar, primaryCurrency)
 }
 
 interface FriendsRepository {

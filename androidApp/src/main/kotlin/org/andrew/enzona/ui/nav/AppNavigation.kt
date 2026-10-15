@@ -27,7 +27,10 @@ import org.andrew.enzona.ui.ComingSoonScreen
 import org.andrew.enzona.ui.ProfileScreen
 import org.andrew.enzona.ui.dashboard.DashboardRoute
 import org.andrew.enzona.ui.transfer.FindAccountRoute
+import org.andrew.enzona.feature.transfer.domain.TransferRecipient
 import org.andrew.enzona.ui.transfer.OwnCardTransferRoute
+import org.andrew.enzona.ui.transfer.RecipientKind
+import org.andrew.enzona.ui.transfer.RecipientTransferRoute
 import org.andrew.enzona.ui.transfer.TransferFriendsRoute
 import org.andrew.enzona.ui.transfer.TransferHistoryRoute
 import org.andrew.enzona.ui.transfer.TransferMenuRoute
@@ -49,6 +52,25 @@ import org.andrew.enzona.ui.transfer.TransferOption
 @Serializable data object TransferFriends
 /** "A una de mis tarjetas": el primer formulario que mueve dinero. */
 @Serializable data object TransferOwnCard
+
+/**
+ * "A una cuenta" / "A un amigo": el destinatario ya verificado viaja campo a campo, tal cual lo dio el servidor, sin
+ * reinterpretarse. [kind] solo cambia el título.
+ */
+@Serializable
+data class TransferToRecipient(
+    val accountUuid: String,
+    val username: String,
+    val displayName: String,
+    val avatar: String?,
+    val currency: String?,
+    val kind: RecipientKind,
+) {
+    fun recipient() = TransferRecipient(accountUuid, username, displayName, avatar, currency)
+}
+
+private fun TransferRecipient.toRoute(kind: RecipientKind) =
+    TransferToRecipient(accountUuid, username, displayName, avatar, currency, kind)
 
 /** Navegación de la zona autenticada. El paso login <-> app lo decide SessionState, no este grafo. */
 @Composable
@@ -136,13 +158,20 @@ fun AppNavigation(onLogout: () -> Unit) {
             composable<TransferFindAccount> {
                 FindAccountRoute(
                     onBack = { nav.popBackStack() },
-                    onRecipient = { showMessage("Transferir a una cuenta estará disponible próximamente.") },
+                    onRecipient = { nav.navigate(it.toRoute(RecipientKind.ACCOUNT)) },
                 )
             }
             composable<TransferFriends> {
                 TransferFriendsRoute(
                     onBack = { nav.popBackStack() },
-                    onFriend = { showMessage("Transferir a un amigo estará disponible próximamente.") },
+                    onFriend = { nav.navigate(it.asRecipient().toRoute(RecipientKind.FRIEND)) },
+                )
+            }
+            composable<TransferToRecipient> { entry ->
+                val args = entry.toRoute<TransferToRecipient>()
+                RecipientTransferRoute(
+                    recipient = args.recipient(), kind = args.kind,
+                    onBack = { nav.popBackStack() }, onOpenHistory = { nav.navigate(TransferHistory) },
                 )
             }
             composable<CardDetail> { entry ->
