@@ -68,7 +68,7 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 
 ---
 
-## M3 · Tarjetas + Dashboard  ◧ lista de tarjetas hecha · faltan saldo y acciones
+## M3 · Tarjetas + Dashboard  ◧ lista y detalle de tarjeta hechos · faltan acciones y validar con datos reales
 - ☑ **Estructura del dashboard** (según el mockup del original, con componentes nativos): cabecera con degradado + Escanear/Recibir, hoja blanca con insignia, barra inferior de 4 pestañas. Android: Compose, píldora propia. iOS: `TabView` nativo.
 - ☑ **Cuadrícula de servicios** con los 14 iconos del original (`HomeService` compartido; `tools/extract_assets.py` los importa; `tools/check_assets.py` los verifica). Las casillas de funciones que no existen avisan "próximamente".
 - ☑ **Tarjetas** (`feature/cards`): `GET /coremz/1.0.2/card/username/{username}` → `{"card":[…]}`; modelo `BankCard`, `CardsViewModel` (cargando / contenido / vacío / error). Orden: predeterminada primero y luego la más nueva (**inferido** de una captura del original).
@@ -81,11 +81,15 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 - ⚠ **iOS**: la barra de Balance es azul plano, no degradado (la barra nativa no admite degradado), y la hora/iconos de la barra de estado salen negros (ni `toolbarColorScheme` lo cambia en iOS 26). Sobre el azul de marca cumplen contraste (~6:1); **en el inicio, sobre el azul marino, no**: defecto conocido sin resolver.
 - ⚠ El margen izquierdo del número en BPA (0.115 del ancho) se fijó **mirando el render**: el triángulo dorado de ese skin no lo detecta ningún verificador. BICSA/BPA referencian `redsa.jpeg` en el original; no sé si lo dibujan encima (aquí no).
 - ⚠ **Sin ver con datos reales**: ninguna tarjeta real se ha dibujado (está detrás del login). El mapeo se probó con la **forma** real de la respuesta (datos inventados).
-- ☐ **Saldo**: `balance/lastOperations/{uuid}` y la pantalla "consultar saldo" (la lista de tarjetas del original no muestra importes).
+- ☑ **Detalle de tarjeta** (al tocar una tarjeta de Balance): saldo disponible y contable, la fila "Tarjeta" (`BANMET 6856`) y "Últimas operaciones" con los iconos, títulos, signo y Débito/Crédito del original. **Un solo endpoint** `GET /coremz/1.0.2/api/balance/lastOperations/{funding_source_uuid}` da saldo y operaciones (respuesta plana: `balance`, `balance_available`, `currency`, `operation[]`); sacado de **decompilar el original** (`ConsultarSaldoView`, `DescriptionOperations`), documentado en `docs/enzona-kmp/06`. Compartido: `CardsRepository.getActivity`, `CardActivity`/`OperationKind`, `Money` (texto decimal → unidades menores, **sin `Double`**), `classifyOperation` (tabla del original) y `CardDetailViewModel` (uno por pantalla, con el id como parámetro de Koin). Los textos, iconos y el formato (`$3395.15`) viven en la UI de cada plataforma. Importes y datos que no se pueden leer no se ocultan: se muestra "—" o "No se pudieron mostrar N operaciones".
+- ☑ Iconos de operación (`op_*`, 7) importados del APK con procedencia y sha256; `tools/check_assets.py` verifica que existen en las dos plataformas y que el mapeo tipo→icono cubre todos los `OperationKind` y es idéntico en Android e iOS.
+- ☑ Verificado: 119 tests compartidos (Android + simulador iOS), 10 de presentación de Android, el cálculo de iOS con un script, y la UI en emulador/simulador en claro, oscuro, fuente grande (hasta 200 % / accesibilidad extra grande) y datos parciales. Pantallas con datos inventados vía `PreviewActivity` (Android, solo debug) y `-ezPreview <nombre>` (iOS, solo DEBUG).
+- ⚠ **Sin ver con datos reales**: el esquema sale del análisis estático, no de una respuesta viva. **Por confirmar**: si `operationDate` ya viene como `14/10/26` (la app original no lo formatea; aquí se muestra tal cual), si `currency` llega en mayúsculas, el orden y el máximo de operaciones, y la forma de `fault`. Solo los códigos de telefonía (`TEL, RMV, RECA…`) se resuelven por código; GAS/ONAT/… muestran el `alias` del comercio (así lo decodifica el original; pendiente de confirmar con datos).
+- ⚠ Al tocar una operación no pasa nada (el detalle de operación es M4) y no hay "tirar para refrescar" (solo reintentar tras un error).
 - ☐ Menú de tarjeta: activar/cambiar PIN, eliminar, marcar predeterminada.
 - ☐ Insignia de la marca: sigue siendo un placeholder neutro; usar el logotipo propio.
 
-**Done cuando:** saldo por tarjeta y acciones del menú funcionando con la cuenta real.
+**Done cuando:** saldo y operaciones por tarjeta validados contra la cuenta real, y las acciones del menú funcionando.
 
 ---
 

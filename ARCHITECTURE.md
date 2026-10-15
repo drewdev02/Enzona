@@ -136,6 +136,35 @@ número/titular/contenido de tarjetas, cuerpos de respuesta, cabeceras ni la que
 - `Failure.Auth` del IdP ya no incluye el cuerpo de la respuesta: lo ve el usuario y lo leen los
   logs, y un error del IdP puede repetir datos de la solicitud.
 
+### Qué es compartido y qué es de cada plataforma (ejemplo: detalle de tarjeta)
+
+El dominio guarda **hechos**; cada plataforma decide cómo se ven (habrá un rediseño distinto en iOS y
+Android, así que nada visual se comparte).
+
+| Compartido (`sharedLogic`) | Por plataforma (UI) |
+|---|---|
+| `CardsRepository.getActivity`, `CardActivity`, `CardOperation` | Textos ("Transferencia", "Débito"…) |
+| `OperationKind` / `OperationDirection` (enums) y `classifyOperation` (tabla decodificada del original) | Tabla tipo → icono (`OperationIcons.kt` / `OperationPresentation.swift`) |
+| `Money` (unidades menores en `Long`, sin `Double`), `parseMinorUnits` | Formato (`$3395.15`, signo, moneda en mayúsculas) |
+| Fecha como el **texto recibido** (`dateText`) | Cómo se muestra (hoy tal cual) |
+| `CardDetailViewModel(cardId)` (uno por pantalla; el id va como parámetro de Koin) | Distribución, apilado con fuente grande, accesibilidad |
+
+- `tools/check_assets.py` comprueba que los iconos `op_*` existen en ambas plataformas con el mismo contenido y que
+  las dos tablas tipo → icono cubren todos los `OperationKind` y son idénticas.
+- Lo que no se puede leer no se oculta: un saldo ilegible es `null` (se muestra "—") y una operación ilegible se
+  cuenta en `skippedOperations` ("No se pudieron mostrar N operaciones").
+- Con fuente grande (Android ≥ 1.3 de `fontScale`; iOS tamaños de accesibilidad) las filas se apilan: **un importe
+  nunca se trunca ni se parte** (en iOS `EzAmount` se encoge antes de partirse).
+
+### Revisar pantallas sin iniciar sesión (solo debug)
+
+El login real necesita SMS, así que hay un anfitrión de previews que **no entra en release**:
+- Android: `adb shell am start -n org.andrew.enzona/.debug.PreviewActivity --es screen detail`
+  (`src/debug`; nombres en el comentario de la clase). Modo oscuro y fuente: `adb shell cmd uimode night yes`,
+  `adb shell settings put system font_scale 2.0`.
+- iOS: `xcrun simctl launch booted org.andrew.enzona.Enzona -ezPreview detail` (`DebugPreview.swift`, `#if DEBUG`).
+  Modo oscuro y tamaño: `xcrun simctl ui booted appearance dark`, `xcrun simctl ui booted content_size accessibility-extra-large`.
+
 ## 5. Autenticación (verificada contra producción)
 
 - **OAuth2 Authorization Code + PKCE** (cliente público, sin secreto) contra WSO2
