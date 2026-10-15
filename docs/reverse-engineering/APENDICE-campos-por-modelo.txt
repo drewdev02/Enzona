@@ -1,0 +1,1301 @@
+################################################################
+## [account] account_model.dart
+  CLASS: class :: 
+  CLASS: class AccountModel extends Account 
+  JSON keys / fields:
+    - account_id
+    - accountId
+    - address
+    - adress
+    - avatar
+    - birthday
+    - contact_code
+    - contactCode
+    - create_at
+    - createAt
+    - email
+    - fingerprint
+    - fingerPrint
+    - gender
+    - identification
+    - lastname
+    - merchant_account
+    - merchantAccount
+    - merchants
+    - name
+    - ocupation_code
+    - ocupation_denom
+    - ocupationCode
+    - ocupationDenom
+    - offline_payment
+    - offlinePayment
+    - old_payment_password
+    - oldPaymentPassword
+    - payment_password
+    - paymentPassword
+    - phone
+    - primary_currency
+    - primaryCurrency
+    - profile_level
+    - profileLevel
+    - public_email
+    - public_phone
+    - publicEmail
+    - publicPhone
+    - receive_code
+    - receiveCode
+    - reseted
+    - response
+    - totpCode
+    - type
+    - update_at
+    - updateAt
+    - username
+    - uuid
+    - verified
+    - verified_phone
+    - verifiedPhone
+
+################################################################
+## [account] contactenos_help_model.dart
+  CLASS: class :: 
+  CLASS: class SocialNetwork extends Object 
+  CLASS: class ContactenosModel extends Object 
+  JSON keys / fields:
+    - email
+    - name
+    - phones
+    - socialNetworks
+    - url
+    - whatsApp
+
+################################################################
+## [account] destinatario_model.dart
+  CLASS: class :: 
+  CLASS: class DestinatarioModel extends Destinatario 
+  CLASS: class DestinatarioList<X0 bound DestinatarioModel> extends Object 
+  JSON keys / fields:
+    - bankCode
+    - createdAt
+    - currency
+    - description
+    - Destinatario
+    - destinatarios
+    - Destinatarios
+    - eliminado
+    - last4
+    - pan
+    - phone
+    - updatedAt
+    - userName
+    - uuid
+
+################################################################
+## [account] verify_account_model.dart
+  CLASS: class :: 
+  CLASS: class VerifyAccountModel extends VerifyAccount 
+  JSON keys / fields:
+    - address
+    - birthday
+    - gender
+    - identification
+    - lastname
+    - name
+    - verified
+
+################################################################
+## [bank_account] bank_account_types_model.dart
+  CLASS: class :: 
+  CLASS: class BankAccountTypesModel extends Object 
+  JSON keys / fields:
+    - description
+    - name
+    - path
+
+################################################################
+## [bank_account] bank_branch_model.dart
+  CLASS: class :: 
+  CLASS: class BankBranchModel extends BankBranch 
+  CLASS: class BankBranchList<X0 bound BankBranchModel> extends Object 
+  JSON keys / fields:
+    - bank
+    - branch
+    - branch_id
+    - code
+    - dpa
+    - name
+
+################################################################
+## [bank_account] municipality_model.dart
+  CLASS: class :: 
+  CLASS: class MunicipalityModel extends Municipality 
+  CLASS: class MunicipalityList<X0 bound MunicipalityModel> extends Object 
+  JSON keys / fields:
+    - codDpa
+    - municipe
+    - municipeId
+
+################################################################
+## [bank_account] province_model.dart
+  CLASS: class :: 
+  CLASS: class ProvinceModel extends Province 
+  CLASS: class ProvinceList<X0 bound ProvinceModel> extends Object 
+  JSON keys / fields:
+    - code
+    - name
+    - Province
+    - provinceId
+
+################################################################
+## [bank_account] tax_account_model.dart
+  CLASS: class :: 
+  CLASS: class TaxAccountModel extends TaxAccount 
+  CLASS: class TaxAccountList extends Object 
+  JSON keys / fields:
+    - \' no es del tipo esperado
+    - accountNumber
+    - bankCode
+    - branch
+    - cardNumber
+    - createdAt
+    - Data
+    - description
+    - dpa
+    - El campo \'
+    - estado
+    - nit
+    - pan
+    - status
+    - updatedAt
+    - userName
+    - uuid
+
+################################################################
+## [bank_account] tax_payer.dart
+  CLASS: class :: 
+  CLASS: class Contribuyente extends ContribuyenteEntity 
+  CLASS: class Actividade extends ActivityEntity 
+  CLASS: class TaxPayer extends TaxPayerEntity 
+  JSON keys / fields:
+    - Actividades
+    - ci
+    - codigo
+    - Contribuyente
+    - dpa
+    - figura
+    - municipio
+    - nit
+    - nombre
+    - nombre_completo
+    - obligado_CBF
+    - rc05
+
+################################################################
+## [bulevar] any_images_model.dart
+  CLASS: class :: 
+  CLASS: class AnyImageModel extends AnyImage 
+  JSON keys / fields:
+    - alt
+    - id
+    - idImage
+    - imageDescription
+    - imageURL
+    - Sin título
+    - title
+
+################################################################
+## [bulevar] beneficiary_model.dart
+  CLASS: class :: 
+  CLASS: class BeneficiaryModel extends Beneficiary 
+  JSON keys / fields:
+    - addressBeneficiary
+    - ciBeneficiary
+    - lastNameBeneficiary
+    - nameBeneficiary
+    - phoneBeneficiary
+
+################################################################
+## [bulevar] merchant_model.dart
+  CLASS: class :: 
+  CLASS: class MerchantModel extends Merchant 
+  CLASS: class MerchantList<X0 bound MerchantModel> extends Object 
+  JSON keys / fields:
+    - address
+    - content
+    - currency
+    - https://
+    - id_shop
+    - image
+    - latitude
+    - latitudedm
+    - latitudedp
+    - lengthdm
+    - lengthdp
+    - lenth
+    - merchant_uuid
+    - merchants
+    - municipality
+    - name
+    - nombreTienda
+    - phone
+    - priority
+    - product_count
+    - province
+    - provincia
+    - Provincia desconocida
+    - url
+    - uuid
+
+################################################################
+## [bulevar] order_detail_model.dart
+  CLASS: class :: 
+  CLASS: class OrderDetailModel extends OrderDetail 
+  CLASS: class OrderDetailList<X0 bound OrderDetailModel> extends Object 
+  JSON keys / fields:
+    - idOrderDetail
+    - orderDetail
+    - product
+
+################################################################
+## [bulevar] order_model.dart
+  CLASS: class :: 
+  CLASS: class OrderModel extends Order 
+  CLASS: class OrderList<X0 bound OrderModel> extends Object 
+  JSON keys / fields:
+    - address
+    - beneficiary
+    - code
+    - createdAt
+    - credential
+    - driver
+    - id
+    - idOrder
+    - idOrderDetail
+    - idProduct
+    - mark
+    - merchantUrl
+    - model
+    - name
+    - orderDetails
+    - orders
+    - pin
+    - price
+    - product
+    - qrCode
+    - status
+    - updatedAt
+    - userName
+
+################################################################
+## [bulevar] product_model.dart
+  CLASS: class :: 
+  CLASS: class ProductModel extends Product 
+  JSON keys / fields:
+    - code
+    - idOrder
+    - idOrderService
+    - idProduct
+    - images
+    - mark
+    - model
+    - name
+    - price
+    - productName
+    - productQuantity
+    - salePrice
+    - warrantyTime
+
+################################################################
+## [card] activation_method.dart
+  CLASS: class :: 
+  JSON keys / fields:
+    - ActivationMethod.
+
+################################################################
+## [card] balance_model.dart
+  CLASS: class :: 
+  CLASS: class BalanceModel extends Balance 
+  JSON keys / fields:
+    - balance
+    - balance_available
+    - bank_account
+    - currency
+    - operation
+    - status_code
+    - status_denom
+    - transaction_signature
+
+################################################################
+## [card] bank_model.dart
+  CLASS: class :: 
+  CLASS: class BankList<X0 bound BankModel> extends Object 
+  CLASS: class BankModel extends Bank 
+  JSON keys / fields:
+    - banks
+    - certificate
+    - code
+    - name
+
+################################################################
+## [card] card_model.dart
+  CLASS: class :: 
+  CLASS: class CardList<X0 bound CardModel> extends Object 
+  CLASS: class CardModel extends Card 
+  CLASS: class AddCardModel extends AddCard 
+  JSON keys / fields:
+    - bank_certificate
+    - bank_code
+    - bank_name
+    - bankCertificate
+    - bankCode
+    - bankName
+    - bin
+    - cadenaEncript
+    - card
+    - card_uuid
+    - cardholder
+    - cardUuid
+    - created_at
+    - createdAt
+    - currency
+    - deleted
+    - expdate
+    - funding_source_id
+    - funding_source_uuid
+    - fundingSourceId
+    - fundingSourceUuid
+    - last4
+    - pan
+    - primary_source
+    - primarySource
+    - status
+    - updated_at
+    - updatedAt
+    - userName
+    - verified
+
+################################################################
+## [card] cordenate_model.dart
+  CLASS: class :: 
+  CLASS: class CordenateModel extends Cordenate 
+  JSON keys / fields:
+    - C1
+    - C2
+    - P1
+    - P2
+
+################################################################
+## [card] operation_model.dart
+  CLASS: class :: 
+  CLASS: class OperationList<X0 bound OperationModel> extends Object 
+  CLASS: class OperationModel extends Operation 
+  CLASS: class EnumValues<X0> extends Object 
+  JSON keys / fields:
+    - action
+    - alias
+    - amount
+    - Attempt to execute code removed by Dart AOT compiler (TFA)
+    - avatar
+    - channel
+    - codigo
+    - DB
+    - description
+    - operation
+    - operation_date
+    - operationDate
+
+################################################################
+## [common] bank_debit_detail_model.dart
+  CLASS: class :: 
+  CLASS: class BankDebitDetailModel extends BankDebitDetail 
+  JSON keys / fields:
+    - ,
+    - :
+    - {
+    - }
+    - \'
+    - debited
+    - discount
+    - discounted
+    - redsa
+    - tipoCambio
+
+################################################################
+## [common] claim_model.dart
+  CLASS: class :: 
+  CLASS: class ClaimCaseModel extends ClaimCase 
+  CLASS: class ClaimModel extends Claim 
+  JSON keys / fields:
+    - case
+    - caseId
+    - caseNumber
+    - casePin
+    - claim_status_code
+    - claimStatusCode
+    - fecha
+    - message
+    - status_code
+    - statusCode
+    - timestamp
+
+################################################################
+## [common] client_service_model.dart
+  CLASS: class :: 
+  CLASS: class ClientServiceList<X0 bound ClientServiceModel> extends Object 
+  CLASS: class ClientServiceModel extends ClientService 
+  JSON keys / fields:
+    - automatic
+    - client_id
+    - created_at
+    - delete
+    - denom
+    - funding_source_uuid
+    - merchant_alias
+    - metadata
+    - owner
+    - service_uuid
+    - type
+    - updated_at
+    - uuid
+
+################################################################
+## [common] info_apk_model.dart
+  CLASS: class :: 
+  CLASS: class InfoApkModel extends InfoApk 
+  JSON keys / fields:
+    - beta
+    - changelog
+    - description
+    - downloadCount
+    - icon
+    - in_payed
+    - name
+    - package_name
+    - price
+    - public
+    - saleCount
+    - sha256
+    - size
+    - type
+    - version
+    - version_sdk
+    - version_target_sdk
+    - withDb
+
+################################################################
+## [common] payed_bill_model.dart
+  CLASS: class :: 
+  CLASS: class PayedBillModel extends PayedBill 
+  JSON keys / fields:
+    - 0.00
+    - amount
+    - bank_debit_detail
+    - bankDebitDetail
+    - client_id
+    - created_at
+    - createdAt
+    - currency
+    - currency_iso
+    - description
+    - getPaymentPasswordIntent
+    - invoice_number
+    - invoiceNumber
+    - leaf
+    - passwordIntent
+    - period
+    - root_transaction_id
+    - status
+    - status_code
+    - statusCode
+    - transaction_code
+    - transaction_denom
+    - transaction_signature
+    - transactionDenom
+    - transactionSignature
+    - updated_at
+    - uuid
+    - uUid
+
+################################################################
+## [common] qrcode_model.dart
+  CLASS: class :: 
+  CLASS: class EzQrRecieveCodeModel extends EzQrRecieveCode 
+  JSON keys / fields:
+    - amount
+    - avatar
+    - cheekCount
+    - currency
+    - description
+    - information
+    - name
+    - require_password
+    - username
+    - vendor_identity_code
+    - verified
+
+################################################################
+## [etecsa] etecsa_model.dart
+  CLASS: class :: 
+  CLASS: class EtecsaModel extends Etecsa 
+  CLASS: class Datum extends Object 
+  CLASS: class Datalist extends Object 
+  JSON keys / fields:
+    - account_state_eid
+    - address
+    - category_code
+    - comi
+    - cons
+    - contract_eid
+    - conversion_rate
+    - currency
+    - current_debt
+    - current_unpaid_debt
+    - data
+    - datalist
+    - discount
+    - emitted_date
+    - enzona_code
+    - error_msg
+    - expire_date
+    - fcuo
+    - imps
+    - invoice_eid
+    - is_valid
+    - maximum_amount
+    - minimum_amount
+    - monthly_invoiced
+    - name
+    - number
+    - partner_name
+    - real_import
+    - resultmsg
+    - service_name
+    - service_type
+    - store_code
+    - store_name
+    - success
+    - to_pay
+    - unpaid_debt
+    - year_month
+
+################################################################
+## [etecsa] invoice_charged_model.dart
+  CLASS: class :: 
+  CLASS: class InvoiceChargedModel extends InvoiceCharged 
+  JSON keys / fields:
+    - amount
+    - bank_debit_detail
+    - barcode
+    - client_id
+    - created_at
+    - currency
+    - description
+    - discount
+    - funding_source_id
+    - getPaymentPasswordIntent
+    - invoice_number
+    - leaf
+    - period
+    - root_transaction_id
+    - status
+    - status_code
+    - transaction_code
+    - transaction_denom
+    - transaction_signature
+    - updated_at
+    - uuid
+
+################################################################
+## [etecsa] invoice_model.dart
+  CLASS: class :: 
+  CLASS: class InvoiceModel extends Invoice 
+  CLASS: class InvoiceList<X0 bound InvoiceModel> extends Object 
+  JSON keys / fields:
+    - amount
+    - bank_code
+    - bank_debit_detail
+    - branch
+    - client_id
+    - currency
+    - discount
+    - funding_source_uuid
+    - invoice
+    - invoice_ez
+    - invoices
+    - last4
+    - merchant_alias
+    - merchant_avatar
+    - metadata
+    - owner
+    - payment_service_id
+    - period
+    - privuse2
+    - rc04
+    - total_amount
+    - transaction_code
+    - transaction_created_at
+    - transaction_denom
+    - transaction_description
+    - transaction_id
+    - transaction_signature
+    - transaction_status
+    - transaction_status_code
+    - transaction_uuid
+    - username
+
+################################################################
+## [friends] account_by_user_name_model.dart
+  CLASS: class :: 
+  CLASS: class AccountByUserNameModel extends AccountByUserName 
+  CLASS: class AccountByUserNameList<X0 bound AccountByUserNameModel> extends Object 
+  JSON keys / fields:
+    - account
+    - avatar
+    - contact
+    - name
+    - userName
+    - uuid
+
+################################################################
+## [friends] friends_model.dart
+  CLASS: class :: 
+  CLASS: class RequestFriendModel extends RequestFriend 
+  CLASS: class FriendModel extends Friend 
+  CLASS: class FriendList<X0 bound FriendModel> extends Object 
+  JSON keys / fields:
+    - account_uuid
+    - accountUuid
+    - avatar
+    - contact
+    - contact_uuid
+    - contacts
+    - contactUuid
+    - created_at
+    - createdAt
+    - deleted
+    - email
+    - name
+    - phone
+    - primaryCurrency
+    - receivedRequest
+    - sendingRequest
+    - username
+    - uuid
+
+################################################################
+## [home] ez_items_model.dart
+  CLASS: class :: 
+  CLASS: class EzItemModel extends EzItem 
+  JSON keys / fields:
+    - image
+    - module_name
+    - name
+
+################################################################
+## [notification_service] notification_model.dart
+  CLASS: class :: 
+  CLASS: class NotificationModel extends NotificationEntity 
+  JSON keys / fields:
+    - active
+    - idNtfy
+    - message
+    - Notificación
+    - unknown
+
+################################################################
+## [scanear] atm_info_model.dart
+  CLASS: class :: 
+  CLASS: class AtmInfoModel extends AtmInfo 
+  JSON keys / fields:
+    - code
+    - description
+    - status
+    - title
+
+################################################################
+## [scanear] qr_fincimex.dart
+  CLASS: class :: 
+  CLASS: class QrFincimex extends Object 
+  JSON keys / fields:
+    - id_transaccion
+    - importe
+    - moneda
+    - proveedor
+    - retrenum
+
+################################################################
+## [scanear] qrcode_model.dart
+  CLASS: class :: 
+  CLASS: class QrCodeModel extends QrCode 
+  CLASS: class Transaction extends Object 
+  CLASS: class Owner extends Object 
+  CLASS: class Employed extends Object 
+  JSON keys / fields:
+    - address
+    - amount
+    - aName
+    - avatar
+    - currency
+    - denom_province
+    - denom_zone
+    - description
+    - email
+    - employeds
+    - expirationDate
+    - id_province
+    - id_zone
+    - information
+    - lastname
+    - latitude
+    - longitude
+    - merchant_alias
+    - merchant_avatar
+    - merchant_name
+    - merchant_uuid
+    - merchantAvatar
+    - merchantName
+    - merchantUuid
+    - name
+    - owners
+    - phone
+    - qr_code
+    - qrCode
+    - require_password
+    - role
+    - total
+    - transaction_created_at
+    - transaction_signature
+    - transaction_status
+    - transaction_status_code
+    - transaction_updated_at
+    - transaction_uuid
+    - transactions
+    - username
+    - userName
+    - uuexpirationDateid
+    - uuid
+    - vendor_identity_code
+    - verified
+
+################################################################
+## [security] profile_model.dart
+  CLASS: class :: 
+  CLASS: class ProfileModel extends Profile 
+  JSON keys / fields:
+    - -
+    - 0
+    - address
+    - amr
+    - at_hash
+    - atHash
+    - aud
+    - azp
+    - birthday
+    - c_hash
+    - cHash
+    - email
+    - exp
+    - family_name
+    - familyName
+    - folio
+    - gender
+    - given_name
+    - givenName
+    - iat
+    - identification
+    - iss
+    - nbf
+    - person_verified
+    - personVerified
+    - phone_number
+    - phoneNumber
+    - secondFactor
+    - state
+    - sub
+    - tomo
+    - zone
+
+################################################################
+## [security] token_model.dart
+  CLASS: class :: 
+  CLASS: class TokenModel extends TokenEntity 
+  JSON keys / fields:
+    - access_token
+    - expires_in
+    - id_token
+    - refresh_token
+    - scope
+    - token_type
+
+################################################################
+## [social_organizations] cuota_pcc_model.dart
+  CLASS: class :: 
+  CLASS: class CuotaPccModel extends CuotaPcc 
+  JSON keys / fields:
+    - ci
+    - cuota
+    - descriptionError
+    - proveedor
+    - quota
+    - sicomOrderId
+
+################################################################
+## [social_organizations] militant_pcc_model.dart
+  CLASS: class :: 
+  CLASS: class MilitantPccModel extends MilitantPcc 
+  JSON keys / fields:
+    - descriptionError
+    - errorCode
+    - merchant_uuid
+    - quota
+
+################################################################
+## [social_organizations] oc_user_model.dart
+  CLASS: class :: 
+  CLASS: class SoUserModel extends SoUser 
+  JSON keys / fields:
+    - budgets
+    - ci
+    - fullName
+    - name
+    - status
+    - userId
+
+################################################################
+## [social_organizations] pcc_payment_model.dart
+  CLASS: class :: 
+  CLASS: class PccPaymentModel extends PccPayment 
+  JSON keys / fields:
+    - amount
+    - created_at
+    - lastName
+    - merchant_alias
+    - merchant_avatar
+    - merchant_code
+    - merchant_name
+    - merchant_uuid
+    - name
+    - pan
+    - transaction_signature
+    - transaction_uuid
+    - transactionCode
+    - transactionStatus
+    - updated_at
+    - userName
+
+################################################################
+## [social_organizations] price_model.dart
+  CLASS: class :: 
+  CLASS: class PriceList<X0 bound PriceModel> extends Object 
+  CLASS: class PriceModel extends Price 
+  JSON keys / fields:
+    - amount
+    - APPROVED_STATUS_PAYMENT_TYPE
+    - budget
+    - budgetId
+    - month
+    - PENDING_STATUS_PAYMENT_TYPE
+    - priceId
+    - priceStatus
+    - status
+    - year
+
+################################################################
+## [social_organizations] uic_payment_model.dart
+  CLASS: class :: 
+  CLASS: class UicPaymentModel extends UicPayment 
+  JSON keys / fields:
+    - amount
+    - created_at
+    - last_name
+    - lastName
+    - merchant_alias
+    - merchant_avatar
+    - merchant_code
+    - merchant_currency_iso
+    - merchant_email
+    - merchant_name
+    - merchant_phone
+    - merchant_uuid
+    - name
+    - pan
+    - transaction_code
+    - transaction_signature
+    - transaction_status
+    - transaction_uuid
+    - transactionCode
+    - transactionStatus
+    - updated_at
+    - user_name
+    - userName
+
+################################################################
+## [tax_service] bank_branch_model.dart
+  CLASS: class :: 
+  CLASS: class BankBranchModel extends BankBranch 
+  CLASS: class BankBranchList<X0 bound BankBranchModel> extends Object 
+  JSON keys / fields:
+    - bank
+    - branch
+    - branch_id
+    - code
+    - dpa
+    - name
+
+################################################################
+## [tax_service] municipality_model.dart
+  CLASS: class :: 
+  CLASS: class MunicipalityModel extends Municipality 
+  CLASS: class MunicipalityList<X0 bound MunicipalityModel> extends Object 
+  JSON keys / fields:
+    - codDpa
+    - municipe
+
+################################################################
+## [tax_service] province_model.dart
+  CLASS: class :: 
+  CLASS: class ProvinceModel extends Province 
+  CLASS: class ProvinceList<X0 bound ProvinceModel> extends Object 
+  JSON keys / fields:
+    - code
+    - name
+    - Province
+    - provinceId
+
+################################################################
+## [tax_service] tax_account_model.dart
+  CLASS: class :: 
+  CLASS: class TaxAccountModel extends TaxAccount 
+  CLASS: class TaxAccountList<X0 bound TaxAccountModel> extends Object 
+  JSON keys / fields:
+    - accountNumber
+    - bankCode
+    - branch
+    - cardNumber
+    - createdAt
+    - Data
+    - description
+    - dpa
+    - nit
+    - status
+    - updatedAt
+    - userName
+    - uuid
+
+################################################################
+## [tax_service] tax_activity_model.dart
+  CLASS: class :: 
+  CLASS: class TaxActivityModel extends TaxActivity 
+  CLASS: class TaxActivityList<X0 bound TaxActivityModel> extends Object 
+  JSON keys / fields:
+    - actividades
+    - Actividades
+    - codigo
+    - figura
+    - nombre
+    - obligado_CBF
+
+################################################################
+## [tax_service] tax_charged_model.dart
+  CLASS: class :: 
+  CLASS: class TaxChargedModel extends TaxCharged 
+  JSON keys / fields:
+    - 0.00
+    - amount
+    - bank_code
+    - bankCode
+    - bankDebitDetail
+    - branch
+    - createdAt
+    - currency
+    - discounted
+    - epayment
+    - funding_source_uuid
+    - fundingSourceUuid
+    - getPaymentPasswordIntent
+    - invoice_number
+    - invoiceNumber
+    - last4
+    - merchant_alias
+    - merchant_avatar
+    - merchantAlias
+    - owner
+    - passwordIntent
+    - pay_soon
+    - period
+    - privuse2
+    - rc04
+    - status
+    - status_code
+    - statusCode
+    - total_amount
+    - totalAmount
+    - transaction_code
+    - transaction_created_at
+    - transaction_denom
+    - transaction_description
+    - transaction_id
+    - transaction_signature
+    - transactionSignature
+    - username
+    - uuid
+
+################################################################
+## [tax_service] tax_general_info_model.dart
+  CLASS: class :: 
+  CLASS: class TaxGeneralInfoModel extends TaxGeneralInfo 
+  JSON keys / fields:
+    - ci
+    - Desconocida
+    - direccion
+    - dpa
+    - enzona.net
+    - es_contribuyente
+    - nit
+    - nombre_completo
+    - rc05
+    - service_uuid
+    - Sin id de cliente
+
+################################################################
+## [tax_service] tax_historical_model.dart
+  CLASS: class :: 
+  CLASS: class TaxHistoricalList<X0 bound TaxHistoricalModel> extends Object 
+  CLASS: class TaxHistoricalModel extends TaxHistorical 
+  JSON keys / fields:
+    - 0.00
+    - amount
+    - bank_debit_detail
+    - client_id
+    - currency
+    - funding_source_uuid
+    - invoice
+    - merchant_alias
+    - metadata
+    - owner
+    - total_amount
+    - transaction_signature
+    - transaction_status
+
+################################################################
+## [tax_service] tax_model.dart
+  CLASS: class :: 
+  CLASS: class TaxList<X0 bound TaxModel> extends Object 
+  CLASS: class TaxModel extends Tax 
+  JSON keys / fields:
+    - canal_electronico
+    - codigo
+    - dpa
+    - fecha_limite_obligacion
+    - fecha_pago
+    - monto
+    - nit
+    - pagado
+    - periodo
+    - pronto_pago
+    - rc04
+    - tributos
+    - val_pago
+
+################################################################
+## [tax_service] tax_payer_model.dart
+  CLASS: class :: 
+  CLASS: class TaxPayerModelList<X0 bound TaxPayerModel> extends Object 
+  CLASS: class TaxPayerModel extends TaxPayer 
+  JSON keys / fields:
+    - ci
+    - cod
+    - code
+    - Contribuyente
+    - dpa
+    - generales
+    - message
+    - municipio
+    - nit
+    - nombre_completo
+    - rc05
+    - taxPayer
+    - tributos
+
+################################################################
+## [transaction] recipient_model.dart
+  CLASS: class :: 
+  CLASS: class RecipientModel extends Recipient 
+  JSON keys / fields:
+    - donation_title
+    - donationTitle
+    - funding_recipient_avatar
+    - funding_recipient_bank
+    - funding_recipient_last4
+    - funding_recipient_lastname
+    - funding_recipient_name
+    - funding_recipient_username
+    - funding_recipient_verified
+    - fundingRecipientAvatar
+    - fundingRecipientBank
+    - fundingRecipientLast4
+    - fundingRecipientLastName
+    - fundingRecipientName
+    - fundingRecipientUsername
+    - fundingRecipientVerified
+    - merchant_alias
+    - merchant_avatar
+    - merchantAlias
+    - merchantAvatar
+    - pan
+
+################################################################
+## [transaction] source_model.dart
+  CLASS: class :: 
+  CLASS: class SourceModel extends Source 
+  JSON keys / fields:
+    - foundignSourceBank
+    - foundingSourceLast4
+    - funding_source_amount
+    - funding_source_avatar
+    - funding_source_bank
+    - funding_source_last4
+    - funding_source_lastname
+    - funding_source_name
+    - funding_source_username
+    - funding_source_verified
+    - fundingSourceAmount
+    - fundingSourceAvatar
+    - fundingSourceLastname
+    - fundingSourceName
+    - fundingSourceUserName
+    - fundingSourceVerified
+    - merchant_alias
+    - merchant_avatar
+    - merchantAlias
+    - pan
+
+################################################################
+## [transaction] transaction_model.dart
+  CLASS: class :: 
+  CLASS: class TransactionModel extends Transaction 
+  CLASS: class TransactionList extends Object 
+  CLASS: class PaginationModel extends Pagination 
+  JSON keys / fields:
+    - : \
+    - :\\s*([a-zA-Z_][a-zA-Z0-9_]*)
+    - :\\s*(0\\d+)
+    - {
+    - \
+    - 0.00
+    - amount
+    - bank_debit_detail
+    - barcode
+    - client_id
+    - currency
+    - donation_title
+    - false
+    - first
+    - invoice
+    - invoice_number
+    - last
+    - merchant_alias
+    - merchant_avatar
+    - merchant_name
+    - metadata
+    - next
+    - owner
+    - pagination
+    - period
+    - prev
+    - recipient
+    - source
+    - status_code
+    - status_denom
+    - total
+    - total_amount
+    - transaction
+    - transaction_code
+    - transaction_created_at
+    - transaction_denom
+    - transaction_description
+    - transaction_signature
+    - transaction_status
+    - transaction_status_code
+    - transaction_uuid
+
+################################################################
+## [transfer] payment_fincimex_model.dart
+  CLASS: class :: 
+  CLASS: class PaymentModelFincimex extends PaymentFincimex 
+  JSON keys / fields:
+    - amount
+    - Attempt to execute code removed by Dart AOT compiler (TFA)
+    - aut
+    - currency
+    - description
+    - idTransaction
+    - merchant_id
+    - merchant_name
+    - numOperation
+    - phone
+    - reference
+    - status
+
+################################################################
+## [transfer] transfer_model.dart
+  CLASS: class :: 
+  CLASS: class TransferModel extends Transfer 
+  CLASS: class TransferList<X0 bound TransferModel> extends Object 
+  CLASS: class Source extends Object 
+  CLASS: class Recipient extends Object 
+  JSON keys / fields:
+    - amount
+    - avatar
+    - avatars
+    - bank
+    - bank_debit_detail
+    - bankDebitDetail
+    - barcode
+    - cardFundingSourceUuid
+    - created_at
+    - createdAt
+    - currency
+    - currency_recipient_denom
+    - description
+    - discount
+    - fingerprint
+    - funding_recipient_uuid
+    - funding_source_amount
+    - funding_source_uuid
+    - id_transfer
+    - idTransfer
+    - last4
+    - lastname
+    - merchant_uuid
+    - merchantUuid
+    - name
+    - pan
+    - payment_password
+    - paymentPassword
+    - phone
+    - recipient
+    - recipient_username
+    - recipientUsername
+    - source
+    - status
+    - status_code
+    - status_denom
+    - statusCode
+    - statusDenom
+    - tipo_cambio
+    - tipoCambio
+    - totalAmount
+    - transaction_code
+    - transaction_signature
+    - transaction_uuid
+    - transactionCode
+    - transactionUuid
+    - transfer
+    - transfers
+    - transferUUID
+    - updated_at
+    - username
+    - uuid
+    - verified
+

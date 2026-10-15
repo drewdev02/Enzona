@@ -20,3 +20,11 @@ node_modules/
 
 # Python (herramientas en tools/)
 __pycache__/
+
+# Ingeniería inversa: nunca se versionan el APK original (app de terceros) ni la salida de Blutter (~320 MB).
+# Ver docs/reverse-engineering/README.md.
+*.apk
+*.xapk
+*.aab
+**/blutter*/
+**/blutter-out/

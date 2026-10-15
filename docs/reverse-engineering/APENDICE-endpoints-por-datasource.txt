@@ -1,0 +1,305 @@
+==================================================================
+MODULE: account   (./app/modules/account/data/datasources/account_local_datasource.dart)
+-- endpoints / paths --
+-- probable body/query keys (snake & short camel) --
+
+
+==================================================================
+MODULE: account   (./app/modules/account/data/datasources/account_remote_datasource.dart)
+-- endpoints / paths --
+/account/v1.0.0/account/authentication
+/account/v1.0.0/account/phone/code/number
+/account/v1.0.0/account/phone/verified
+/account/v1.0.0/account/TOTP/validate\?
+/account/v1.0.0/account/verify
+/account/v1.0.0/account\?username=
+/coremz/1.0.2/api/account/sendCode\?token=
+/coremz/1.0.2/api/account/updateAnyToUser
+/recipent/1.0.1/recipient/allByUserName\?
+/recipent/1.0.1/recipient/remove
+https://api.enzona.net
+https://api.enzona.net/account/v1.0.0/account
+https://api.enzona.net/account/v1.0.0/account/authentication
+https://api.enzona.net/account/v1.0.0/account/password
+https://api.enzona.net/account/v1.0.0/account/paymentpassword/reset
+https://api.enzona.net/account/v1.0.0/account/phone/code/number
+https://api.enzona.net/account/v1.0.0/account/phone/verified
+https://api.enzona.net/account/v1.0.0/account/TOTP/disable
+https://api.enzona.net/account/v1.0.0/account/TOTP/init
+https://api.enzona.net/account/v1.0.0/account/verify
+https://api.enzona.net/coremz/1.0.2/api/account/updateAnyToUser
+https://api.enzona.net/coremz/1.0.2/help/contacts
+https://api.enzona.net/recipent/1.0.1/recipient/add
+https://api.enzona.net/recipent/1.0.1/recipient/setRecipient
+-- probable body/query keys (snake & short camel) --
+socialNetworks statusCode statusCodeValue 
+
+==================================================================
+MODULE: bank_account   (./app/modules/bank_account/data/datasources/fiscal_account_remote_datasource.dart)
+-- endpoints / paths --
+/coremz/1.0.2/fiscal_account
+/coremz/1.0.2/fiscal_account/all/
+/coremz/1.0.2/fiscal_account/allProvince
+/coremz/1.0.2/fiscal_account/branch\?code_dpa=
+/coremz/1.0.2/fiscal_account/consult_status\?uuid=
+/coremz/1.0.2/fiscal_account/is_contribuyente\?account_uuid=
+/coremz/1.0.2/fiscal_account/municipe\?province_code=
+https://api.enzona.net
+-- probable body/query keys (snake & short camel) --
+code_dpa province_code 
+
+==================================================================
+MODULE: bulevar   (./app/modules/bulevar/data/datasources/bulevard_local_datasource.dart)
+-- endpoints / paths --
+-- probable body/query keys (snake & short camel) --
+
+
+==================================================================
+MODULE: bulevar   (./app/modules/bulevar/data/datasources/bulevard_remote_datasource.dart)
+-- endpoints / paths --
+/order/1.0/order/getByUserName\?
+https://api.enzona.net/bulevar/1.0/tiendas/allTiendas
+-- probable body/query keys (snake & short camel) --
+
+
+==================================================================
+MODULE: common   (./app/modules/common/data/datasources/claim_remote_datasource.dart)
+-- endpoints / paths --
+/claim/v1.0.0/createClaims
+/oauth/token
+https://api.enzona.net
+-- probable body/query keys (snake & short camel) --
+access_token claim_data refresh_token V_motivo 
+
+==================================================================
+MODULE: common   (./app/modules/common/data/datasources/rating_remote_datasource.dart)
+-- endpoints / paths --
+/coremz/1.0.2/api/merchants/reviews/
+https://api.enzona.net
+-- probable body/query keys (snake & short camel) --
+merchantUuid 
+
+==================================================================
+MODULE: common   (./app/modules/common/data/datasources/update_apk_remote_datasource.dart)
+-- endpoints / paths --
+/coremz/1.0.2/utils/check-updates
+https://api.apklis.cu/
+https://api.enzona.net
+-- probable body/query keys (snake & short camel) --
+package_name 
+
+==================================================================
+MODULE: cuban_email   (./app/modules/cuban_email/data/datasource/cuban_email_remote_datasource.dart)
+-- endpoints / paths --
+/cubanemail/v1.0.0/cubanemail/amount/
+/cubanemail/v1.0.0/cubanemail/ci/
+/cubanemail/v1.0.0/cubanemail/reason
+/delete
+/invoice/v1.0.0/client-id
+/invoice/v1.0.0/client-id/search\?
+/invoice/v1.0.0/invoice/
+/invoice/v1.0.0/invoice/payment
+/invoice/v1.0.0/invoice\?
+https://api.enzona.net
+https://api.enzona.net/invoice/v1.0.0/client-id
+-- probable body/query keys (snake & short camel) --
+charged_invoice client_id getPaymentPasswordIntent importe_a_debitar 
+
+==================================================================
+MODULE: donation   (./app/modules/donation/data/datasource/donation_remote_datasource.dart)
+-- endpoints / paths --
+/donation/v1.0.0/donations
+https://api.enzona.net
+-- probable body/query keys (snake & short camel) --
+
+
+==================================================================
+MODULE: electricity_service   (./app/modules/electricity_service/data/datasources/electric_bill_datasource.dart)
+-- endpoints / paths --
+/delete
+/invoice/v1.0.0/client-id
+/invoice/v1.0.0/client-id/search\?
+/invoice/v1.0.0/invoice/
+/invoice/v1.0.0/invoice/payment
+/invoice/v1.0.0/invoice/search\?
+/invoice/v1.0.0/invoice\?
+https://api.enzona.net
+-- probable body/query keys (snake & short camel) --
+charged_invoice client_id getPaymentPasswordIntent 
+
+==================================================================
+MODULE: etecsa   (./app/modules/etecsa/data/datasources/etecsa_local_datasource.dart)
+-- endpoints / paths --
+-- probable body/query keys (snake & short camel) --
+
+
+==================================================================
+MODULE: etecsa   (./app/modules/etecsa/data/datasources/etecsa_remote_datasource.dart)
+-- endpoints / paths --
+/delete
+/invoice/v1.0.0/client-id/search\?
+/invoice/v1.0.0/invoice/
+/invoice/v1.0.0/invoice/search\?
+/invoice/v1.0.0/invoice\?
+https://api.enzona.net/invoice/v1.0.0/client-id
+https://api.enzona.net/invoice/v1.0.0/invoice/payment
+-- probable body/query keys (snake & short camel) --
+charged_invoice client_id serviceUuid 
+
+==================================================================
+MODULE: friends   (./app/modules/friends/data/datasources/friends_local_datasource.dart)
+-- endpoints / paths --
+-- probable body/query keys (snake & short camel) --
+
+
+==================================================================
+MODULE: friends   (./app/modules/friends/data/datasources/friends_remote_datasource.dart)
+-- endpoints / paths --
+/contact/1.0/api/account/all-contact-request/
+/contact/1.0/api/account/contacts/
+/contact/1.0/api/account/user-name\?
+https://api.enzona.net/contact/1.0/api/account/contact-add
+https://api.enzona.net/contact/1.0/api/account/contact-remove-request
+-- probable body/query keys (snake & short camel) --
+receivedRequest sendingRequest 
+
+==================================================================
+MODULE: gas_service   (./app/modules/gas_service/data/datasource/gas_datasource.dart)
+-- endpoints / paths --
+/delete
+/invoice/v1.0.0/client-id
+/invoice/v1.0.0/client-id/search\?
+/invoice/v1.0.0/invoice/
+/invoice/v1.0.0/invoice/payment
+/invoice/v1.0.0/invoice/search\?
+/invoice/v1.0.0/invoice\?
+https://api.enzona.net
+-- probable body/query keys (snake & short camel) --
+charged_invoice client_id debtResponse getPaymentPasswordIntent service_code 
+
+==================================================================
+MODULE: gift   (./app/modules/gift/data/datasource/remote_gift_datasource.dart)
+-- endpoints / paths --
+/category
+/contact/1.0/api/account/contacts/
+/giftapi/v1.0.0/gift
+/giftapi/v1.0.0/gift/
+/giftapi/v1.0.0/gift/category
+https://api.enzona.net
+-- probable body/query keys (snake & short camel) --
+card_gift 
+
+==================================================================
+MODULE: home   (./app/modules/home/data/datasources/remote_home_datasource.dart)
+-- endpoints / paths --
+https://api.enzona.net/qr/v1.0.0/qr/account
+-- probable body/query keys (snake & short camel) --
+merchant_uuid qr_code vendor_identity_code 
+
+==================================================================
+MODULE: notification_service   (./app/modules/notification_service/data/datasources/remote_notification_datasource.dart)
+-- endpoints / paths --
+/nyfy/1.0/ntfy/delete/
+/nyfy/1.0/ntfy/list/
+/nyfy/1.0/ntfy/set-active/
+/oauth/token
+https://api.enzona.net
+-- probable body/query keys (snake & short camel) --
+access_token refresh_token 
+
+==================================================================
+MODULE: notification_service   (./app/modules/notification_service/data/datasources/websocket_notification_datasource.dart)
+-- endpoints / paths --
+-- probable body/query keys (snake & short camel) --
+
+
+==================================================================
+MODULE: scanear   (./app/modules/scanear/data/datasources/scanear_local_datasource.dart)
+-- endpoints / paths --
+-- probable body/query keys (snake & short camel) --
+
+
+==================================================================
+MODULE: scanear   (./app/modules/scanear/data/datasources/scanear_remote_datasource.dart)
+-- endpoints / paths --
+/payment/v1.0.0/payments/vendor/code
+/qr/v1.0.0/qr/
+https://api.enzona.net
+https://service-core.enzona.net/atm
+-- probable body/query keys (snake & short camel) --
+cash_advance merchant_uuid qr_code vendor_identity_code 
+
+==================================================================
+MODULE: security   (./app/modules/security/data/datasources/security_local_datasource.dart)
+-- endpoints / paths --
+-- probable body/query keys (snake & short camel) --
+authCode codeChallenge codeVerifier expTime 
+
+==================================================================
+MODULE: security   (./app/modules/security/data/datasources/security_remote_datasource.dart)
+-- endpoints / paths --
+/oauth2/token
+https://identity.enzona.net
+-- probable body/query keys (snake & short camel) --
+error_description 
+
+==================================================================
+MODULE: social_organizations   (./app/modules/social_organizations/data/source/so_remote_datasource_impl.dart)
+-- endpoints / paths --
+/coremz/1.0.2/api/cotizacion/createPayment
+/coremz/1.0.2/api/cotizacion/validateMilitant
+/coremz/1.0.2/uidc/info
+/coremz/1.0.2/uidc/payment
+https://api.enzona.net
+-- probable body/query keys (snake & short camel) --
+errorCode paymentUICResponseDTO transaction_uuid 
+
+==================================================================
+MODULE: tax_service   (./app/modules/tax_service/data/datasources/tax_datasource.dart)
+-- endpoints / paths --
+/core/1.0/fiscal_account/allProvince
+/delete
+/invoice/v1.0.0/client-id
+/invoice/v1.0.0/invoice/
+/invoice/v1.0.0/invoice\?
+/onat/v1.0.0/tax
+/onat/v1.0.0/tax-payer\?
+https://api.enzona.net
+-- probable body/query keys (snake & short camel) --
+client_id taxPayer 
+
+==================================================================
+MODULE: transaction   (./app/modules/transaction/data/datasources/transaction_datasource.dart)
+-- endpoints / paths --
+/operations/v1.0.0/operations/account\?
+https://api.enzona.net
+-- probable body/query keys (snake & short camel) --
+start_date_filter 
+
+==================================================================
+MODULE: transaction   (./app/modules/transaction/data/datasources/transaction_remote_datasource.dart)
+-- endpoints / paths --
+/oauth/token
+/operations/v1.0.0/operations/account\?
+https://api.enzona.net
+-- probable body/query keys (snake & short camel) --
+access_token refresh_token 
+
+==================================================================
+MODULE: transfer   (./app/modules/transfer/data/datasources/transfer_local_datasource.dart)
+-- endpoints / paths --
+-- probable body/query keys (snake & short camel) --
+
+
+==================================================================
+MODULE: transfer   (./app/modules/transfer/data/datasources/transfer_remote_datasource.dart)
+-- endpoints / paths --
+/transfer/v1.0.0/transfer\?
+https://api.enzona.net/coremz/1.0.2/qr/postFincimex
+https://api.enzona.net/coremz/1.0.2/transfer/fincimex
+https://api.enzona.net/payment/v1.0.0/payments/vendor/code
+https://api.enzona.net/transfer/v1.0.0/transfer/account
+https://api.enzona.net/transfer/v1.0.0/transfer/card
+-- probable body/query keys (snake & short camel) --
+createAt created_at panRecipient status_code status_denom statusCode statusDenom transaction_signature transactionSignature 
+
