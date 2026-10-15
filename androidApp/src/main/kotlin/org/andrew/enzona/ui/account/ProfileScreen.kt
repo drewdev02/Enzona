@@ -35,25 +35,38 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ProfileScreen(onLogout: () -> Unit, vm: AccountViewModel = koinViewModel()) {
     LaunchedEffect(Unit) { vm.load() }
     val state by vm.state.collectAsStateWithLifecycle()
-    ProfileContentScreen(state, onRetry = vm::load, onLogout = onLogout)
+    // La sección de depuración la inyecta la ruta (que ya usa Koin): las previews quedan puras.
+    ProfileContentScreen(
+        state, onRetry = vm::load, onLogout = onLogout,
+        debugSection = { DebugTokenSection() },
+    )
 }
 
 /** Sin ViewModel: se puede previsualizar. */
 @Composable
-fun ProfileContentScreen(state: AccountUiState, onRetry: () -> Unit, onLogout: () -> Unit) {
+fun ProfileContentScreen(
+    state: AccountUiState,
+    onRetry: () -> Unit,
+    onLogout: () -> Unit,
+    debugSection: (@Composable () -> Unit)? = null,
+) {
     Scaffold(topBar = { EzTopAppBar("Mi perfil") }) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             when (state) {
                 is AccountUiState.Loading -> EzLoadingState()
                 is AccountUiState.Error -> EzErrorState(state.message, onRetry)
-                is AccountUiState.Content -> ProfileContent(state.account, onLogout)
+                is AccountUiState.Content -> ProfileContent(state.account, onLogout, debugSection)
             }
         }
     }
 }
 
 @Composable
-private fun ProfileContent(account: Account, onLogout: () -> Unit) {
+private fun ProfileContent(
+    account: Account,
+    onLogout: () -> Unit,
+    debugSection: (@Composable () -> Unit)? = null,
+) {
     val spacing = EnzonaTheme.spacing
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         Column(
@@ -83,6 +96,7 @@ private fun ProfileContent(account: Account, onLogout: () -> Unit) {
             Modifier.padding(spacing.xl),
             style = EzButtonStyle.Secondary,
         )
+        debugSection?.invoke()
     }
 }
 
