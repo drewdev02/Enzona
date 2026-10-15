@@ -20,6 +20,16 @@ sealed interface SessionState {
 }
 
 /**
+ * Los tres tokens de la sesión EN CLARO. Existe solo para la herramienta de depuración del
+ * perfil (Android: builds `debuggable`; iOS: `#if DEBUG`); nunca pasan por los logs.
+ */
+data class SessionTokensForDebug(
+    val accessToken: String?,
+    val refreshToken: String?,
+    val idToken: String?,
+)
+
+/**
  * Dueño de la sesión durante toda la vida de la app: tokens, estado y el PKCE del login en curso.
  * Las pantallas (y sus ViewModels) observan [state]; ninguna es dueña de la sesión, así que
  * recrearlas no pierde un login a medias ni deja datos del usuario anterior.
@@ -111,6 +121,16 @@ class SessionRepository(
     }
 
     fun idToken(): String? = tokenStore.idToken()
+
+    /**
+     * Los tres tokens EN CLARO, para el botón de depuración del perfil: la UI los copia al
+     * portapapeles cuando el usuario lo pide. No se registran en ninguna parte.
+     */
+    fun sessionTokensForDebug(): SessionTokensForDebug = SessionTokensForDebug(
+        accessToken = tokenStore.accessToken(),
+        refreshToken = tokenStore.refreshToken(),
+        idToken = tokenStore.idToken(),
+    )
 
     /** Username de la sesión: claim `sub` del id_token (verificado contra el backend real). */
     fun username(): String? = tokenStore.idToken()?.let { JwtClaims.string(it, "sub") }

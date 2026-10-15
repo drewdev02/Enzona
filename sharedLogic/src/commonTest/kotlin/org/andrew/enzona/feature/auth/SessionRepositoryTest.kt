@@ -68,6 +68,22 @@ class SessionRepositoryTest {
     }
 
     @Test
+    fun debugExportReadsTheThreeStoredTokens() {
+        val tokens = repo(store = TokenStore(MemoryTokens()).withSession()).sessionTokensForDebug()
+        assertEquals("at", tokens.accessToken)
+        assertEquals("rt", tokens.refreshToken)
+        assertEquals(ID_TOKEN, tokens.idToken)
+    }
+
+    @Test
+    fun debugExportIsEmptyWithoutASession() {
+        val tokens = repo().sessionTokensForDebug()
+        assertNull(tokens.accessToken)
+        assertNull(tokens.refreshToken)
+        assertNull(tokens.idToken)
+    }
+
+    @Test
     fun loginExchangesTheCodeSavesTokensAndOpensTheSession() = runTest {
         val store = TokenStore(MemoryTokens())
         val r = repo(store = store)
