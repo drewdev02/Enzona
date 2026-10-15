@@ -77,10 +77,13 @@ private fun mapSuccessStatus(httpStatus: Int, body: JsonObject?): TransferOutcom
     val recognizable = operationCode != null || statusText != null || status != TransferStatus.OTHER ||
         body.text("transaction_uuid") != null || body.text("uuid") != null
     if (!recognizable) return TransferOutcome.Unknown(UnknownCause.UNRECOGNIZED_RESPONSE, httpStatus)
+    val createdAtText = body.text("created_at")
     return TransferOutcome.Accepted(
         TransferReceipt(
             operationCode = operationCode, status = status, statusText = statusText,
-            createdAtText = body.text("created_at"),
+            createdAt = parseWallClock(createdAtText), createdAtText = createdAtText,
+            // Lo que el original muestra como QR del comprobante (inferido: el campo `qr` no se ha visto en vivo).
+            signature = body.text("transaction_signature"),
         ),
     )
 }

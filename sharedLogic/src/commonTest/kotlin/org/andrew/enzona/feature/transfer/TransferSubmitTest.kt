@@ -130,12 +130,26 @@ class TransferOutcomeMappingTest {
 
     @Test
     fun anAcceptedTransferCarriesTheReceipt() = runTest {
-        val o = outcome(HttpStatusCode.OK, """{"transaction_code":"EZ-77","status_code":2222,"status_denom":"Aceptada","created_at":"2026-10-14T16:30:00.000-04:00"}""")
+        val o = outcome(
+            HttpStatusCode.OK,
+            """{"transaction_code":"EZ-77","status_code":2222,"status_denom":"Aceptada","created_at":"2026-10-14T16:30:00.000-04:00","transaction_signature":"SIG-1"}""",
+        )
         assertIs<TransferOutcome.Accepted>(o)
         assertEquals("EZ-77", o.receipt.operationCode)
         assertEquals(TransferStatus.ACCEPTED, o.receipt.status)
         assertEquals("Aceptada", o.receipt.statusText)
         assertEquals("2026-10-14T16:30:00.000-04:00", o.receipt.createdAtText)
+        assertEquals(kotlinx.datetime.LocalDateTime(2026, 10, 14, 16, 30, 0), o.receipt.createdAt, "hora de reloj, sin convertir de zona")
+        assertEquals("SIG-1", o.receipt.signature)
+    }
+
+    @Test
+    fun aReceiptWithoutDateOrSignatureKeepsThemEmpty() = runTest {
+        val o = outcome(HttpStatusCode.OK, """{"transaction_code":"EZ-78","status_code":2222,"created_at":false,"transaction_signature":false}""")
+        assertIs<TransferOutcome.Accepted>(o)
+        assertNull(o.receipt.createdAt)
+        assertNull(o.receipt.createdAtText)
+        assertNull(o.receipt.signature, "false no es un texto: no es una firma")
     }
 
     @Test
@@ -245,7 +259,7 @@ class SubmitTransferUseCaseTest {
     }
 
     private val accepted = TransferOutcome.Accepted(
-        org.andrew.enzona.feature.transfer.domain.TransferReceipt("EZ-1", TransferStatus.ACCEPTED, "Aceptada", null),
+        org.andrew.enzona.feature.transfer.domain.TransferReceipt("EZ-1", TransferStatus.ACCEPTED, "Aceptada", null, null, null),
     )
 
     private fun useCase(gateway: TransferGateway, encryptor: PaymentPasswordEncryptor = FakeEncryptor()) =

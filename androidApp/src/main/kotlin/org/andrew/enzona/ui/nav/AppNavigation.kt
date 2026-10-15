@@ -27,6 +27,7 @@ import org.andrew.enzona.ui.ComingSoonScreen
 import org.andrew.enzona.ui.ProfileScreen
 import org.andrew.enzona.ui.dashboard.DashboardRoute
 import org.andrew.enzona.ui.transfer.FindAccountRoute
+import org.andrew.enzona.ui.transfer.OwnCardTransferRoute
 import org.andrew.enzona.ui.transfer.TransferFriendsRoute
 import org.andrew.enzona.ui.transfer.TransferHistoryRoute
 import org.andrew.enzona.ui.transfer.TransferMenuRoute
@@ -46,6 +47,8 @@ import org.andrew.enzona.ui.transfer.TransferOption
 @Serializable data object TransferHistory
 @Serializable data object TransferFindAccount
 @Serializable data object TransferFriends
+/** "A una de mis tarjetas": el primer formulario que mueve dinero. */
+@Serializable data object TransferOwnCard
 
 /** Navegación de la zona autenticada. El paso login <-> app lo decide SessionState, no este grafo. */
 @Composable
@@ -118,14 +121,18 @@ fun AppNavigation(onLogout: () -> Unit) {
                         when (option) {
                             TransferOption.ACCOUNT -> nav.navigate(TransferFindAccount)
                             TransferOption.FRIEND -> nav.navigate(TransferFriends)
-                            // Los formularios que mueven dinero llegan en su hito.
-                            TransferOption.CARD, TransferOption.OWN_CARD ->
+                            TransferOption.OWN_CARD -> nav.navigate(TransferOwnCard)
+                            // Los demás formularios que mueven dinero llegan en su hito.
+                            TransferOption.CARD ->
                                 showMessage("${option.label} estará disponible próximamente.")
                         }
                     },
                 )
             }
             composable<TransferHistory> { TransferHistoryRoute(onBack = { nav.popBackStack() }) }
+            composable<TransferOwnCard> {
+                OwnCardTransferRoute(onBack = { nav.popBackStack() }, onOpenHistory = { nav.navigate(TransferHistory) })
+            }
             composable<TransferFindAccount> {
                 FindAccountRoute(
                     onBack = { nav.popBackStack() },

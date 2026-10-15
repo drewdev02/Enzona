@@ -8,7 +8,8 @@ import SwiftUI
 ///
 ///   xcrun simctl launch booted <bundle id> -ezPreview <nombre>
 /// Nombres: detail (por defecto), detail-empty, detail-partial, detail-loading, detail-error, balance,
-/// transfer-menu, transfer-menu-empty, transfer-history, transfer-history-empty, find-account, find-account-notfound, friends.
+/// transfer-menu, transfer-menu-empty, transfer-history, transfer-history-empty, find-account, find-account-notfound, friends,
+/// own-form, own-errors, own-sending, own-accepted, own-pending, own-rejected, own-unknown.
 enum DebugPreview {
     static var requested: String? {
         let args = ProcessInfo.processInfo.arguments
@@ -48,6 +49,20 @@ enum DebugPreview {
                 FindAccountContent(phase: .notFound)
             case "friends":
                 TransferFriendsContent(phase: .content(PersonModel.samples))
+            case "own-form":
+                OwnCardContent(phase: .editing(.sample))
+            case "own-errors":
+                OwnCardContent(phase: .editing(.withProblems))
+            case "own-sending":
+                OwnCardContent(phase: .submitting)
+            case "own-accepted":
+                OwnCardContent(phase: .finished(.accepted))
+            case "own-pending":
+                OwnCardContent(phase: .finished(.pending))
+            case "own-rejected":
+                OwnCardContent(phase: .finished(.rejected))
+            case "own-unknown":
+                OwnCardContent(phase: .finished(.unknown))
             case "balance":
                 BalanceContent(phase: .content(EzBankCardModel.samples)).balanceNavigationChrome()
             default:

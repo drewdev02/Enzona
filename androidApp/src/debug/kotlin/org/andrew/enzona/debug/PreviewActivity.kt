@@ -17,6 +17,9 @@ import org.andrew.enzona.feature.transfer.presentation.FindRecipientUiState
 import org.andrew.enzona.feature.transfer.presentation.TransferHistoryUiState
 import org.andrew.enzona.feature.transfer.presentation.TransferMenuUiState
 import org.andrew.enzona.ui.transfer.FindAccountScreen
+import org.andrew.enzona.ui.transfer.OwnCardTransferActions
+import org.andrew.enzona.ui.transfer.OwnCardTransferPreviewData
+import org.andrew.enzona.ui.transfer.OwnCardTransferScreen
 import org.andrew.enzona.ui.transfer.TransferFriendsScreen
 import org.andrew.enzona.ui.transfer.TransferHistoryScreen
 import org.andrew.enzona.ui.transfer.TransferMenuScreen
@@ -29,7 +32,8 @@ import org.andrew.enzona.ui.transfer.TransferPreviewData
  *
  *   adb shell am start -n org.andrew.enzona/.debug.PreviewActivity --es screen <nombre>
  * Nombres: detail (por defecto), detail-empty, detail-partial, detail-loading, detail-error, balance,
- * transfer-menu, transfer-menu-empty, transfer-history, transfer-history-empty, transfer-history-error, find-account, find-account-notfound, friends.
+ * transfer-menu, transfer-menu-empty, transfer-history, transfer-history-empty, transfer-history-error, find-account, find-account-notfound, friends,
+ * own-form, own-errors, own-confirm, own-sending, own-accepted, own-rejected, own-unknown.
  */
 class PreviewActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +64,14 @@ class PreviewActivity : ComponentActivity() {
                     "find-account" -> FindAccountScreen(FindRecipientUiState.Found(TransferPreviewData.recipient), {}, {}, {}, {})
                     "find-account-notfound" -> FindAccountScreen(FindRecipientUiState.NotFound, {}, {}, {}, {})
                     "friends" -> TransferFriendsScreen(FriendsUiState.Content(TransferPreviewData.friends), {}, {}, {})
+                    "own-form" -> OwnCardTransferScreen(OwnCardTransferPreviewData.editing, OwnCardTransferActions())
+                    "own-errors" -> OwnCardTransferScreen(OwnCardTransferPreviewData.withProblems, OwnCardTransferActions())
+                    "own-confirm" -> OwnCardTransferScreen(OwnCardTransferPreviewData.confirming, OwnCardTransferActions())
+                    "own-sending" -> OwnCardTransferScreen(OwnCardTransferPreviewData.submitting, OwnCardTransferActions())
+                    "own-accepted" -> OwnCardTransferScreen(OwnCardTransferPreviewData.accepted, OwnCardTransferActions())
+                    "own-pending" -> OwnCardTransferScreen(OwnCardTransferPreviewData.pending, OwnCardTransferActions())
+                    "own-rejected" -> OwnCardTransferScreen(OwnCardTransferPreviewData.rejected, OwnCardTransferActions())
+                    "own-unknown" -> OwnCardTransferScreen(OwnCardTransferPreviewData.unknown, OwnCardTransferActions())
                     "balance" -> BalanceScreen(CardsUiState.Content(CardPreviewData.all), {}, {}, {})
                     else -> CardDetailScreen(CardDetailUiState.Content(CardDetailPreviewData.activity), label, {}, {})
                 }

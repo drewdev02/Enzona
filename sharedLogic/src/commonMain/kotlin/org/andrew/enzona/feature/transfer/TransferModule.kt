@@ -7,6 +7,7 @@ import org.andrew.enzona.feature.transfer.domain.SubmitTransferUseCase
 import org.andrew.enzona.feature.transfer.domain.TransferGateway
 import org.andrew.enzona.feature.transfer.domain.TransferRepository
 import org.andrew.enzona.feature.transfer.presentation.FindRecipientViewModel
+import org.andrew.enzona.feature.transfer.presentation.OwnCardTransferViewModel
 import org.andrew.enzona.feature.transfer.presentation.TransferHistoryViewModel
 import org.andrew.enzona.feature.transfer.presentation.TransferMenuViewModel
 import org.koin.core.module.Module
@@ -24,4 +25,5 @@ val transferModule: Module = module {
     viewModelOf(::TransferMenuViewModel)
     viewModelOf(::TransferHistoryViewModel)
     viewModelOf(::FindRecipientViewModel)
+    viewModelOf(::OwnCardTransferViewModel)
 }

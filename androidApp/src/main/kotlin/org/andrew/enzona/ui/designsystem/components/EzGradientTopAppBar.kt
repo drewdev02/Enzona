@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import org.andrew.enzona.ui.designsystem.EnzonaTheme
 import org.andrew.enzona.ui.designsystem.WhiteStatusBarIcons
 
@@ -57,6 +58,9 @@ fun EzGradientTopAppBar(
             title,
             color = Color.White,
             style = MaterialTheme.typography.titleLarge,
+            // La barra tiene altura fija: un título largo con letra grande se acorta con "…" en vez de cortarse.
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f).padding(start = EnzonaTheme.spacing.sm).semantics { heading() },
         )
         if (actionText != null && onAction != null) {

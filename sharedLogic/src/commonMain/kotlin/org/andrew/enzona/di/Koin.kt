@@ -13,6 +13,7 @@ import org.andrew.enzona.feature.cards.cardsModule
 import org.andrew.enzona.feature.friends.friendsModule
 import org.andrew.enzona.feature.friends.presentation.FriendsViewModel
 import org.andrew.enzona.feature.transfer.presentation.FindRecipientViewModel
+import org.andrew.enzona.feature.transfer.presentation.OwnCardTransferViewModel
 import org.andrew.enzona.feature.transfer.presentation.TransferHistoryViewModel
 import org.andrew.enzona.feature.transfer.presentation.TransferMenuViewModel
 import org.andrew.enzona.feature.transfer.transferModule
@@ -70,5 +71,7 @@ object KoinHelper : KoinComponent {
     fun findRecipientViewModelHolder(): ViewModelHolder<FindRecipientViewModel> = getKoin().viewModelHolder()
 
     fun friendsViewModelHolder(): ViewModelHolder<FriendsViewModel> = getKoin().viewModelHolder()
+
+    fun ownCardTransferViewModelHolder(): ViewModelHolder<OwnCardTransferViewModel> = getKoin().viewModelHolder()
 }
 

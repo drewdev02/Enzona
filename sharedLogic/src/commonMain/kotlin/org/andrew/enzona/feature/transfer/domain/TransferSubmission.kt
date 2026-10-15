@@ -1,5 +1,6 @@
 package org.andrew.enzona.feature.transfer.domain
 
+import kotlinx.datetime.LocalDateTime
 import org.andrew.enzona.core.money.Money
 
 /** Contraseña de pago en memoria, solo hasta cifrarla. `toString` no la revela, así que un log o un `data class` no la filtran. */
@@ -54,7 +55,11 @@ data class TransferReceipt(
     val operationCode: String?,
     val status: TransferStatus,
     val statusText: String?,
+    /** Hora de reloj tal cual la dio el servidor (sin convertir de zona), como en el historial. */
+    val createdAt: LocalDateTime?,
     val createdAtText: String?,
+    /** `transaction_signature`: la emite el servidor; la app original la muestra como QR del comprobante. */
+    val signature: String?,
 )
 
 enum class RejectionCause {

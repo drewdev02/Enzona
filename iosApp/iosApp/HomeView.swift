@@ -11,6 +11,8 @@ enum HomeRoute: Hashable {
     case transferHistory
     case transferFindAccount
     case transferFriends
+    /// "A una de mis tarjetas": el primer formulario que mueve dinero.
+    case transferOwnCard
 }
 
 /// Raíz de la zona autenticada: conecta los ViewModels y el modelo compartido con las pantallas.
@@ -57,14 +59,20 @@ struct HomeView: View {
                                         switch option {
                                         case .account: path.append(.transferFindAccount)
                                         case .friend: path.append(.transferFriends)
-                                        // Los formularios que mueven dinero llegan en su hito.
-                                        case .card, .ownCard: comingSoon = "\(option.label) estará disponible próximamente."
+                                        case .ownCard: path.append(.transferOwnCard)
+                                        // Los demás formularios que mueven dinero llegan en su hito.
+                                        case .card: comingSoon = "\(option.label) estará disponible próximamente."
                                         }
                                     },
                                     onHistory: { path.append(.transferHistory) }
                                 )
                             case .transferHistory:
                                 TransferHistoryView()
+                            case .transferOwnCard:
+                                OwnCardView(
+                                    onOpenHistory: { path.append(.transferHistory) },
+                                    onClose: { if !path.isEmpty { path.removeLast() } }
+                                )
                             case .transferFindAccount:
                                 FindAccountView(onRecipient: { _ in
                                     comingSoon = "Transferir a una cuenta estará disponible próximamente."

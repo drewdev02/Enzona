@@ -29,4 +29,41 @@ eq(T.isoDay(d, calendar: cal), "2026-10-01", "ida y vuelta del día en zona extr
 let rows = TransferRowModel.samples
 eq(rows[0].spoken, "BPA(1234), desde BANMET(6856), -1400.00 CUP, Aceptada, 14/10/2026 04:30 PM", "VoiceOver")
 eq(rows[5].logoName, "avatar_placeholder", "persona sin logo")
+
+// ---- A una de mis tarjetas ----
+let O = OwnCardPresentation.self
+eq(O.moneyShown(minorUnits: 1_050, currency: "cup"), "$10.50 CUP", "importe con símbolo")
+eq(O.amountPlain(minorUnits: 1_050, currency: "cup"), "10.50 CUP", "importe sin símbolo")
+eq(O.sourceSuffix(last4: "6856", currency: "cup"), "(6856) CUP", "línea de la tarjeta de origen")
+eq(O.amountProblem("ZERO"), "El monto no puede ser $0.00", "monto cero")
+eq(O.amountProblem("HAS_WHITESPACE"), "El monto no puede contener espacios en blanco", "monto con espacios")
+eq(O.amountProblem("INVALID"), "Introduzca un monto válido", "monto inválido"); eq(O.amountProblem("EMPTY"), "Introduzca un monto válido", "monto vacío")
+eq(O.confirmation(amount: "$10.50 CUP", source: "BANMET 6856", destination: "BANDEC 1234", destinationCurrency: "cup", exchangeApplies: false),
+   "¿Está seguro que desea transferir $10.50 CUP de la tarjeta BANMET 6856 a la tarjeta BANDEC 1234?", "confirmación")
+eq(O.confirmation(amount: "$10.50 CUP", source: "BANMET 6856", destination: "BANDEC 9021", destinationCurrency: "usd", exchangeApplies: true),
+   "¿Desea transferir $10.50 CUP de la tarjeta BANMET 6856 a una tarjeta en USD aplicando la tasa de cambio vigente?", "confirmación con cambio")
+eq(O.notSent("PASSWORD_EMPTY"), "Escribe tu contraseña de pago.", "contraseña vacía")
+eq(O.notSent("ANOTHER_TRANSFER_IN_PROGRESS"), "Hay otra transferencia en curso. Espera a que termine.", "otra en curso")
+func res(_ outcome: String, _ status: String? = nil, text: String? = nil, cause: String? = nil, http: Int? = nil, server: String? = nil) -> OwnCardPresentation.Result {
+    O.result(outcome: outcome, receiptStatus: status, statusText: text, cause: cause, httpStatus: http, serverMessage: server)
+}
+eq(res("ACCEPTED", "ACCEPTED").kind, .success, "aceptada"); eq(res("ACCEPTED", "ACCEPTED").title, "Transferencia confirmada", "título confirmada")
+eq(res("ACCEPTED", "PENDING").kind, .pending, "pendiente"); eq(res("ACCEPTED", "OTHER", text: "Procesando").kind, .pending, "otro estado aceptado")
+eq(res("ACCEPTED", "OTHER", text: "Procesando").detail?.contains("Procesando"), true, "estado desconocido visible")
+eq(res("REJECTED", cause: "REFUSED", http: 400, server: "Saldo insuficiente").detail, "Saldo insuficiente\nNo se movió dinero.", "rechazo con texto")
+eq(res("REJECTED", cause: "REFUSED", http: 403).detail?.contains("403"), true, "rechazo con código")
+eq(res("REJECTED", cause: "SESSION_EXPIRED", http: 401).detail?.contains("sesión"), true, "sesión expirada")
+eq(res("REJECTED", cause: "REFUSED", http: 400).title, "Transferencia fallida", "título fallida")
+eq(res("UNKNOWN").kind, .unknown, "desconocido"); eq(res("UNKNOWN").detail?.contains("No repitas"), true, "no repetir")
+eq(res("UNKNOWN").title.lowercased().contains("fallida"), false, "desconocido no dice fallida")
+eq(O.rows(operationCode: "kf1", description: "Ahorro"), [OwnCardPresentation.Row(label: "No.Operación", value: "kf1"), OwnCardPresentation.Row(label: "Descripción", value: "Ahorro")], "filas completas")
+eq(O.rows(operationCode: nil, description: "  "), [], "sin filas")
+eq(O.dateText(wallClock: (2026, 9, 11, 11, 30), receivedText: "x"), "11/09/2026 11:30 AM", "fecha de reloj")
+eq(O.dateText(wallClock: nil, receivedText: "ayer"), "ayer", "fecha recibida"); eq(O.dateText(wallClock: nil, receivedText: nil), nil, "sin fecha")
+let accepted = TransferDetailData.accepted
+eq(accepted.kind, .success, "comprobante confirmado"); eq(accepted.amountText, "10.50 CUP", "importe del comprobante")
+eq(accepted.dateText, "11/09/2026 11:30 AM", "fecha del comprobante"); eq(accepted.qrContent, "SIG-INVENTADA-0001", "QR")
+eq(accepted.rows.map { $0.label }, ["No.Operación", "Descripción"], "filas del comprobante")
+eq(TransferDetailData.rejected.qrContent, nil, "fallida sin QR"); eq(TransferDetailData.rejected.dateText, nil, "fallida sin fecha")
+eq(TransferDetailData.unknown.rows.map { $0.label }, ["Descripción"], "desconocida sin número de operación")
 print(failures == 0 ? "OK: todos los casos pasan" : "\(failures) fallos"); exit(failures == 0 ? 0 : 1)

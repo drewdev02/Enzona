@@ -8,5 +8,6 @@ trap 'rm -rf "$OUT"' EXIT
 swiftc -o "$OUT/check" \
   tools/swiftcheck/stubs.swift tools/swiftcheck/main.swift \
   iosApp/iosApp/Transfer/TransferPresentation.swift iosApp/iosApp/Transfer/TransferData.swift \
+  iosApp/iosApp/Transfer/OwnCardPresentation.swift iosApp/iosApp/Transfer/OwnCardData.swift \
   iosApp/iosApp/Cards/OperationPresentation.swift
 "$OUT/check"
