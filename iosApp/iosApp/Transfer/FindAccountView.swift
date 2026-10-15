@@ -55,7 +55,7 @@ struct FindAccountContent: View {
         switch phase {
         case .found(let person):
             Button { onRecipient(person) } label: {
-                EzListItem(title: person.displayName, subtitle: person.username, leading: {
+                EzListItem(title: person.displayName, subtitle: person.subtitle, leading: {
                     EzAvatar(initials: TransferPresentation.initials(person.displayName))
                 })
             }

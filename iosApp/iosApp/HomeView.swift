@@ -13,6 +13,8 @@ enum HomeRoute: Hashable {
     case transferFriends
     /// "A una de mis tarjetas": el primer formulario que mueve dinero.
     case transferOwnCard
+    /// "A una cuenta" / "A un amigo": el destinatario ya verificado viaja tal cual lo dio el servidor.
+    case transferToRecipient(RecipientIdentity, isFriend: Bool)
 }
 
 /// Raíz de la zona autenticada: conecta los ViewModels y el modelo compartido con las pantallas.
@@ -74,13 +76,19 @@ struct HomeView: View {
                                     onClose: { if !path.isEmpty { path.removeLast() } }
                                 )
                             case .transferFindAccount:
-                                FindAccountView(onRecipient: { _ in
-                                    comingSoon = "Transferir a una cuenta estará disponible próximamente."
+                                FindAccountView(onRecipient: { person in
+                                    path.append(.transferToRecipient(person.recipient, isFriend: false))
                                 })
                             case .transferFriends:
-                                TransferFriendsView(onFriend: { _ in
-                                    comingSoon = "Transferir a un amigo estará disponible próximamente."
+                                TransferFriendsView(onFriend: { person in
+                                    path.append(.transferToRecipient(person.recipient, isFriend: true))
                                 })
+                            case .transferToRecipient(let recipient, let isFriend):
+                                RecipientView(
+                                    recipient: recipient, isFriend: isFriend,
+                                    onOpenHistory: { path.append(.transferHistory) },
+                                    onClose: { if !path.isEmpty { path.removeLast() } }
+                                )
                             }
                         }
                 }

@@ -9,5 +9,6 @@ swiftc -o "$OUT/check" \
   tools/swiftcheck/stubs.swift tools/swiftcheck/main.swift iosApp/iosApp/Domain/EzKinds.swift \
   iosApp/iosApp/Transfer/TransferPresentation.swift iosApp/iosApp/Transfer/TransferData.swift \
   iosApp/iosApp/Transfer/OwnCardPresentation.swift iosApp/iosApp/Transfer/OwnCardData.swift \
+  iosApp/iosApp/Transfer/RecipientPresentation.swift iosApp/iosApp/Transfer/RecipientData.swift \
   iosApp/iosApp/Cards/OperationPresentation.swift
 "$OUT/check"

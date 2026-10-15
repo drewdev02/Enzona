@@ -80,12 +80,15 @@ extension OwnCardFormData {
 }
 
 extension TransferDetailData {
+    /// [mainText] y [destinationLogo] son del destino: por defecto una tarjeta propia; una persona usa su nombre y el
+    /// avatar neutro (ver `acceptedToPerson`).
     private static func make(outcome: EzOutcome, kind: EzResultKind, operation: String? = nil,
-                             date: String? = nil, qr: String? = nil) -> TransferDetailData {
+                             date: String? = nil, qr: String? = nil, mainText: String = "BANDEC 1234",
+                             destinationLogo: String = "bank_bandec") -> TransferDetailData {
         let result = OwnCardPresentation.result(outcome: outcome, kind: kind)
         return TransferDetailData(
-            kind: result.kind, statusTitle: result.title, note: result.detail, mainText: "BANDEC 1234",
-            destinationLogo: "bank_bandec", amountText: OwnCardPresentation.amountPlain(minorUnits: 1_050, currency: "cup"),
+            kind: result.kind, statusTitle: result.title, note: result.detail, mainText: mainText,
+            destinationLogo: destinationLogo, amountText: OwnCardPresentation.amountPlain(minorUnits: 1_050, currency: "cup"),
             dateText: date, rows: OwnCardPresentation.rows(operationCode: operation, description: "Ahorro mensual"),
             sourceLogo: "bank_banmet", sourceHolder: "TITULAR DE PRUEBA",
             sourceSuffix: OwnCardPresentation.sourceSuffix(last4: "6856", currency: "cup"), qrContent: qr)
@@ -100,4 +103,13 @@ extension TransferDetailData {
     static let rejected = make(
         outcome: .rejected(cause: .refused, httpStatus: 400, serverMessage: "Saldo insuficiente"), kind: .failed)
     static let unknown = make(outcome: .unknown, kind: .unknown)
+
+    /// Comprobantes de una transferencia a una PERSONA: su nombre y el avatar neutro en lugar del banco.
+    static let acceptedToPerson = make(
+        outcome: .accepted(status: .accepted, statusText: "Aceptada"), kind: .success, operation: "kf1jldsUqZ9x",
+        date: OwnCardPresentation.dateText(wallClock: (2026, 9, 11, 11, 30), receivedText: nil), qr: "SIG-INVENTADA-0002",
+        mainText: "Ana Pérez Gómez", destinationLogo: TransferPresentation.logo(brand: .unknown))
+    static let rejectedToPerson = make(
+        outcome: .rejected(cause: .refused, httpStatus: 400, serverMessage: "Saldo insuficiente"), kind: .failed,
+        mainText: "Ana Pérez Gómez", destinationLogo: TransferPresentation.logo(brand: .unknown))
 }

@@ -41,10 +41,14 @@ struct TransferFilterModel: Equatable {
     static let none = TransferFilterModel()
 }
 
+/// Una persona elegible como destinatario (resultado de buscar una cuenta, o un amigo). [recipient] es lo que se envía,
+/// tal cual lo dio el servidor; [subtitle] es solo lo que se muestra bajo el nombre.
 struct PersonModel: Identifiable, Equatable {
-    let id: String
-    let displayName: String
-    let username: String?
+    let recipient: RecipientIdentity
+    let subtitle: String?
+
+    var id: String { recipient.accountUuid }
+    var displayName: String { recipient.displayName }
 }
 
 enum TransferMenuPhase {
@@ -113,8 +117,12 @@ extension TransferRowModel {
 
 extension PersonModel {
     static let samples = [
-        PersonModel(id: "u1", displayName: "Ana Pérez Gómez", username: "ana.perez"),
-        PersonModel(id: "u2", displayName: "carlos87", username: nil),
-        PersonModel(id: "u3", displayName: "María López", username: "maria.lopez"),
+        PersonModel(recipient: .sample, subtitle: "ana.perez"),
+        PersonModel(
+            recipient: RecipientIdentity(accountUuid: "u2", username: "carlos87", displayName: "carlos87", avatar: nil, currency: nil),
+            subtitle: nil),
+        PersonModel(
+            recipient: RecipientIdentity(accountUuid: "u3", username: "maria.lopez", displayName: "María López", avatar: nil, currency: "usd"),
+            subtitle: "maria.lopez"),
     ]
 }

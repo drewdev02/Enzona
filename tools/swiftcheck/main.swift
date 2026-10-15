@@ -96,4 +96,25 @@ eq(accepted.rows.map { $0.label }, ["No.Operación", "Descripción"], "filas del
 eq(TransferDetailData.pending.kind, .pending, "comprobante pendiente")
 eq(TransferDetailData.rejected.qrContent, nil, "fallida sin QR"); eq(TransferDetailData.rejected.dateText, nil, "fallida sin fecha")
 eq(TransferDetailData.unknown.rows.map { $0.label }, ["Descripción"], "desconocida sin número de operación")
+
+// ---- A una cuenta / A un amigo ----
+let R = RecipientPresentation.self
+eq(R.title(isFriend: false), "Transferir a una cuenta", "título cuenta"); eq(R.title(isFriend: true), "Transferir a un amigo", "título amigo")
+eq(R.confirmation(amount: "$25.00 CUP", source: "BANMET 6856", recipientName: "Ana Pérez", recipientCurrency: "cup", exchangeApplies: false),
+   "¿Está seguro que desea transferir $25.00 CUP de la tarjeta BANMET 6856 a la cuenta de Ana Pérez?", "confirmación a una cuenta")
+eq(R.confirmation(amount: "$25.00 CUP", source: "BANMET 6856", recipientName: "Ana Pérez", recipientCurrency: "usd", exchangeApplies: true),
+   "¿Desea transferir $25.00 CUP de la tarjeta BANMET 6856 a una tarjeta en USD aplicando la tasa de cambio vigente?", "confirmación con cambio")
+// Sin moneda conocida del destinatario no se afirma ningún cambio, aunque llegara el aviso.
+eq(R.confirmation(amount: "$25.00 CUP", source: "BANMET 6856", recipientName: "Ana Pérez", recipientCurrency: nil, exchangeApplies: true),
+   "¿Está seguro que desea transferir $25.00 CUP de la tarjeta BANMET 6856 a la cuenta de Ana Pérez?", "cambio con moneda desconocida")
+eq(R.confirmation(amount: "$25.00 CUP", source: "BANMET 6856", recipientName: "Ana Pérez", recipientCurrency: " ", exchangeApplies: true).contains("tasa"), false, "moneda en blanco")
+eq(TransferDetailData.acceptedToPerson.mainText, "Ana Pérez Gómez", "el comprobante a una persona lleva su nombre")
+eq(TransferDetailData.acceptedToPerson.destinationLogo, "avatar_placeholder", "y el avatar neutro, no un banco")
+eq(TransferDetailData.rejectedToPerson.kind, .failed, "comprobante fallido a una persona")
+eq(RecipientFormData.sample.source?.label, "BANMET 6856", "tarjeta de origen del formulario")
+eq(RecipientFormData.withProblem.amountError, "El monto no puede ser $0.00", "problema de importe")
+eq(RecipientConfirmData.withExchange.question.contains("USD"), true, "ejemplo con cambio")
+eq(PersonModel.samples[0].id, "acc-uuid-ana", "la identidad de una persona es el uuid de su cuenta")
+eq(PersonModel.samples[1].subtitle, nil, "sin nombre no hay texto secundario"); eq(PersonModel.samples[1].recipient.username, "carlos87", "pero el usuario real se conserva")
+eq(PersonModel.samples[1].recipient.currency, nil, "moneda desconocida sigue desconocida")
 print(failures == 0 ? "OK: todos los casos pasan" : "\(failures) fallos"); exit(failures == 0 ? 0 : 1)

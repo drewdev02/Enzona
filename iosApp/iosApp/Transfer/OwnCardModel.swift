@@ -1,21 +1,6 @@
 import Foundation
 import SharedLogic
 
-private extension BankCard {
-    /// La tarjeta como se ofrece en los selectores: `BANMET 6856`, su moneda y el logo de su banco.
-    func choice() -> CardChoice {
-        CardChoice(id: id, label: label, currency: currency, logoName: logo)
-    }
-
-    /// `BANMET 6856`.
-    var label: String {
-        OperationPresentation.cardDetailLabel(skin: EzCardSkin(skin), bankName: bankName, last4: last4)
-    }
-
-    /// Logo del banco, o el avatar neutro si no se reconoce.
-    var logo: String { TransferPresentation.logo(brand: EzBankBrand(BankBrandKt.bankBrandOf(bank: bankCode))) }
-}
-
 private extension OwnCardTransferUiStateEditing {
     func formData() -> OwnCardFormData {
         OwnCardFormData(
@@ -28,24 +13,11 @@ private extension OwnCardTransferUiStateEditing {
 }
 
 private extension OwnCardTransferUiStateFinished {
-    /// El comprobante de lo que pasó, con los mismos hechos que `toDetail()` de Android.
+    /// El comprobante: el destino es la tarjeta (banco y número), como `toDetail()` de Android.
     func detailData() -> TransferDetailData {
-        let receipt = (outcome as? TransferOutcomeAccepted)?.receipt
-        // El desenlace se convierte una vez; cómo se clasifica (`kind`) lo decide el dominio, no esta capa.
-        let result = OwnCardPresentation.result(outcome: EzOutcome(outcome), kind: EzResultKind(kind))
-        let wallClock = receipt?.createdAt.map {
-            (year: Int($0.year), month: Int($0.monthNumber), day: Int($0.dayOfMonth), hour: Int($0.hour), minute: Int($0.minute))
-        }
-        return TransferDetailData(
-            kind: result.kind, statusTitle: result.title, note: result.detail,
-            mainText: destination.label, destinationLogo: destination.logo,
-            amountText: OwnCardPresentation.amountPlain(minorUnits: request.amount.minorUnits, currency: request.amount.currency),
-            dateText: receipt.flatMap { OwnCardPresentation.dateText(wallClock: wallClock, receivedText: $0.createdAtText) },
-            rows: OwnCardPresentation.rows(operationCode: receipt?.operationCode, description: request.description_),
-            sourceLogo: source.logo, sourceHolder: source.holder,
-            sourceSuffix: OwnCardPresentation.sourceSuffix(last4: source.last4, currency: source.currency),
-            qrContent: receipt?.signature
-        )
+        TransferDetailBuilder.make(
+            outcome: outcome, kind: kind, request: request, source: source,
+            mainText: destination.label, destinationLogo: destination.logo)
     }
 }
 

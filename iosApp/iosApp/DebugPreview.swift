@@ -9,7 +9,8 @@ import SwiftUI
 ///   xcrun simctl launch booted <bundle id> -ezPreview <nombre>
 /// Nombres: detail (por defecto), detail-empty, detail-partial, detail-loading, detail-error, balance,
 /// transfer-menu, transfer-menu-empty, transfer-history, transfer-history-empty, find-account, find-account-notfound, friends,
-/// own-form, own-errors, own-sending, own-accepted, own-pending, own-rejected, own-unknown.
+/// own-form, own-errors, own-sending, own-accepted, own-pending, own-rejected, own-unknown,
+/// acct-form, acct-problem, friend-exchange, acct-sending, acct-receipt, acct-rejected.
 enum DebugPreview {
     static var requested: String? {
         let args = ProcessInfo.processInfo.arguments
@@ -49,6 +50,18 @@ enum DebugPreview {
                 FindAccountContent(phase: .notFound)
             case "friends":
                 TransferFriendsContent(phase: .content(PersonModel.samples))
+            case "acct-form":
+                RecipientContent(phase: .editing(.sample))
+            case "acct-problem":
+                RecipientContent(phase: .editing(.withProblem))
+            case "friend-exchange":
+                RecipientContent(phase: .confirming(.withExchange), isFriend: true)
+            case "acct-sending":
+                RecipientContent(phase: .submitting)
+            case "acct-receipt":
+                RecipientContent(phase: .finished(.acceptedToPerson))
+            case "acct-rejected":
+                RecipientContent(phase: .finished(.rejectedToPerson), isFriend: true)
             case "own-form":
                 OwnCardContent(phase: .editing(.sample))
             case "own-errors":

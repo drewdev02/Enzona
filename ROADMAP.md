@@ -104,10 +104,14 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 ---
 
 ## M5 · Transferencias + QR (núcleo de dinero)
-- ☐ `expect/actual RsaEncryptor` (clave pública empaquetada) para cifrar contraseña de pago / datos de tarjeta.
-- ☐ `expect/actual Biometrics` (BiometricPrompt / LAContext) para confirmar operaciones.
-- ☐ Transferencia a cuenta (`/transfer/v1.0.0/transfer/account`) y a tarjeta (`/transfer/card`), con `payment_password` cifrada.
-- ☐ QR: escáner nativo (CameraX+MLKit / AVFoundation) + generación (zxing / nativo).
+- ☑ Cifrado de la contraseña de pago: RSA PKCS#1 v1.5 con la clave pública del APK (`PaymentPasswordEncryptor`, `Cipher` en Android y `SecKey` en iOS; ida y vuelta probada en ambas). Pendiente de validar contra el servidor real.
+- ☑ **Menú Transferir** (Recientes, Historial con filtros y paginación, Buscar una cuenta, Mis amigos), lectura sola.
+- ☑ **Motor de envío** (`SubmitTransferUseCase`): una transferencia a la vez en toda la app, no se cancela una petición ya enviada, nunca reintenta, y el resultado es *aceptada / rechazada / desconocida / no enviada* (un fallo de red, una respuesta ilegible o un 5xx es *desconocido*: puede haberse movido dinero).
+- ☑ Formularios que mueven dinero: **A una de mis tarjetas**, **A una cuenta** y **A un amigo**, con confirmación por contraseña de pago y el comprobante "Detalles de la transferencia" (logo, estado, importe, fecha, No.Operación, tarjeta de origen y QR de la firma).
+- ☐ **A una tarjeta** (`/transfer/v1.0.0/transfer/card`: PAN destino y "móvil a confirmar").
+- ☐ Validar una transferencia **real** de prueba (cuenta y montos propios): forma de la respuesta de éxito y del `fault`, qué contiene el QR, límites y bloqueo por contraseña errónea.
+- ☐ `expect/actual Biometrics` (BiometricPrompt / LAContext) para confirmar operaciones (fuera de alcance por ahora: se usa la contraseña de pago).
+- ☐ QR: escáner nativo (CameraX+MLKit / AVFoundation); la generación ya está (ZXing en Android, CoreImage en iOS).
 - ☐ Pago a comercio por QR; flujo de confirmación.
 
 **Done cuando:** una transferencia real de prueba se completa con confirmación biométrica. (Operaciones de dinero: probar con cuenta y montos propios.)

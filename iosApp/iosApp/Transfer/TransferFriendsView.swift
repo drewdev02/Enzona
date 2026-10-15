@@ -30,7 +30,7 @@ struct TransferFriendsContent: View {
                     LazyVStack(spacing: 0) {
                         ForEach(friends) { friend in
                             Button { onFriend(friend) } label: {
-                                EzListItem(title: friend.displayName, subtitle: friend.username, leading: {
+                                EzListItem(title: friend.displayName, subtitle: friend.subtitle, leading: {
                                     EzAvatar(initials: TransferPresentation.initials(friend.displayName))
                                 })
                             }

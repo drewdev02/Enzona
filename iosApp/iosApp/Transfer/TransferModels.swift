@@ -155,9 +155,7 @@ final class FindAccountModel: ObservableObject {
     private func apply(_ state: FindRecipientUiState) {
         switch state {
         case let found as FindRecipientUiStateFound:
-            phase = .found(PersonModel(
-                id: found.recipient.accountUuid, displayName: found.recipient.displayName,
-                username: found.recipient.username))
+            phase = .found(PersonModel(recipient: found.recipient.identity(), subtitle: found.recipient.username))
         case is FindRecipientUiStateNotFound: phase = .notFound
         case let invalid as FindRecipientUiStateInvalid: phase = .invalid(Self.message(invalid.reason))
         case let error as FindRecipientUiStateError: phase = .error(error.message)
@@ -194,8 +192,9 @@ final class FriendsModel: ObservableObject {
     private func apply(_ state: FriendsUiState) {
         switch state {
         case let content as FriendsUiStateContent:
+            // El destinatario sale del propio amigo (`asRecipient`); el texto bajo el nombre es solo para mostrar.
             phase = .content(content.friends.map {
-                PersonModel(id: $0.uuid, displayName: $0.displayName, username: $0.name == nil ? nil : $0.username)
+                PersonModel(recipient: $0.asRecipient().identity(), subtitle: $0.name == nil ? nil : $0.username)
             })
         case is FriendsUiStateEmpty: phase = .empty
         case let error as FriendsUiStateError: phase = .error(error.message)
