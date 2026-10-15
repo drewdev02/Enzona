@@ -19,13 +19,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.andrew.enzona.core.money.Money
@@ -139,18 +139,33 @@ private fun AvailableBalance(available: Money?) {
     }
 }
 
+/**
+ * Con la fuente muy grande no caben dos columnas: un importe no puede truncarse ni partirse, así que las
+ * filas se apilan. Mismo umbral que la rejilla de servicios.
+ */
+@Composable
+private fun isLargeFont(): Boolean = LocalDensity.current.fontScale >= LargeFontScale
+
+private const val LargeFontScale = 1.3f
+
 @Composable
 private fun DetailRow(label: String, value: String) {
     val spacing = EnzonaTheme.spacing
-    Row(
-        Modifier.fillMaxWidth().padding(horizontal = spacing.lg, vertical = spacing.md)
-            .semantics(mergeDescendants = true) { contentDescription = "$label: $value" },
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
+    val modifier = Modifier.fillMaxWidth().padding(horizontal = spacing.lg, vertical = spacing.md)
+        .semantics(mergeDescendants = true) { contentDescription = "$label: $value" }
+    val labelText: @Composable () -> Unit = {
         Text(label, style = Regular(MaterialTheme.typography.titleLarge), color = EnzonaTheme.colors.onSurface)
-        Text(value, style = Regular(MaterialTheme.typography.titleLarge), color = EnzonaTheme.colors.onSurfaceVariant,
-            maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = spacing.md))
+    }
+    val valueText: @Composable (Modifier) -> Unit = { m ->
+        Text(value, style = Regular(MaterialTheme.typography.titleLarge), color = EnzonaTheme.colors.onSurfaceVariant, modifier = m)
+    }
+    if (isLargeFont()) {
+        Column(modifier) { labelText(); valueText(Modifier) }
+    } else {
+        Row(modifier, horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            labelText()
+            valueText(Modifier.padding(start = spacing.md))
+        }
     }
 }
 
@@ -164,21 +179,41 @@ private fun OperationRow(operation: CardOperation) {
     val spoken = listOfNotNull(
         title, operation.direction.label(), "$amount $currency", operation.dateText.takeIf { it.isNotBlank() },
     ).joinToString(", ")
-    Row(
-        Modifier.fillMaxWidth().padding(horizontal = spacing.lg, vertical = spacing.md)
-            .semantics(mergeDescendants = true) { contentDescription = spoken },
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(spacing.lg),
-    ) {
+    val modifier = Modifier.fillMaxWidth().padding(horizontal = spacing.lg, vertical = spacing.md)
+        .semantics(mergeDescendants = true) { contentDescription = spoken }
+    val icon: @Composable () -> Unit = {
         Image(painterResource(operation.kind.iconRes), contentDescription = null, Modifier.size(EnzonaTheme.sizes.avatarLg))
-        Column(Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.bodyLarge, color = EnzonaTheme.colors.onSurface, maxLines = 2)
+    }
+    val titles: @Composable (Modifier) -> Unit = { m ->
+        Column(m) {
+            Text(title, style = MaterialTheme.typography.bodyLarge, color = EnzonaTheme.colors.onSurface)
             Text(operation.direction.label(), style = MaterialTheme.typography.bodyMedium, color = EnzonaTheme.colors.onSurfaceVariant)
         }
-        Column(horizontalAlignment = Alignment.End) {
-            EzAmount(amount, currency = currency)
-            if (operation.dateText.isNotBlank()) {
-                Text(operation.dateText, style = MaterialTheme.typography.bodyMedium, color = EnzonaTheme.colors.onSurfaceVariant)
+    }
+    val date: @Composable () -> Unit = {
+        if (operation.dateText.isNotBlank()) {
+            Text(operation.dateText, style = MaterialTheme.typography.bodyMedium, color = EnzonaTheme.colors.onSurfaceVariant)
+        }
+    }
+    if (isLargeFont()) {
+        // Icono y título arriba; importe y fecha debajo, cada uno con todo el ancho que necesite.
+        Column(modifier, verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacing.lg)) {
+                icon()
+                titles(Modifier.weight(1f))
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
+                EzAmount(amount, currency = currency)
+                date()
+            }
+        }
+    } else {
+        Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacing.lg)) {
+            icon()
+            titles(Modifier.weight(1f))
+            Column(horizontalAlignment = Alignment.End) {
+                EzAmount(amount, currency = currency)
+                date()
             }
         }
     }
