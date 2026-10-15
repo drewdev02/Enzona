@@ -35,6 +35,20 @@ internal fun JsonElement?.hasFault(): Boolean {
     return true
 }
 
+/**
+ * Un booleano que el backend expresa de varias formas: `true`/`false` sin comillas, `"true"`, `"1"`, `1`.
+ * Ausente, `null`, `false`, `"0"`, `"false"` y cualquier otra cosa es `false`. OJO: [asCleanText] descarta los
+ * booleanos sin comillas, así que un flag NO se puede leer con él (un `true` desaparecería).
+ */
+internal fun JsonElement?.asFlag(): Boolean {
+    if (this !is JsonPrimitive) return false
+    if (!isString) booleanOrNull?.let { return it }
+    val s = content.trim()
+    return s == "1" || s.equals("true", ignoreCase = true)
+}
+
+internal fun JsonObject?.flag(key: String): Boolean = this?.get(key).asFlag()
+
 internal fun JsonElement?.asObjectOrNull(): JsonObject? = this as? JsonObject
 
 /** Los elementos de un array JSON; cualquier otra cosa (`false`, `null`, un objeto...) es "sin elementos". */
