@@ -1,0 +1,6 @@
+{
+						"fault":{
+							"code": 4016,
+							"message": "La Moneda no está configurada en el sistema."
+							}
+					}

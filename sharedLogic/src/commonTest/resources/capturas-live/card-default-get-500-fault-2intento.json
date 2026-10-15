@@ -1,0 +1,6 @@
+{
+						"fault":{
+							"code": 5001,
+							"message": "En estos momentos no se puede realizar su transacción, por favor intente más tarde."
+							}
+					}
