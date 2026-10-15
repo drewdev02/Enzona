@@ -23,8 +23,8 @@ import org.andrew.enzona.feature.home.domain.HomeService
 import org.andrew.enzona.ui.cards.BalanceRoute
 import org.andrew.enzona.ui.cards.CardDetailRoute
 import org.andrew.enzona.ui.cards.detailLabel
-import org.andrew.enzona.ui.ComingSoonScreen
-import org.andrew.enzona.ui.ProfileScreen
+import org.andrew.enzona.ui.common.ComingSoonScreen
+import org.andrew.enzona.ui.account.ProfileScreen
 import org.andrew.enzona.ui.dashboard.DashboardRoute
 import org.andrew.enzona.ui.transfer.FindAccountRoute
 import org.andrew.enzona.feature.transfer.domain.TransferRecipient

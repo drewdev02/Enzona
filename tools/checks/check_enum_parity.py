@@ -3,7 +3,7 @@
 Comprueba que los enums del dominio (Kotlin) y sus espejos en Swift (`iosApp/iosApp/Domain/EzKinds.swift`) no se
 separan, y que iOS no vuelve a comparar nombres de enum en texto. Sale con código 1 si algo no cuadra.
 
-    python3 tools/check_enum_parity.py
+    python3 tools/checks/check_enum_parity.py
 
 Qué comprueba:
 1. Cada espejo Swift tiene EXACTAMENTE las mismas entradas que su enum Kotlin (por el valor crudo de cada caso).
@@ -16,7 +16,7 @@ import re
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 FEATURE = ROOT / "sharedLogic/src/commonMain/kotlin/org/andrew/enzona/feature"
 IOS_APP = ROOT / "iosApp/iosApp"
 KINDS = IOS_APP / "Domain/EzKinds.swift"

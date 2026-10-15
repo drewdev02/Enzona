@@ -1,4 +1,4 @@
-package org.andrew.enzona.ui
+package org.andrew.enzona.ui.common
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview

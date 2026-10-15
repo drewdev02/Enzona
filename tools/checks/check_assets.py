@@ -3,12 +3,12 @@
 Comprueba que cada recurso que el código compartido espera existe en Android e iOS, y que no
 sobran recursos huérfanos. Sale con código 1 si algo no cuadra.
 
-    python3 tools/check_assets.py
+    python3 tools/checks/check_assets.py
 
 Grupos:
 - Casillas del inicio: `HomeService` (sharedLogic)  ->  `service_<nombre en minúsculas>`
 - Skins de tarjeta:    `CardSkin`   (sharedLogic)  ->  `card_skin_<nombre en minúsculas>` (GENERIC no tiene imagen)
-- Secciones de `tools/assets_manifest.json` (iconos de operación `op_*`, menú de transferir `transfer_option_*`,
+- Secciones de `tools/assets/assets_manifest.json` (iconos de operación `op_*`, menú de transferir `transfer_option_*`,
   logos de banco `bank_*`, avatar `avatar_*`): existen en ambas plataformas con el mismo sha256 y no sobra ninguna.
 - Tablas "tipo -> imagen" de cada plataforma (`OperationKind`, `BankBrand`): cubren todo el enum, son idénticas en
   Android e iOS y solo usan imágenes del manifiesto.
@@ -19,7 +19,7 @@ import re
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 SHARED = ROOT / "sharedLogic/src/commonMain/kotlin/org/andrew/enzona/feature"
 ANDROID = ROOT / "androidApp/src/main/res/drawable-nodpi"
 ANDROID_UI = ROOT / "androidApp/src/main/kotlin/org/andrew/enzona/ui"
@@ -69,7 +69,7 @@ for prefix, (label, names, expected_count) in groups.items():
 # Secciones del manifiesto: no hay enum compartido que diga qué imágenes existen (el dominio no conoce nombres de
 # imagen); la fuente de verdad es el manifiesto. Cada entrada existe en Android e iOS con el mismo contenido (sha256)
 # y no sobra ninguna.
-manifest = json.loads((ROOT / "tools/assets_manifest.json").read_text())
+manifest = json.loads((ROOT / "tools/assets/assets_manifest.json").read_text())
 SECTIONS = {
     "operation_icons": ("op_", "operaciones"),
     "transfer_options": ("transfer_option_", "menú de transferir"),

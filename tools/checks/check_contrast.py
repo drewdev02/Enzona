@@ -4,7 +4,7 @@ Valida el contraste WCAG de la paleta del sistema de diseño (claro y oscuro).
 Texto >= 4.5:1 (AA). Elementos no textuales (bordes de campos, iconos) >= 3:1.
 Los valores deben coincidir con EzColors.kt (Android) y EzColors.swift (iOS).
 
-    python3 tools/check_contrast.py          # sale con código 1 si algún par falla
+    python3 tools/checks/check_contrast.py          # sale con código 1 si algún par falla
 """
 import sys
 

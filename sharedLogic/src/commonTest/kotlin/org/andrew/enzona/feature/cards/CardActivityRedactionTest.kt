@@ -11,7 +11,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.test.runTest
 import org.andrew.enzona.core.logging.LogLevel
 import org.andrew.enzona.core.logging.withLogging
-import org.andrew.enzona.core.network.enzonaJson
+import org.andrew.enzona.core.json.enzonaJson
 import org.andrew.enzona.core.result.EzResult
 import org.andrew.enzona.feature.cards.data.CardsRepositoryImpl
 import kotlin.test.Test

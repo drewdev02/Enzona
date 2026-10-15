@@ -7,9 +7,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.andrew.enzona.core.di.PlainHttpClient
 import org.andrew.enzona.core.crypto.PaymentPasswordEncryptor
-import org.andrew.enzona.core.di.coreModule
 import org.andrew.enzona.core.result.EzResult
 import org.andrew.enzona.core.storage.SecureStorage
 import org.andrew.enzona.feature.account.accountModule

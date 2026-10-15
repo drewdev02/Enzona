@@ -149,7 +149,7 @@ Android, así que nada visual se comparte).
 | Fecha como el **texto recibido** (`dateText`) | Cómo se muestra (hoy tal cual) |
 | `CardDetailViewModel(cardId)` (uno por pantalla; el id va como parámetro de Koin) | Distribución, apilado con fuente grande, accesibilidad |
 
-- `tools/check_assets.py` comprueba que los iconos `op_*` existen en ambas plataformas con el mismo contenido y que
+- `tools/checks/check_assets.py` comprueba que los iconos `op_*` existen en ambas plataformas con el mismo contenido y que
   las dos tablas tipo → icono cubren todos los `OperationKind` y son idénticas.
 - **Los valores del backend se tipan una vez, en la frontera.** El mapper (`data/`) convierte el texto del servidor a
   tipos del dominio (`OperationAction`, `OperationChannel`, `TransferStatus`, `BankBrand`…), conservando el valor
@@ -157,10 +157,10 @@ Android, así que nada visual se comparte).
   Cada concepto tiene UNA tabla (códigos de banco: `bankBrandOfCode`; monedas: `sameCurrency`; clasificación del
   resultado de una transferencia: `TransferResultKind`).
 - **iOS convierte cada enum de Kotlin a su espejo Swift una sola vez** (`Domain/EzKinds.swift`, sin dependencias del
-  framework; la conversión está en `EzKinds+Kotlin.swift`, el único sitio que lee `.name`). `tools/check_enum_parity.py`
+  framework; la conversión está en `EzKinds+Kotlin.swift`, el único sitio que lee `.name`). `tools/checks/check_enum_parity.py`
   falla si un espejo y su enum Kotlin se separan, si falta una conversión o si algún `.swift` vuelve a comparar nombres
   de enum en texto (`case "X":`, `== "X"`, clave `"X":`, `switch … .name`).
-- `tools/check_transfer_presentation.sh` compila y ejecuta los casos de la presentación de iOS sin Xcode ni Kotlin.
+- `tools/checks/check_transfer_presentation.sh` compila y ejecuta los casos de la presentación de iOS sin Xcode ni Kotlin.
 - Lo que no se puede leer no se oculta: un saldo ilegible es `null` (se muestra "—") y una operación ilegible se
   cuenta en `skippedOperations` ("No se pudieron mostrar N operaciones").
 - Con fuente grande (Android ≥ 1.3 de `fontScale`; iOS tamaños de accesibilidad) las filas se apilan: **un importe

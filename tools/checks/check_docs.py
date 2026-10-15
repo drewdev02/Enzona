@@ -2,7 +2,7 @@
 """
 Comprueba la documentación de ingeniería inversa (`docs/reverse-engineering/`). Sale con código 1 si algo no cuadra.
 
-    python3 tools/check_docs.py
+    python3 tools/checks/check_docs.py
 
 1. Todo enlace relativo de un `.md` apunta a un archivo que existe (y, si lleva `#ancla`, a un título que existe).
 2. El README de la carpeta enlaza a TODOS los demás documentos (ninguno queda huérfano).
@@ -13,7 +13,7 @@ import re
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 DOCS = ROOT / "docs" / "reverse-engineering"
 MAX_BYTES = 1_000_000
 

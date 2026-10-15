@@ -2,8 +2,8 @@
 """
 Elige y valida el color del texto de cada skin de tarjeta MIDIENDO los píxeles bajo cada texto.
 
-    python3 tools/check_card_skins.py --report   # tabla de contraste de cada candidato por zona
-    python3 tools/check_card_skins.py            # verifica los colores declarados en CardSkin.kt
+    python3 tools/checks/check_card_skins.py --report   # tabla de contraste de cada candidato por zona
+    python3 tools/checks/check_card_skins.py            # verifica los colores declarados en CardSkin.kt
 
 Por qué: cada tarjeta es una imagen distinta (dorada, beige, playa con palmera, verde oscuro...).
 Un color de texto fijo no sirve para todas, y a ojo se falla justo en las difíciles.
@@ -21,7 +21,7 @@ import sys
 import zlib
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 ANDROID = ROOT / "androidApp/src/main/res/drawable-nodpi"
 SKIN_KT = ROOT / "sharedLogic/src/commonMain/kotlin/org/andrew/enzona/feature/cards/domain/CardSkin.kt"
 

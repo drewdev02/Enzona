@@ -1,7 +1,7 @@
 package org.andrew.enzona.feature.auth
 
 import io.ktor.client.HttpClient
-import org.andrew.enzona.core.di.PlainHttpClient
+import org.andrew.enzona.di.PlainHttpClient
 import org.andrew.enzona.core.network.TokenProvider
 import org.andrew.enzona.core.network.createApiHttpClient
 import org.andrew.enzona.feature.auth.data.OAuthService

@@ -1,4 +1,4 @@
-package org.andrew.enzona.core.network
+package org.andrew.enzona.core.json
 
 import kotlinx.serialization.json.Json
 

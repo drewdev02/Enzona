@@ -14,6 +14,7 @@ import io.ktor.http.Url
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import org.andrew.enzona.core.EnzonaConfig
+import org.andrew.enzona.core.json.enzonaJson
 
 /** Motor HTTP por plataforma (OkHttp en Android, Darwin en iOS). */
 expect fun httpClientEngine(): HttpClientEngine

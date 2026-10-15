@@ -15,7 +15,7 @@ import org.andrew.enzona.feature.auth.domain.SessionState
 import org.andrew.enzona.feature.auth.presentation.LoginViewModel
 import org.andrew.enzona.ui.nav.AppNavigation
 import org.andrew.enzona.ui.designsystem.EnzonaTheme
-import org.andrew.enzona.ui.LoginScreen
+import org.andrew.enzona.ui.auth.LoginScreen
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
