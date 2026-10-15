@@ -15,7 +15,7 @@ ViewModel; architecture and decisions live in [ARCHITECTURE.md](./ARCHITECTURE.m
 
 * [/docs/reverse-engineering](./docs/reverse-engineering/README.md) is the static reverse-engineering documentation of the
   original app (endpoints, JSON schemas, security, methodology). It is versioned with the code that depends on it:
-  update it in the same change. `python3 tools/check_docs.py` checks its links and hygiene. The original APK and the
+  update it in the same change. `python3 tools/checks/check_docs.py` checks its links and hygiene. The original APK and the
   decompiler output are never committed.
 
 ### Running the apps

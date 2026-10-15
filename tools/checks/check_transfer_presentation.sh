@@ -2,7 +2,7 @@
 # Compila y ejecuta los casos de TransferPresentation.swift sin Xcode ni el framework Kotlin
 # (la presentación de iOS no depende de él). Sale con código 1 si algún caso falla.
 set -eu
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 OUT="$(mktemp -d)"
 trap 'rm -rf "$OUT"' EXIT
 swiftc -o "$OUT/check" \

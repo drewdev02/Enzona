@@ -2,7 +2,7 @@
 """
 Extrae del APK original los recursos gráficos que usa la app y los importa a Android e iOS.
 
-    python3 tools/extract_assets.py --apk /ruta/cu.xetid.apk.enzona-v20003.apk
+    python3 tools/assets/extract_assets.py --apk /ruta/cu.xetid.apk.enzona-v20003.apk
 
 Tres grupos:
 - Iconos del inicio (`service_*`): el orden y las etiquetas salen de `assets/json/items.json` DEL
@@ -12,7 +12,7 @@ Tres grupos:
 - Iconos de tipo de operación (`op_*`): los del detalle de tarjeta (`images/iconos/ic_*.png`).
 
 Falla en voz alta si el APK trae una etiqueta nueva, falta un archivo o cambian las medidas.
-Copia los PNG TAL CUAL (sin recomprimir), escribe `tools/assets_manifest.json` con el origen y el
+Copia los PNG TAL CUAL (sin recomprimir), escribe `tools/assets/assets_manifest.json` con el origen y el
 sha256 de cada archivo, y es idempotente.
 
 Los recursos son arte de EnZona/XETID y contienen marcas de terceros. Ver el manifiesto.
@@ -26,7 +26,7 @@ import zipfile
 from pathlib import Path
 from urllib.parse import quote
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 PREFIX = "assets/flutter_assets/"
 ANDROID = ROOT / "androidApp/src/main/res/drawable-nodpi"
 IOS = ROOT / "iosApp/iosApp/Assets.xcassets"
@@ -91,7 +91,7 @@ AVATARS = {
     "avatar_placeholder": "assets/images/im_foto_usuario.png",
 }
 
-# Sección del manifiesto -> imágenes. Todas deben ser cuadradas y se copian tal cual. `tools/check_assets.py`
+# Sección del manifiesto -> imágenes. Todas deben ser cuadradas y se copian tal cual. `tools/checks/check_assets.py`
 # las comprueba en ambas plataformas.
 SIMPLE_GROUPS = {
     "operation_icons": OPERATION_ICONS,
@@ -189,7 +189,7 @@ def main() -> int:
         "card_skins": skins,
         **simple,
     }
-    out = ROOT / "tools/assets_manifest.json"
+    out = ROOT / "tools/assets/assets_manifest.json"
     out.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
     extra = " + ".join(f"{len(entries)} {section}" for section, entries in simple.items())
     print(f"OK: {len(services)} iconos + {len(skins)} skins + {extra} -> Android + iOS ; manifiesto: {out.relative_to(ROOT)}")
