@@ -99,3 +99,15 @@ fun parseMinorUnits(raw: String?): Long? {
 
     return if (isNegative) result else -result
 }
+
+/**
+ * El importe como texto decimal con punto y dos decimales, sin separador de miles ni símbolo (`1400.00`): la forma en
+ * que la API recibe los importes. Trabaja con los dígitos del `Long` (el dinero nunca pasa por `Double`, y `abs` de
+ * `Long.MIN_VALUE` desbordaría). Es el inverso de [parseMinorUnits].
+ */
+fun Money.toDecimalText(): String {
+    val negative = minorUnits < 0
+    val digits = minorUnits.toString().removePrefix("-").padStart(3, '0')
+    val text = digits.dropLast(2) + "." + digits.takeLast(2)
+    return if (negative) "-$text" else text
+}

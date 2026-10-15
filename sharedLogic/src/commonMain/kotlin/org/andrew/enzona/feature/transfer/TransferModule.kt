@@ -1,7 +1,10 @@
 package org.andrew.enzona.feature.transfer
 
+import org.andrew.enzona.feature.transfer.data.TransferGatewayImpl
 import org.andrew.enzona.feature.transfer.data.TransferRepositoryImpl
 import org.andrew.enzona.feature.transfer.domain.FindRecipientUseCase
+import org.andrew.enzona.feature.transfer.domain.SubmitTransferUseCase
+import org.andrew.enzona.feature.transfer.domain.TransferGateway
 import org.andrew.enzona.feature.transfer.domain.TransferRepository
 import org.andrew.enzona.feature.transfer.presentation.FindRecipientViewModel
 import org.andrew.enzona.feature.transfer.presentation.TransferHistoryViewModel
@@ -14,7 +17,10 @@ import org.koin.dsl.module
 
 val transferModule: Module = module {
     singleOf(::TransferRepositoryImpl) bind TransferRepository::class
+    singleOf(::TransferGatewayImpl) bind TransferGateway::class
     singleOf(::FindRecipientUseCase)
+    // Una sola instancia: su Mutex es lo que impide dos transferencias a la vez en toda la app.
+    singleOf(::SubmitTransferUseCase)
     viewModelOf(::TransferMenuViewModel)
     viewModelOf(::TransferHistoryViewModel)
     viewModelOf(::FindRecipientViewModel)

@@ -104,3 +104,28 @@ class MoneyTest {
         assertEquals("cup", lowercase.currency)
     }
 }
+
+class MoneyDecimalTextTest {
+    @Test
+    fun formatsWithTwoDecimalsAndNoSeparatorsOrSymbol() {
+        assertEquals("1400.00", Money(140_000, "CUP").toDecimalText())
+        assertEquals("0.05", Money(5, "CUP").toDecimalText())
+        assertEquals("0.50", Money(50, "CUP").toDecimalText())
+        assertEquals("17088.00", Money(1_708_800, "CUP").toDecimalText())
+        assertEquals("0.00", Money(0, "CUP").toDecimalText())
+    }
+
+    @Test
+    fun negativeAndExtremeValuesDoNotOverflow() {
+        assertEquals("-9.50", Money(-950, "CUP").toDecimalText())
+        assertEquals("-92233720368547758.08", Money(Long.MIN_VALUE, "CUP").toDecimalText())
+        assertEquals("92233720368547758.07", Money(Long.MAX_VALUE, "CUP").toDecimalText())
+    }
+
+    @Test
+    fun isTheInverseOfParseMinorUnits() {
+        for (minor in listOf(0L, 1L, 99L, 100L, 123_456L, -250L, 9_999_999_999L)) {
+            assertEquals(minor, parseMinorUnits(Money(minor, "CUP").toDecimalText()))
+        }
+    }
+}
