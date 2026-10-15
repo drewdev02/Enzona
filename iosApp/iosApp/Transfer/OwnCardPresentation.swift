@@ -19,12 +19,11 @@ enum OwnCardPresentation {
         "(\(last4)) \(OperationPresentation.displayCurrency(currency))"
     }
 
-    /// `AmountProblem`.
-    static func amountProblem(_ name: String) -> String {
-        switch name {
-        case "HAS_WHITESPACE": return "El monto no puede contener espacios en blanco"
-        case "ZERO": return "El monto no puede ser $0.00"
-        default: return "Introduzca un monto válido"
+    static func amountProblem(_ problem: EzAmountProblem) -> String {
+        switch problem {
+        case .hasWhitespace: return "El monto no puede contener espacios en blanco"
+        case .zero: return "El monto no puede ser $0.00"
+        case .empty, .invalid: return "Introduzca un monto válido"
         }
     }
 
@@ -38,58 +37,56 @@ enum OwnCardPresentation {
         return "¿Está seguro que desea transferir \(amount) de la tarjeta \(source) a la tarjeta \(destination)?"
     }
 
-    /// `NotSentReason`: por qué no salió el intento (nada se envió: se puede corregir y volver a probar).
-    static func notSent(_ name: String) -> String {
-        switch name {
-        case "PASSWORD_EMPTY": return "Escribe tu contraseña de pago."
-        case "PASSWORD_UNUSABLE": return "No se pudo proteger tu contraseña de pago. Inténtalo de nuevo."
-        case "ANOTHER_TRANSFER_IN_PROGRESS": return "Hay otra transferencia en curso. Espera a que termine."
-        default: return "No se pudo enviar la transferencia. Revisa los datos."
+    /// Por qué no salió el intento (nada se envió: se puede corregir y volver a probar).
+    static func notSent(_ reason: EzNotSentReason) -> String {
+        switch reason {
+        case .passwordEmpty: return "Escribe tu contraseña de pago."
+        case .passwordUnusable: return "No se pudo proteger tu contraseña de pago. Inténtalo de nuevo."
+        case .anotherTransferInProgress: return "Hay otra transferencia en curso. Espera a que termine."
+        case .nonPositiveAmount, .missingCurrency, .missingSourceCard, .missingDestination, .sameCard:
+            return "No se pudo enviar la transferencia. Revisa los datos."
         }
     }
 
-    enum ResultKind { case success, pending, failed, unknown }
-
     struct Result: Equatable {
-        let kind: ResultKind
+        let kind: EzResultKind
         let title: String
         let detail: String?
     }
 
-    /// Cómo se cuenta el desenlace al usuario. `outcome` es `ACCEPTED`, `REJECTED`, `UNKNOWN` o `NOT_SENT`;
-    /// `receiptStatus` es el `TransferStatus` de un recibo; `cause` es el `RejectionCause` o el `NotSentReason`.
-    static func result(outcome: String, receiptStatus: String?, statusText: String?, cause: String?, httpStatus: Int?,
-                       serverMessage: String?) -> Result {
+    /// Cómo se cuenta el desenlace al usuario. El [kind] lo decide el dominio (`TransferResultKind`); aquí solo las
+    /// palabras, que son las mismas que las de `resultText()` de Android.
+    static func result(outcome: EzOutcome, kind: EzResultKind) -> Result {
         switch outcome {
-        case "ACCEPTED":
-            switch receiptStatus {
-            case "ACCEPTED":
-                return Result(kind: .success, title: "Transferencia confirmada", detail: nil)
-            case "PENDING":
-                return Result(kind: .pending, title: "Transferencia pendiente",
+        case .accepted(let status, let statusText):
+            switch status {
+            case .accepted:
+                return Result(kind: kind, title: "Transferencia confirmada", detail: nil)
+            case .pending:
+                return Result(kind: kind, title: "Transferencia pendiente",
                               detail: "El servicio la recibió y la está procesando. Revisa su estado en el historial.")
-            default:
+            case .failed, .other:
                 let state = statusText.map { " (estado: \($0))" } ?? ""
-                return Result(kind: .pending, title: "Transferencia recibida",
+                return Result(kind: kind, title: "Transferencia recibida",
                               detail: "El servicio la aceptó\(state). Confírmala en el historial.")
             }
-        case "REJECTED":
+        case .rejected(let cause, let httpStatus, let serverMessage):
             let detail: String
-            if cause == "SESSION_EXPIRED" {
+            if cause == .sessionExpired {
                 detail = "Tu sesión expiró. Inicia sesión de nuevo. No se movió dinero."
             } else if let serverMessage {
                 detail = "\(serverMessage)\nNo se movió dinero."
-            } else if cause == "REFUSED", let httpStatus {
+            } else if cause == .refused, let httpStatus {
                 detail = "El servicio no aceptó la transferencia (código \(httpStatus)). No se movió dinero."
             } else {
                 detail = "El servicio no pudo completar la transferencia. No se movió dinero."
             }
-            return Result(kind: .failed, title: "Transferencia fallida", detail: detail)
-        case "UNKNOWN":
-            return Result(kind: .unknown, title: "No sabemos si se realizó",
+            return Result(kind: kind, title: "Transferencia fallida", detail: detail)
+        case .unknown:
+            return Result(kind: kind, title: "No sabemos si se realizó",
                           detail: "No repitas la transferencia hasta revisar el historial: puede que ya se haya hecho.")
-        default:
-            return Result(kind: .failed, title: "No se envió", detail: notSent(cause ?? ""))
+        case .notSent(let reason):
+            return Result(kind: kind, title: "No se envió", detail: notSent(reason))
         }
     }
 

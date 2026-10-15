@@ -1,50 +1,50 @@
 import Foundation
 
 /// Presentación de una operación. Los textos y los iconos son de la UI (el dominio solo guarda hechos);
-/// el rediseño de iOS puede cambiarlos sin tocar la lógica compartida. Mismos textos que la app original.
+/// el rediseño de iOS puede cambiarlo sin tocar la lógica compartida. Mismos textos que la app original.
 ///
 /// Sin dependencias del framework Kotlin: se verifica con un script (tools/check_assets.py comprueba que la
 /// tabla de iconos cubre todos los `OperationKind` y coincide con la de Android) y se puede previsualizar.
-/// Las claves son los nombres de `OperationKind` (Kotlin).
+/// Los tipos son los espejos de `EzKinds.swift`: ningún `switch` compara nombres en texto.
 enum OperationPresentation {
     /// Tipo -> imageset. Debe coincidir con `OperationIcons.kt` (Android).
-    static let icons: [String: String] = [
-        "TRANSFER": "op_transfer",
-        "REVERSAL": "op_transfer",
-        "CARD_ACTIVATION": "op_ez",
-        "MERCHANT_PAYMENT": "op_merchant",
-        "UNKNOWN": "op_merchant",
-        "POS_PAYMENT": "op_pos",
-        "WITHDRAWAL": "op_withdrawal",
-        "CREDIT": "op_payroll",
-        "PAYROLL": "op_payroll",
-        "ETECSA_PAYMENT": "op_mobile",
-        "MICRO_TOPUP": "op_mobile",
-        "MOBILE_TOPUP": "op_mobile",
-        "NAUTA_TOPUP": "op_mobile",
-        "OWN_TOPUP": "op_mobile",
+    static let icons: [EzOperationKind: String] = [
+        .transfer: "op_transfer",
+        .reversal: "op_transfer",
+        .cardActivation: "op_ez",
+        .merchantPayment: "op_merchant",
+        .unknown: "op_merchant",
+        .posPayment: "op_pos",
+        .withdrawal: "op_withdrawal",
+        .credit: "op_payroll",
+        .payroll: "op_payroll",
+        .etecsaPayment: "op_mobile",
+        .microTopup: "op_mobile",
+        .mobileTopup: "op_mobile",
+        .nautaTopup: "op_mobile",
+        .ownTopup: "op_mobile",
     ]
 
-    /// Un tipo nuevo del dominio que aún no tenga icono no rompe la pantalla (el verificador lo detecta).
-    static func icon(kind: String) -> String { icons[kind] ?? "op_merchant" }
+    /// El verificador garantiza que la tabla cubre todos los tipos; el valor por defecto solo evita romper la pantalla.
+    static func icon(kind: EzOperationKind) -> String { icons[kind] ?? "op_merchant" }
 
     /// Título de la fila. Un pago a comercio muestra el nombre del comercio si el backend lo trae.
-    static func title(kind: String, merchantAlias: String?) -> String {
+    static func title(kind: EzOperationKind, merchantAlias: String?) -> String {
         switch kind {
-        case "TRANSFER": return "Transferencia"
-        case "CARD_ACTIVATION": return "Activación de Tarjeta"
-        case "MERCHANT_PAYMENT": return merchantAlias ?? "Pago a comercio"
-        case "POS_PAYMENT": return "Pago en POS"
-        case "WITHDRAWAL": return "Extracción"
-        case "CREDIT": return "Crédito"
-        case "PAYROLL": return "Nómina"
-        case "REVERSAL": return "Reverso"
-        case "ETECSA_PAYMENT": return "Pago de servicio a ETECSA"
-        case "MICRO_TOPUP": return "Micro Recarga Móvil"
-        case "MOBILE_TOPUP": return "Recarga Móvil"
-        case "NAUTA_TOPUP": return "Recarga Nauta"
-        case "OWN_TOPUP": return "Recarga Propia"
-        default: return "Operación"
+        case .transfer: return "Transferencia"
+        case .cardActivation: return "Activación de Tarjeta"
+        case .merchantPayment: return merchantAlias ?? "Pago a comercio"
+        case .posPayment: return "Pago en POS"
+        case .withdrawal: return "Extracción"
+        case .credit: return "Crédito"
+        case .payroll: return "Nómina"
+        case .reversal: return "Reverso"
+        case .etecsaPayment: return "Pago de servicio a ETECSA"
+        case .microTopup: return "Micro Recarga Móvil"
+        case .mobileTopup: return "Recarga Móvil"
+        case .nautaTopup: return "Recarga Nauta"
+        case .ownTopup: return "Recarga Propia"
+        case .unknown: return "Operación"
         }
     }
 
@@ -71,17 +71,17 @@ enum OperationPresentation {
     }
 
     /// Texto de la fila "Tarjeta": banco + últimos 4 dígitos ("BANMET 6856"). Un banco desconocido muestra su
-    /// nombre real (el original mostraba "BANMET" para cualquier banco desconocido). `skinName` es `CardSkin.name`.
-    static func cardDetailLabel(skinName: String, bankName: String, last4: String) -> String {
+    /// nombre real (el original mostraba "BANMET" para cualquier banco desconocido).
+    static func cardDetailLabel(skin: EzCardSkin, bankName: String, last4: String) -> String {
         let bank: String
-        switch skinName {
-        case "AIS": bank = "AIS"
-        case "BANDEC", "BANDEC_USD": bank = "BANDEC"
-        case "BANMET": bank = "BANMET"
-        case "BICSA": bank = "BICSA"
-        case "BPA": bank = "BPA"
-        case "CLASICA": bank = "Clásica"
-        default:
+        switch skin {
+        case .ais: bank = "AIS"
+        case .bandec, .bandecUsd: bank = "BANDEC"
+        case .banmet: bank = "BANMET"
+        case .bicsa: bank = "BICSA"
+        case .bpa: bank = "BPA"
+        case .clasica: bank = "Clásica"
+        case .generic:
             let name = bankName.trimmingCharacters(in: .whitespaces)
             bank = name.isEmpty ? "Tarjeta" : name
         }

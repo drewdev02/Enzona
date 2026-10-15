@@ -86,9 +86,9 @@ enum FriendsPhase {
 extension TransferRowModel {
     /// Datos INVENTADOS para previews.
     static let samples: [TransferRowModel] = {
-        func row(_ id: String, outgoing: Bool, minor: Int64, status: String, statusText: String? = nil,
-                 from: String, to: String, toBrand: String, date: (Int, Int, Int, Int, Int)) -> TransferRowModel {
-            let direction = outgoing ? "OUTGOING" : "INCOMING"
+        func row(_ id: String, outgoing: Bool, minor: Int64, status: EzTransferStatus, statusText: String? = nil,
+                 from: String, to: String, toBrand: EzBankBrand, date: (Int, Int, Int, Int, Int)) -> TransferRowModel {
+            let direction: EzTransferDirection = outgoing ? .outgoing : .incoming
             let amount = TransferPresentation.amountText(direction: direction, minorUnits: minor)
             let statusLabel = TransferPresentation.statusLabel(status: status, statusText: statusText)
             let dateText = TransferPresentation.wallClock(year: date.0, month: date.1, day: date.2, hour: date.3, minute: date.4)
@@ -101,12 +101,12 @@ extension TransferRowModel {
             )
         }
         return [
-            row("1", outgoing: true, minor: 140_000, status: "ACCEPTED", from: "BANMET(6856)", to: "BPA(1234)", toBrand: "BPA", date: (2026, 10, 14, 16, 30)),
-            row("2", outgoing: false, minor: 50_000, status: "ACCEPTED", from: "BANDEC(9021)", to: "BANMET(6856)", toBrand: "BANMET", date: (2026, 10, 12, 9, 5)),
-            row("3", outgoing: true, minor: 25_000, status: "PENDING", from: "BANMET(6856)", to: "BICSA(4410)", toBrand: "BICSA", date: (2026, 10, 10, 0, 15)),
-            row("4", outgoing: true, minor: 1_200_000, status: "FAILED", from: "BANMET(6856)", to: "CLASICA(7733)", toBrand: "CLASICA", date: (2026, 10, 9, 12, 0)),
-            row("5", outgoing: true, minor: 9_950, status: "OTHER", statusText: "Reversada", from: "BANMET(6856)", to: "AIS(5502)", toBrand: "AIS", date: (2026, 10, 8, 18, 45)),
-            row("6", outgoing: true, minor: 300_000, status: "ACCEPTED", from: "BANMET(6856)", to: "Ana Pérez", toBrand: "UNKNOWN", date: (2026, 10, 7, 11, 20)),
+            row("1", outgoing: true, minor: 140_000, status: .accepted, from: "BANMET(6856)", to: "BPA(1234)", toBrand: .bpa, date: (2026, 10, 14, 16, 30)),
+            row("2", outgoing: false, minor: 50_000, status: .accepted, from: "BANDEC(9021)", to: "BANMET(6856)", toBrand: .banmet, date: (2026, 10, 12, 9, 5)),
+            row("3", outgoing: true, minor: 25_000, status: .pending, from: "BANMET(6856)", to: "BICSA(4410)", toBrand: .bicsa, date: (2026, 10, 10, 0, 15)),
+            row("4", outgoing: true, minor: 1_200_000, status: .failed, from: "BANMET(6856)", to: "CLASICA(7733)", toBrand: .clasica, date: (2026, 10, 9, 12, 0)),
+            row("5", outgoing: true, minor: 9_950, status: .other, statusText: "Reversada", from: "BANMET(6856)", to: "AIS(5502)", toBrand: .ais, date: (2026, 10, 8, 18, 45)),
+            row("6", outgoing: true, minor: 300_000, status: .accepted, from: "BANMET(6856)", to: "Ana Pérez", toBrand: .unknown, date: (2026, 10, 7, 11, 20)),
         ]
     }()
 }

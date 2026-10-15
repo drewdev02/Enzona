@@ -35,7 +35,7 @@ enum CardDetailPhase {
 extension CardActivityData {
     /// Datos INVENTADOS para previews: una operación de cada tipo, con la forma de la respuesta real.
     static let sample: CardActivityData = {
-        func row(_ id: Int, _ kind: String, debit: Bool, minor: Int64, date: String, alias: String? = nil) -> OperationRowModel {
+        func row(_ id: Int, _ kind: EzOperationKind, debit: Bool, minor: Int64, date: String, alias: String? = nil) -> OperationRowModel {
             let title = OperationPresentation.title(kind: kind, merchantAlias: alias)
             let label = OperationPresentation.label(isDebit: debit)
             let amount = OperationPresentation.sign(isDebit: debit)
@@ -50,15 +50,15 @@ extension CardActivityData {
         return CardActivityData(
             availableText: "$3395.15", availableCurrency: "CUP", bookText: "$3395.15 CUP",
             operations: [
-                row(0, "TRANSFER", debit: true, minor: 95_000, date: "14/10/26"),
-                row(1, "MOBILE_TOPUP", debit: true, minor: 32_400, date: "14/10/26"),
-                row(2, "PAYROLL", debit: false, minor: 1_708_800, date: "08/10/26"),
-                row(3, "POS_PAYMENT", debit: true, minor: 12_550, date: "07/10/26"),
-                row(4, "WITHDRAWAL", debit: true, minor: 500_000, date: "06/10/26"),
-                row(5, "MERCHANT_PAYMENT", debit: true, minor: 8_975, date: "05/10/26", alias: "Tienda La Esquina"),
-                row(6, "MERCHANT_PAYMENT", debit: true, minor: 4_000, date: "04/10/26"),
-                row(7, "ETECSA_PAYMENT", debit: true, minor: 21_000, date: "03/10/26"),
-                row(8, "CARD_ACTIVATION", debit: false, minor: 0, date: "01/10/26"),
+                row(0, .transfer, debit: true, minor: 95_000, date: "14/10/26"),
+                row(1, .mobileTopup, debit: true, minor: 32_400, date: "14/10/26"),
+                row(2, .payroll, debit: false, minor: 1_708_800, date: "08/10/26"),
+                row(3, .posPayment, debit: true, minor: 12_550, date: "07/10/26"),
+                row(4, .withdrawal, debit: true, minor: 500_000, date: "06/10/26"),
+                row(5, .merchantPayment, debit: true, minor: 8_975, date: "05/10/26", alias: "Tienda La Esquina"),
+                row(6, .merchantPayment, debit: true, minor: 4_000, date: "04/10/26"),
+                row(7, .etecsaPayment, debit: true, minor: 21_000, date: "03/10/26"),
+                row(8, .cardActivation, debit: false, minor: 0, date: "01/10/26"),
             ],
             skipped: 0
         )

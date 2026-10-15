@@ -4,11 +4,10 @@ import SharedLogic
 private extension CardInk {
     /// Debe coincidir con INK en tools/check_card_skins.py: el verificador mide contra estos valores.
     var color: Color {
-        switch name {
-        case "SOFT_BLACK": return Color(red: 0x20 / 255, green: 0x1F / 255, blue: 0x1F / 255)
-        case "WHITE": return .white
-        default: return Color(red: 0, green: 0, blue: 0)
-        }
+        // Se compara con las constantes de Kotlin (tipadas), no con el nombre en texto.
+        if self == CardInk.softBlack { return Color(red: 0x20 / 255, green: 0x1F / 255, blue: 0x1F / 255) }
+        if self == CardInk.white { return .white }
+        return Color(red: 0, green: 0, blue: 0)
     }
 }
 
@@ -16,17 +15,18 @@ extension BankCard {
     /// Traduce el dominio a los datos de presentación de `EzBankCard`.
     func displayModel() -> EzBankCardModel {
         let skin = self.skin
+        let kind = EzCardSkin(skin)
         return EzBankCardModel(
             id: id,
             imageName: skin.imageKey,
-            fallbackTitle: (skin.name == "GENERIC" && !bankName.isEmpty) ? bankName : nil,
+            fallbackTitle: (kind == .generic && !bankName.isEmpty) ? bankName : nil,
             last4: last4, holder: holder, currency: currency, expiry: expiry, isPrimary: isPrimary,
             numberInk: skin.number.color, textInk: skin.text.color, menuInk: skin.menu.color,
             menuScrim: skin.menuScrim,
             numberInset: CGFloat(skin.numberInset),
             spoken: spokenDescription(),
             menuLabel: "Más opciones de la tarjeta terminada en \(last4)",
-            detailLabel: OperationPresentation.cardDetailLabel(skinName: skin.name, bankName: bankName, last4: last4)
+            detailLabel: OperationPresentation.cardDetailLabel(skin: kind, bankName: bankName, last4: last4)
         )
     }
 }

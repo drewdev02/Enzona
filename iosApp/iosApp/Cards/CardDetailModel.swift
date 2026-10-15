@@ -10,8 +10,9 @@ extension CardActivity {
         }
         let currencyText = OperationPresentation.displayCurrency(currency)
         let rows: [OperationRowModel] = operations.enumerated().map { index, operation in
-            let isDebit = operation.direction.name == "DEBIT"
-            let title = OperationPresentation.title(kind: operation.kind.name, merchantAlias: operation.merchantAlias)
+            let isDebit = operation.direction == OperationDirection.debit
+            let kind = EzOperationKind(operation.kind)
+            let title = OperationPresentation.title(kind: kind, merchantAlias: operation.merchantAlias)
             let label = OperationPresentation.label(isDebit: isDebit)
             // El importe llega como magnitud; el signo sale del sentido de la operación.
             var magnitude = OperationPresentation.formatMinorUnits(operation.amount.minorUnits)
@@ -22,7 +23,7 @@ extension CardActivity {
             if !operation.dateText.isEmpty { spokenParts.append(operation.dateText) }
             return OperationRowModel(
                 id: index, title: title, subtitle: label,
-                iconName: OperationPresentation.icon(kind: operation.kind.name),
+                iconName: OperationPresentation.icon(kind: kind),
                 amountText: amount, currency: shownCurrency, dateText: operation.dateText,
                 spoken: spokenParts.joined(separator: ", ")
             )

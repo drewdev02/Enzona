@@ -9,8 +9,9 @@ extension TransferSummary {
         }
         let title = label(recipient)
         let subtitle = label(source)
-        let directionName = direction.name
-        let amount = TransferPresentation.amountText(direction: directionName, minorUnits: self.amount.minorUnits)
+        let directionKind = EzTransferDirection(direction)
+        let statusKind = EzTransferStatus(status)
+        let amount = TransferPresentation.amountText(direction: directionKind, minorUnits: self.amount.minorUnits)
         let currency = OperationPresentation.displayCurrency(self.amount.currency)
         let dateText: String
         if let at = createdAt {
@@ -20,12 +21,12 @@ extension TransferSummary {
         } else {
             dateText = createdAtText ?? ""
         }
-        let statusLabel = TransferPresentation.statusLabel(status: status.name, statusText: statusText)
+        let statusLabel = TransferPresentation.statusLabel(status: statusKind, statusText: statusText)
         return TransferRowModel(
             id: id, title: title, subtitle: subtitle,
-            logoName: TransferPresentation.logo(brand: BankBrandKt.bankBrandOf(bank: recipient.bank).name),
-            amountText: amount, currency: currency, amountTone: TransferPresentation.amountTone(direction: directionName),
-            dateText: dateText, statusText: statusLabel, statusTone: TransferPresentation.statusTone(status: status.name),
+            logoName: TransferPresentation.logo(brand: EzBankBrand(BankBrandKt.bankBrandOf(bank: recipient.bank))),
+            amountText: amount, currency: currency, amountTone: TransferPresentation.amountTone(direction: directionKind),
+            dateText: dateText, statusText: statusLabel, statusTone: TransferPresentation.statusTone(status: statusKind),
             spoken: TransferPresentation.spoken(title: title, subtitle: subtitle, amount: amount, currency: currency,
                                                 status: statusLabel, date: dateText)
         )
@@ -166,11 +167,7 @@ final class FindAccountModel: ObservableObject {
     }
 
     private static func message(_ reason: InvalidQuery) -> String {
-        switch reason.name {
-        case "HAS_WHITESPACE": return "El nombre de usuario no lleva espacios."
-        case "YOURSELF": return "Esa es tu cuenta. Para mover dinero entre tus tarjetas usa \"A una de mis tarjetas\"."
-        default: return "Escribe el nombre de usuario de la cuenta."
-        }
+        TransferPresentation.invalidQuery(EzInvalidQuery(reason))
     }
 
     func search(_ query: String) { holder.viewModel.search(query: query) }

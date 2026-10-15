@@ -102,11 +102,12 @@ struct HomeView: View {
     /// La navegación de cada servicio se añade con su hito; hasta entonces avisa.
     private func open(_ item: EzServiceItem) {
         let service = HomeServices.shared.all.first { $0.iconKey == item.id }
-        if service?.isAvailable == true {
-            switch service?.name {
-            case "BALANCE": path.append(.balance)
-            case "TRANSFER": path.append(.transferMenu)
-            default: break
+        if let service, service.isAvailable {
+            // Se compara con las constantes de Kotlin (tipadas), no con el nombre en texto.
+            if service == HomeService.balance {
+                path.append(.balance)
+            } else if service == HomeService.transfer {
+                path.append(.transferMenu)
             }
         } else {
             comingSoon = "\(item.title) estará disponible próximamente."

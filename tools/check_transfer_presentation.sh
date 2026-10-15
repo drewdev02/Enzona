@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 OUT="$(mktemp -d)"
 trap 'rm -rf "$OUT"' EXIT
 swiftc -o "$OUT/check" \
-  tools/swiftcheck/stubs.swift tools/swiftcheck/main.swift \
+  tools/swiftcheck/stubs.swift tools/swiftcheck/main.swift iosApp/iosApp/Domain/EzKinds.swift \
   iosApp/iosApp/Transfer/TransferPresentation.swift iosApp/iosApp/Transfer/TransferData.swift \
   iosApp/iosApp/Transfer/OwnCardPresentation.swift iosApp/iosApp/Transfer/OwnCardData.swift \
   iosApp/iosApp/Cards/OperationPresentation.swift

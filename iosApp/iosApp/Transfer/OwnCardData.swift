@@ -34,7 +34,7 @@ struct OwnCardConfirmData: Equatable {
 /// El comprobante "Detalles de la transferencia", ya resuelto: logo y texto del destino, estado, importe, fecha, filas,
 /// la tarjeta de origen y el QR.
 struct TransferDetailData: Equatable {
-    let kind: OwnCardPresentation.ResultKind
+    let kind: EzResultKind
     let statusTitle: String
     /// Aviso bajo el estado (pendiente, fallida, desconocida). La transferencia confirmada no lleva.
     let note: String?
@@ -76,16 +76,13 @@ extension OwnCardFormData {
 
     static let withProblems = OwnCardFormData(
         cards: sampleCards, sourceId: "c1", destinationId: nil, amountText: "0", description: "",
-        amountError: OwnCardPresentation.amountProblem("ZERO"), destinationError: true, descriptionError: true)
+        amountError: OwnCardPresentation.amountProblem(.zero), destinationError: true, descriptionError: true)
 }
 
 extension TransferDetailData {
-    private static func make(outcome: String, receiptStatus: String? = nil, statusText: String? = nil, cause: String? = nil,
-                             httpStatus: Int? = nil, serverMessage: String? = nil, operation: String? = nil,
+    private static func make(outcome: EzOutcome, kind: EzResultKind, operation: String? = nil,
                              date: String? = nil, qr: String? = nil) -> TransferDetailData {
-        let result = OwnCardPresentation.result(
-            outcome: outcome, receiptStatus: receiptStatus, statusText: statusText, cause: cause,
-            httpStatus: httpStatus, serverMessage: serverMessage)
+        let result = OwnCardPresentation.result(outcome: outcome, kind: kind)
         return TransferDetailData(
             kind: result.kind, statusTitle: result.title, note: result.detail, mainText: "BANDEC 1234",
             destinationLogo: "bank_bandec", amountText: OwnCardPresentation.amountPlain(minorUnits: 1_050, currency: "cup"),
@@ -95,11 +92,12 @@ extension TransferDetailData {
     }
 
     static let accepted = make(
-        outcome: "ACCEPTED", receiptStatus: "ACCEPTED", statusText: "Aceptada", operation: "kf1jldsUqZ1o",
+        outcome: .accepted(status: .accepted, statusText: "Aceptada"), kind: .success, operation: "kf1jldsUqZ1o",
         date: OwnCardPresentation.dateText(wallClock: (2026, 9, 11, 11, 30), receivedText: nil), qr: "SIG-INVENTADA-0001")
     static let pending = make(
-        outcome: "ACCEPTED", receiptStatus: "PENDING", operation: "kf1jldsUqZ2p",
+        outcome: .accepted(status: .pending, statusText: nil), kind: .pending, operation: "kf1jldsUqZ2p",
         date: OwnCardPresentation.dateText(wallClock: (2026, 9, 11, 11, 31), receivedText: nil))
-    static let rejected = make(outcome: "REJECTED", cause: "REFUSED", httpStatus: 400, serverMessage: "Saldo insuficiente")
-    static let unknown = make(outcome: "UNKNOWN")
+    static let rejected = make(
+        outcome: .rejected(cause: .refused, httpStatus: 400, serverMessage: "Saldo insuficiente"), kind: .failed)
+    static let unknown = make(outcome: .unknown, kind: .unknown)
 }

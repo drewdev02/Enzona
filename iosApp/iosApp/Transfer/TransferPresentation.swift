@@ -3,7 +3,7 @@ import Foundation
 /// Presentación de una transferencia. Los textos, formatos e imágenes son de la UI (el dominio solo guarda
 /// hechos). Sin dependencias del framework Kotlin: se verifica con un script y se puede previsualizar. Mismas
 /// reglas que `TransferPresentation.kt` (Android): título = destinatario, subtítulo = origen, `dd/MM/yyyy hh:mm a`.
-/// Las claves son los nombres de los enums de Kotlin (`TransferDirection`, `TransferStatus`, `BankBrand`).
+/// Los tipos son los espejos de `EzKinds.swift` (`EzTransferDirection`, `EzTransferStatus`, `EzBankBrand`).
 enum TransferPresentation {
     /// `BANMET(6856)`; sin banco o sin últimos dígitos, lo que haya (usuario, nombre...). Nunca vacío.
     static func partyLabel(name: String?, username: String?, bank: String?, last4: String?) -> String {
@@ -19,12 +19,12 @@ enum TransferPresentation {
     }
 
     /// El importe llega como magnitud; el signo sale del sentido. Sin sentido conocido no se inventa signo.
-    static func amountText(direction: String, minorUnits: Int64) -> String {
+    static func amountText(direction: EzTransferDirection, minorUnits: Int64) -> String {
         let sign: String
         switch direction {
-        case "OUTGOING": sign = "-"
-        case "INCOMING": sign = "+"
-        default: sign = ""
+        case .outgoing: sign = "-"
+        case .incoming: sign = "+"
+        case .unknown: sign = ""
         }
         var magnitude = OperationPresentation.formatMinorUnits(minorUnits)
         if magnitude.hasPrefix("-") { magnitude.removeFirst() }
@@ -41,37 +41,46 @@ enum TransferPresentation {
         return "\(two(day))/\(two(month))/\(yearText) \(two(hour12)):\(two(minute)) \(suffix)"
     }
 
-    static func statusLabel(status: String, statusText: String?) -> String {
+    static func statusLabel(status: EzTransferStatus, statusText: String?) -> String {
         switch status {
-        case "ACCEPTED": return "Aceptada"
-        case "PENDING": return "Pendiente"
-        case "FAILED": return "Fallida"
-        default:
+        case .accepted: return "Aceptada"
+        case .pending: return "Pendiente"
+        case .failed: return "Fallida"
+        case .other:
             let text = statusText?.trimmingCharacters(in: .whitespaces) ?? ""
             return text.isEmpty ? "Sin estado" : text
         }
     }
 
-    static func statusTone(status: String) -> Ez.Tone {
+    static func statusTone(status: EzTransferStatus) -> Ez.Tone {
         switch status {
-        case "ACCEPTED": return .success
-        case "PENDING": return .warning
-        case "FAILED": return .error
-        default: return .neutral
+        case .accepted: return .success
+        case .pending: return .warning
+        case .failed: return .error
+        case .other: return .neutral
         }
     }
 
-    static func amountTone(direction: String) -> EzAmountTone {
+    static func amountTone(direction: EzTransferDirection) -> EzAmountTone {
         switch direction {
-        case "OUTGOING": return .negative
-        case "INCOMING": return .positive
-        default: return .neutral
+        case .outgoing: return .negative
+        case .incoming: return .positive
+        case .unknown: return .neutral
         }
     }
 
     /// Texto para lectores de pantalla: toda la fila en una frase.
     static func spoken(title: String, subtitle: String, amount: String, currency: String, status: String, date: String) -> String {
         [title, "desde \(subtitle)", "\(amount) \(currency)", status, date].filter { !$0.isEmpty }.joined(separator: ", ")
+    }
+
+    /// Por qué no se hizo la búsqueda de una cuenta (mismos textos que `InvalidQuery.message()` de Android).
+    static func invalidQuery(_ reason: EzInvalidQuery) -> String {
+        switch reason {
+        case .empty: return "Escribe el nombre de usuario de la cuenta."
+        case .hasWhitespace: return "El nombre de usuario no lleva espacios."
+        case .yourself: return "Esa es tu cuenta. Para mover dinero entre tus tarjetas usa \"A una de mis tarjetas\"."
+        }
     }
 
     /// Iniciales para el avatar de una persona (sin foto): hasta dos palabras.
@@ -81,19 +90,19 @@ enum TransferPresentation {
         return text.isEmpty ? "?" : text
     }
 
-    /// Banco -> logo. Un banco que no conocemos (`UNKNOWN`) no tiene entrada: no se adivina. Debe coincidir con
+    /// Banco -> logo. Un banco que no conocemos (`.unknown`) no tiene entrada: no se adivina. Debe coincidir con
     /// `BankLogos.kt` (Android); `tools/check_assets.py` lo comprueba.
-    static let bankLogos: [String: String] = [
-        "BANMET": "bank_banmet",
-        "BANDEC": "bank_bandec",
-        "BPA": "bank_bpa",
-        "BICSA": "bank_bicsa",
-        "CLASICA": "bank_clasica",
-        "AIS": "bank_ais",
+    static let bankLogos: [EzBankBrand: String] = [
+        .banmet: "bank_banmet",
+        .bandec: "bank_bandec",
+        .bpa: "bank_bpa",
+        .bicsa: "bank_bicsa",
+        .clasica: "bank_clasica",
+        .ais: "bank_ais",
     ]
 
     /// Logo del banco, o el avatar neutro si no se reconoce.
-    static func logo(brand: String) -> String { bankLogos[brand] ?? "avatar_placeholder" }
+    static func logo(brand: EzBankBrand) -> String { bankLogos[brand] ?? "avatar_placeholder" }
 
     /// `yyyy-MM-dd` del día de calendario elegido (sin pasar por la zona horaria).
     static func isoDay(_ date: Date, calendar: Calendar = .current) -> String {

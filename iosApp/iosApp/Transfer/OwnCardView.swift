@@ -204,7 +204,7 @@ struct TransferDetailView: View {
     private var statusColor: Color {
         switch detail.kind {
         case .success: return Ez.Palette.success
-        case .failed: return Ez.Palette.error
+        case .failed, .notSent: return Ez.Palette.error
         case .pending, .unknown: return Ez.Tone.warning.content
         }
     }
@@ -251,6 +251,9 @@ struct TransferDetailView: View {
         // El dinero no se movió: se puede corregir y volver a intentar.
         case .failed:
             EzButton(title: "Corregir", action: actions.editAgain)
+            EzButton(title: "Cerrar", kind: .tertiary, action: actions.close)
+        // Nunca se muestra aquí (un intento que no salió vuelve a confirmar), pero el `switch` es exhaustivo.
+        case .notSent:
             EzButton(title: "Cerrar", kind: .tertiary, action: actions.close)
         // Pendiente o desconocido: puede que sí se movió, así que nada de reintentar; primero el historial.
         case .pending, .unknown:

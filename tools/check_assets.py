@@ -99,8 +99,20 @@ for section, (prefix, label) in SECTIONS.items():
     print(f"{label}: {len(wanted)} | Android: {len(android_found)} | iOS: {len(ios_found)}")
 
 
+EZ_KINDS = IOS_UI / "Domain/EzKinds.swift"
+
+
+def swift_mirror_raw(swift_enum: str) -> dict[str, str]:
+    """`case outgoing = "OUTGOING"` de un espejo Swift (EzKinds.swift): nombre del caso -> nombre de la entrada Kotlin."""
+    src = EZ_KINDS.read_text()
+    start = src.index(f"enum {swift_enum}:")
+    body = src[start:src.index("\n}", start)]
+    return dict(re.findall(r'case (\w+) = "([A-Z][A-Z0-9_]*)"', body))
+
+
 def check_mapping(label: str, enum_file: Path, enum: str, image_prefix: str,
-                  android_file: Path, swift_file: Path, swift_table: str, exempt: set[str] = frozenset()):
+                  android_file: Path, swift_file: Path, swift_table: str, swift_enum: str,
+                  exempt: set[str] = frozenset()):
     """Cada plataforma tiene su tabla `tipo -> imagen`; aquí se comprueba que las dos cubren todo el enum (salvo
     [exempt], que en Android se escribe `-> null` y en iOS no aparece), que dicen lo mismo y que usan imágenes del
     manifiesto."""
@@ -125,9 +137,16 @@ def check_mapping(label: str, enum_file: Path, enum: str, image_prefix: str,
         else:
             pending = []  # `-> null`: ese caso no lleva imagen
     swift_src = swift_file.read_text()
-    # El tipo `[String: String]` ya contiene un `]`: se corta en el cierre del literal, no en el primero.
+    # El tipo `[EzOperationKind: String]` ya contiene un `]`: se corta en el cierre del literal, no en el primero.
     table = swift_src[swift_src.index("= [", swift_src.index(swift_table)):].split("\n    ]")[0]
-    swift_map = dict(re.findall(rf'"([A-Z_]+)":\s*"({image_prefix}\w+)"', table))
+    # La tabla de iOS está indexada por el caso del espejo Swift (`.transfer`); se traduce al nombre Kotlin (`TRANSFER`).
+    raw_of = swift_mirror_raw(swift_enum)
+    swift_map: dict[str, str] = {}
+    for case, image in re.findall(rf'\.(\w+):\s*"({image_prefix}\w+)"', table):
+        if case not in raw_of:
+            problems.append(f"iOS: la tabla de {label} usa .{case}, que no es un caso de {swift_enum}")
+        else:
+            swift_map[raw_of[case]] = image
     for plat, mapping in (("Android", android_map), ("iOS", swift_map)):
         for k in sorted(required - set(mapping)):
             problems.append(f"{plat}: {enum}.{k} no tiene imagen")
@@ -150,12 +169,13 @@ def check_mapping(label: str, enum_file: Path, enum: str, image_prefix: str,
 check_mapping(
     "tipos de operación", SHARED / "cards/domain/CardActivity.kt", "OperationKind", "op_",
     ANDROID_UI / "cards/OperationIcons.kt", IOS_UI / "Cards/OperationPresentation.swift", "static let icons",
+    "EzOperationKind",
 )
 
 check_mapping(
     "bancos", SHARED / "cards/domain/BankBrand.kt", "BankBrand", "bank_",
     ANDROID_UI / "transfer/BankLogos.kt", IOS_UI / "Transfer/TransferPresentation.swift", "static let bankLogos",
-    exempt={"UNKNOWN"},
+    "EzBankBrand", exempt={"UNKNOWN"},
 )
 
 print("OK" if not problems else "\n".join("FALLA: " + p for p in problems))

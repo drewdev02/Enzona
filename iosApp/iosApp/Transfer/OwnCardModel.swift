@@ -9,11 +9,11 @@ private extension BankCard {
 
     /// `BANMET 6856`.
     var label: String {
-        OperationPresentation.cardDetailLabel(skinName: skin.name, bankName: bankName, last4: last4)
+        OperationPresentation.cardDetailLabel(skin: EzCardSkin(skin), bankName: bankName, last4: last4)
     }
 
     /// Logo del banco, o el avatar neutro si no se reconoce.
-    var logo: String { TransferPresentation.logo(brand: BankBrandKt.bankBrandOf(bank: bankCode).name) }
+    var logo: String { TransferPresentation.logo(brand: EzBankBrand(BankBrandKt.bankBrandOf(bank: bankCode))) }
 }
 
 private extension OwnCardTransferUiStateEditing {
@@ -21,7 +21,7 @@ private extension OwnCardTransferUiStateEditing {
         OwnCardFormData(
             cards: cards.map { $0.choice() }, sourceId: sourceId, destinationId: destinationId,
             amountText: amountText, description: description_,
-            amountError: problems.amount.map { OwnCardPresentation.amountProblem($0.name) },
+            amountError: problems.amount.map { OwnCardPresentation.amountProblem(EzAmountProblem($0)) },
             destinationError: problems.destinationMissing, descriptionError: problems.descriptionMissing
         )
     }
@@ -30,30 +30,9 @@ private extension OwnCardTransferUiStateEditing {
 private extension OwnCardTransferUiStateFinished {
     /// El comprobante de lo que pasó, con los mismos hechos que `toDetail()` de Android.
     func detailData() -> TransferDetailData {
-        var outcomeName = "NOT_SENT"
-        var receipt: TransferReceipt?
-        var cause: String?
-        var httpStatus: Int?
-        var serverMessage: String?
-        switch outcome {
-        case let accepted as TransferOutcomeAccepted:
-            outcomeName = "ACCEPTED"
-            receipt = accepted.receipt
-        case let rejected as TransferOutcomeRejected:
-            outcomeName = "REJECTED"
-            cause = rejected.cause.name
-            httpStatus = rejected.httpStatus.map { $0.intValue }
-            serverMessage = rejected.serverMessage
-        case is TransferOutcomeUnknown:
-            outcomeName = "UNKNOWN"
-        case let notSent as TransferOutcomeNotSent:
-            cause = notSent.reason.name
-        default:
-            break
-        }
-        let result = OwnCardPresentation.result(
-            outcome: outcomeName, receiptStatus: receipt?.status.name, statusText: receipt?.statusText, cause: cause,
-            httpStatus: httpStatus, serverMessage: serverMessage)
+        let receipt = (outcome as? TransferOutcomeAccepted)?.receipt
+        // El desenlace se convierte una vez; cómo se clasifica (`kind`) lo decide el dominio, no esta capa.
+        let result = OwnCardPresentation.result(outcome: EzOutcome(outcome), kind: EzResultKind(kind))
         let wallClock = receipt?.createdAt.map {
             (year: Int($0.year), month: Int($0.monthNumber), day: Int($0.dayOfMonth), hour: Int($0.hour), minute: Int($0.minute))
         }
@@ -102,7 +81,7 @@ final class OwnCardModel: ObservableObject {
                 question: OwnCardPresentation.confirmation(
                     amount: amount, source: confirming.source.label, destination: confirming.destination.label,
                     destinationCurrency: confirming.destination.currency, exchangeApplies: confirming.exchangeApplies),
-                passwordError: confirming.notSent.map { OwnCardPresentation.notSent($0.name) }
+                passwordError: confirming.notSent.map { OwnCardPresentation.notSent(EzNotSentReason($0)) }
             ))
         case is OwnCardTransferUiStateSubmitting:
             phase = .submitting

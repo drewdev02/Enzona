@@ -22,6 +22,8 @@ import org.andrew.enzona.feature.transfer.domain.PaymentPassword
 import org.andrew.enzona.feature.transfer.domain.SubmitTransferUseCase
 import org.andrew.enzona.feature.transfer.domain.TransferOutcome
 import org.andrew.enzona.feature.transfer.domain.TransferRequest
+import org.andrew.enzona.feature.transfer.domain.TransferResultKind
+import org.andrew.enzona.feature.transfer.domain.kind
 import org.andrew.enzona.feature.transfer.domain.parseAmountInput
 
 /** Lo que está mal en el formulario tras intentar revisarlo. Cada campo se limpia al editarlo. */
@@ -77,7 +79,10 @@ sealed interface OwnCardTransferUiState {
         val source: BankCard,
         val destination: BankCard,
         val form: Editing,
-    ) : OwnCardTransferUiState
+    ) : OwnCardTransferUiState {
+        /** Cómo se clasifica el desenlace; lo decide el dominio y las dos apps solo ponen las palabras. */
+        val kind: TransferResultKind get() = outcome.kind
+    }
 }
 
 /**
