@@ -6,6 +6,7 @@ import SharedLogic
 struct BalanceView: View {
     @ObservedObject var cards: CardsModel
     let onCardMenu: () -> Void
+    let onCardTap: (EzBankCardModel) -> Void
 
     private var phase: BalanceContent.Phase {
         switch cards.phase {
@@ -17,7 +18,7 @@ struct BalanceView: View {
     }
 
     var body: some View {
-        BalanceContent(phase: phase, onRetry: { cards.load() }, onCardMenu: onCardMenu)
+        BalanceContent(phase: phase, onRetry: { cards.load() }, onCardMenu: onCardMenu, onCardTap: onCardTap)
             .balanceNavigationChrome()
             .onAppear { cards.load() }
     }
@@ -53,6 +54,7 @@ struct BalanceContent: View {
     let phase: Phase
     var onRetry: () -> Void = {}
     var onCardMenu: () -> Void = {}
+    var onCardTap: (EzBankCardModel) -> Void = { _ in }
 
     var body: some View {
         Group {
@@ -69,7 +71,7 @@ struct BalanceContent: View {
                 ScrollView {
                     LazyVStack(spacing: Ez.Space.lg) {
                         ForEach(cards) { card in
-                            EzBankCard(model: card, onMenu: onCardMenu)
+                            EzBankCard(model: card, onMenu: onCardMenu, onTap: { onCardTap(card) })
                         }
                     }
                     .padding(.horizontal, Ez.Space.lg)

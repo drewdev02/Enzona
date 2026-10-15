@@ -25,7 +25,8 @@ extension BankCard {
             menuScrim: skin.menuScrim,
             numberInset: CGFloat(skin.numberInset),
             spoken: spokenDescription(),
-            menuLabel: "Más opciones de la tarjeta terminada en \(last4)"
+            menuLabel: "Más opciones de la tarjeta terminada en \(last4)",
+            detailLabel: OperationPresentation.cardDetailLabel(skinName: skin.name, bankName: bankName, last4: last4)
         )
     }
 }

@@ -76,5 +76,39 @@ for plat, have in (("Android", android_ops), ("iOS", ios_ops)):
             problems.append(f"{plat}: {name} no coincide con el sha256 del manifiesto")
 print(f"operaciones: {len(ops)} | Android: {len(android_ops)} | iOS: {len(ios_ops)}")
 
+# Mapeo tipo de operación -> icono. Cada plataforma tiene su tabla (el dominio no conoce iconos); aquí se
+# comprueba que las dos cubren todos los `OperationKind`, que dicen lo mismo y que usan iconos del manifiesto.
+kinds = set(re.findall(r"^\s+([A-Z][A-Z0-9_]*),?\s*$",
+                       (lambda s: s[s.index("enum class OperationKind"):].split("}")[0])(
+                           (SHARED / "cards/domain/CardActivity.kt").read_text()), re.M))
+android_src = (ROOT / "androidApp/src/main/kotlin/org/andrew/enzona/ui/cards/OperationIcons.kt").read_text()
+android_map, pending = {}, []
+for m in re.finditer(r"OperationKind\.([A-Z_]+)|R\.drawable\.(op_\w+)", android_src[android_src.index("when (this)"):]):
+    if m.group(1):
+        pending.append(m.group(1))
+    else:
+        android_map.update({k: m.group(2) for k in pending})
+        pending = []
+swift_src = (ROOT / "iosApp/iosApp/Cards/OperationPresentation.swift").read_text()
+# El tipo `[String: String]` ya contiene un `]`: se corta en el cierre del literal, no en el primero.
+swift_table = swift_src[swift_src.index("= [", swift_src.index("static let icons")):].split("\n    ]")[0]
+swift_map = dict(re.findall(r'"([A-Z_]+)":\s*"(op_\w+)"', swift_table))
+if not kinds:
+    problems.append("operaciones: no se pudo leer OperationKind")
+for plat, mapping in (("Android", android_map), ("iOS", swift_map)):
+    for k in sorted(kinds - set(mapping)):
+        problems.append(f"{plat}: OperationKind.{k} no tiene icono")
+    for k in sorted(set(mapping) - kinds):
+        problems.append(f"{plat}: el mapeo de iconos menciona un tipo que no existe ({k})")
+    for k, icon in sorted(mapping.items()):
+        if icon not in ops:
+            problems.append(f"{plat}: {k} usa {icon}, que no está en el manifiesto")
+for k in sorted(kinds & set(android_map) & set(swift_map)):
+    if android_map[k] != swift_map[k]:
+        problems.append(f"{k}: Android usa {android_map[k]} e iOS {swift_map[k]}")
+for icon in sorted(set(ops) - set(android_map.values()) - set(swift_map.values())):
+    problems.append(f"{icon} está en el manifiesto pero ninguna plataforma lo usa")
+print(f"tipos de operación: {len(kinds)} | Android: {len(android_map)} | iOS: {len(swift_map)}")
+
 print("OK" if not problems else "\n".join("FALLA: " + p for p in problems))
 sys.exit(1 if problems else 0)

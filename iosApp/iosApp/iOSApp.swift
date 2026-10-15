@@ -15,7 +15,16 @@ struct iOSApp: App {
 
     var body: some Scene {
         WindowGroup {
+            #if DEBUG
+            // `-ezPreview <nombre>` muestra una pantalla con datos inventados (ver DebugPreview.swift).
+            if let name = DebugPreview.requested {
+                DebugPreview.view(name)
+            } else {
+                ContentView()
+            }
+            #else
             ContentView()
+            #endif
         }
     }
 }

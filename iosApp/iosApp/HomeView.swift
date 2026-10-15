@@ -4,6 +4,8 @@ import SharedLogic
 /// Segundo nivel (no son pestañas): pantallas que se abren desde el inicio.
 enum HomeRoute: Hashable {
     case balance
+    /// Tercer nivel: saldo y operaciones de una tarjeta. `label` es la fila "Tarjeta" ("BANMET 6856").
+    case cardDetail(id: String, label: String)
 }
 
 /// Raíz de la zona autenticada: conecta los ViewModels y el modelo compartido con las pantallas.
@@ -32,10 +34,18 @@ struct HomeView: View {
                         .navigationDestination(for: HomeRoute.self) { route in
                             switch route {
                             case .balance:
-                                BalanceView(cards: cards) {
-                                    // Eliminar / predeterminada / PIN / operaciones: llegan en su hito.
-                                    comingSoon = "Las acciones de la tarjeta estarán disponibles próximamente."
-                                }
+                                BalanceView(
+                                    cards: cards,
+                                    onCardMenu: {
+                                        // Eliminar / predeterminada / PIN / operaciones: llegan en su hito.
+                                        comingSoon = "Las acciones de la tarjeta estarán disponibles próximamente."
+                                    },
+                                    onCardTap: { card in
+                                        path.append(.cardDetail(id: card.id, label: card.detailLabel))
+                                    }
+                                )
+                            case .cardDetail(let id, let label):
+                                CardDetailView(cardId: id, cardLabel: label)
                             }
                         }
                 }
