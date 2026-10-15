@@ -1,12 +1,9 @@
 package org.andrew.enzona.feature.cards.data
 
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.decodeFromJsonElement
+import org.andrew.enzona.core.json.asCleanText
 import org.andrew.enzona.core.money.Money
 import org.andrew.enzona.core.money.parseMinorUnits
 import org.andrew.enzona.core.network.enzonaJson
@@ -14,43 +11,6 @@ import org.andrew.enzona.feature.cards.domain.CardActivity
 import org.andrew.enzona.feature.cards.domain.CardOperation
 import org.andrew.enzona.feature.cards.domain.OperationDirection
 import org.andrew.enzona.feature.cards.domain.classifyOperation
-
-/**
- * Convierte un [JsonElement] a texto limpio:
- * Solo son ausentes (null): null, JsonNull, booleanos JSON sin comillas (false/true),
- * objetos y arrays. Un string se conserva tal cual (tras trim, si quedó vacío -> null),
- * incluidos "True" o "false" como valores textuales.
- */
-internal fun JsonElement?.asCleanText(): String? {
-    if (this == null || this is JsonNull) return null
-    if (this is JsonPrimitive) {
-        if (this.isString) {
-            val s = this.content.trim()
-            return s.ifEmpty { null }
-        }
-        // Primitivo no-string: descartar booleanos JSON sin comillas
-        if (this.booleanOrNull != null) {
-            return null
-        }
-        val s = this.content.trim()
-        return s.ifEmpty { null }
-    }
-    return null
-}
-
-/**
- * Determina si el campo `fault` representa un error real del backend:
- * ausente, null o booleano false se consideran sin error.
- */
-internal fun JsonElement?.hasFault(): Boolean {
-    if (this == null || this is JsonNull) return false
-    if (this is JsonPrimitive) {
-        if (this.booleanOrNull == false) return false
-        val s = this.content.trim()
-        if (s.isEmpty() || s.equals("false", ignoreCase = true)) return false
-    }
-    return true
-}
 
 /**
  * Transforma [CardActivityDto] al modelo de dominio [CardActivity].
