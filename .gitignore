@@ -18,6 +18,9 @@ captures
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
 
+# Salida de ejecución local (redirecciones de `./gradlew run`, etc.)
+run.out
+
 # Python (herramientas en tools/)
 __pycache__/
 
