@@ -6,7 +6,7 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import org.andrew.enzona.core.json.asCleanText
 import org.andrew.enzona.core.money.Money
 import org.andrew.enzona.core.money.parseMinorUnits
-import org.andrew.enzona.core.network.enzonaJson
+import org.andrew.enzona.core.json.enzonaJson
 import org.andrew.enzona.feature.cards.domain.CardActivity
 import org.andrew.enzona.feature.cards.domain.CardOperation
 import org.andrew.enzona.feature.cards.domain.OperationAction

@@ -1,9 +1,9 @@
-package org.andrew.enzona.core.di
+package org.andrew.enzona.di
 
 import org.andrew.enzona.core.crypto.PaymentPasswordEncryptor
 import org.andrew.enzona.core.crypto.RsaPaymentPasswordEncryptor
 import org.andrew.enzona.core.network.createPlainHttpClient
-import org.andrew.enzona.core.network.enzonaJson
+import org.andrew.enzona.core.json.enzonaJson
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module

@@ -1,7 +1,5 @@
 package org.andrew.enzona.di
 
-import org.andrew.enzona.core.di.coreModule
-import org.andrew.enzona.core.di.platformModule
 import org.andrew.enzona.core.util.Cancellable
 import org.andrew.enzona.core.util.watch
 import org.andrew.enzona.feature.auth.domain.SessionRepository

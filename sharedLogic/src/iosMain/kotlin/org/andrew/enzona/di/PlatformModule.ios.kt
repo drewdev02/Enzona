@@ -1,4 +1,4 @@
-package org.andrew.enzona.core.di
+package org.andrew.enzona.di
 
 import org.andrew.enzona.core.storage.IosSecureStorage
 import org.andrew.enzona.core.storage.SecureStorage
