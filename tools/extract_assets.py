@@ -66,6 +66,39 @@ OPERATION_ICONS = {
     "op_ez": "assets/images/iconos/ic_enzona_new.png",
 }
 
+# Menú "Transferir": una imagen por opción (la UI de cada plataforma decide cuál va en cada fila).
+TRANSFER_OPTIONS = {
+    "transfer_option_friend": "assets/images/transferir_amigo.png",
+    "transfer_option_account": "assets/images/cuenta.png",
+    "transfer_option_card": "assets/images/transferir_tarjeta.png",
+    "transfer_option_own_card": "assets/images/tarjeta_azul.png",
+}
+
+# Logo de cada banco en las filas de transferencias. Una clave por `BankBrand` (menos UNKNOWN). El APK lo llama
+# `BM.png` al de Banco Metropolitano y guarda `Cl%C3%A1sica.png` con el acento codificado (read_member lo resuelve).
+BANK_LOGOS = {
+    "bank_banmet": "assets/images/iconos/BM.png",
+    "bank_bandec": "assets/images/iconos/Bandec.png",
+    "bank_bpa": "assets/images/iconos/BPA.png",
+    "bank_bicsa": "assets/images/iconos/BICSA.png",
+    "bank_clasica": "assets/images/iconos/Clásica.png",
+    "bank_ais": "assets/images/iconos/AIS.png",
+}
+
+# Imagen de reserva cuando una persona no tiene avatar (los avatares reales son `media.enzona.net/<avatar>`).
+AVATARS = {
+    "avatar_placeholder": "assets/images/im_foto_usuario.png",
+}
+
+# Sección del manifiesto -> imágenes. Todas deben ser cuadradas y se copian tal cual. `tools/check_assets.py`
+# las comprueba en ambas plataformas.
+SIMPLE_GROUPS = {
+    "operation_icons": OPERATION_ICONS,
+    "transfer_options": TRANSFER_OPTIONS,
+    "bank_logos": BANK_LOGOS,
+    "avatars": AVATARS,
+}
+
 
 def png_size(data: bytes):
     if data[:8] != b"\x89PNG\r\n\x1a\n":
@@ -106,7 +139,8 @@ def main() -> int:
     args = ap.parse_args()
 
     apk_sha = hashlib.sha256(args.apk.read_bytes()).hexdigest()
-    services, skins, operation_icons = [], [], []
+    services, skins = [], []
+    simple: dict[str, list] = {section: [] for section in SIMPLE_GROUPS}
     with zipfile.ZipFile(args.apk) as z:
         items = json.loads(read_member(z, "assets/json/items.json")[0])
         unknown = [i["name"] for i in items if i["name"] not in SERVICE_KEYS]
@@ -136,13 +170,14 @@ def main() -> int:
             write_resource(name, data)
             skins.append(entry(name, member, data, w, h, key=key))
 
-        for name, logical in OPERATION_ICONS.items():
-            data, member = read_member(z, logical)
-            w, h = png_size(data)
-            if w != h:
-                raise SystemExit(f"ERROR: {logical} no es cuadrado ({w}x{h})")
-            write_resource(name, data)
-            operation_icons.append(entry(name, member, data, w, h, key=name))
+        for section, images in SIMPLE_GROUPS.items():
+            for name, logical in images.items():
+                data, member = read_member(z, logical)
+                w, h = png_size(data)
+                if w != h:
+                    raise SystemExit(f"ERROR: {logical} no es cuadrado ({w}x{h})")
+                write_resource(name, data)
+                simple[section].append(entry(name, member, data, w, h, key=name))
 
     manifest = {
         "origin": "APK oficial de EnZona (cu.xetid.apk.enzona)",
@@ -151,12 +186,12 @@ def main() -> int:
                 "bancos y la red 'red'). Importado por decisión del titular del proyecto.",
         "services": services,
         "card_skins": skins,
-        "operation_icons": operation_icons,
+        **simple,
     }
     out = ROOT / "tools/assets_manifest.json"
     out.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
-    print(f"OK: {len(services)} iconos + {len(skins)} skins + {len(operation_icons)} iconos de operación "
-          f"-> Android + iOS ; manifiesto: {out.relative_to(ROOT)}")
+    extra = " + ".join(f"{len(entries)} {section}" for section, entries in simple.items())
+    print(f"OK: {len(services)} iconos + {len(skins)} skins + {extra} -> Android + iOS ; manifiesto: {out.relative_to(ROOT)}")
     return 0
 
 

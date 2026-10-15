@@ -259,5 +259,99 @@
       "sha256": "12ceead3f0f9ff29d5a7b3d1a75da6478184961f9251dd9ae77684396c3e9762",
       "key": "op_ez"
     }
+  ],
+  "transfer_options": [
+    {
+      "resource": "transfer_option_friend",
+      "source": "assets/flutter_assets/assets/images/transferir_amigo.png",
+      "width": 96,
+      "height": 96,
+      "sha256": "858a8fefc3cd7a36f8d9a8770ec41cd095acf81593433bd4b20250a3917da86e",
+      "key": "transfer_option_friend"
+    },
+    {
+      "resource": "transfer_option_account",
+      "source": "assets/flutter_assets/assets/images/cuenta.png",
+      "width": 96,
+      "height": 96,
+      "sha256": "401a28f4142c4449cf818d8292257bb24421f7c477e6445d3ec7b4b646120517",
+      "key": "transfer_option_account"
+    },
+    {
+      "resource": "transfer_option_card",
+      "source": "assets/flutter_assets/assets/images/transferir_tarjeta.png",
+      "width": 96,
+      "height": 96,
+      "sha256": "17f6e757f6d3785ba1f206efc7fd95488c256054c1c5aee3f507474f3060d63b",
+      "key": "transfer_option_card"
+    },
+    {
+      "resource": "transfer_option_own_card",
+      "source": "assets/flutter_assets/assets/images/tarjeta_azul.png",
+      "width": 97,
+      "height": 97,
+      "sha256": "4b3bf4cca1d07af30d8c8aa317cffb96743f7781168dd39b95a89ee9a11cdf78",
+      "key": "transfer_option_own_card"
+    }
+  ],
+  "bank_logos": [
+    {
+      "resource": "bank_banmet",
+      "source": "assets/flutter_assets/assets/images/iconos/BM.png",
+      "width": 355,
+      "height": 355,
+      "sha256": "606e6ccdf9e7486e1594df6ad665b8aa025e2e849c353ba30d36fae19baf7059",
+      "key": "bank_banmet"
+    },
+    {
+      "resource": "bank_bandec",
+      "source": "assets/flutter_assets/assets/images/iconos/Bandec.png",
+      "width": 355,
+      "height": 355,
+      "sha256": "40a559c1f6a7609240d19c71ddf15f94326f30df137f2b7c9b11a7845ed0b3bd",
+      "key": "bank_bandec"
+    },
+    {
+      "resource": "bank_bpa",
+      "source": "assets/flutter_assets/assets/images/iconos/BPA.png",
+      "width": 355,
+      "height": 355,
+      "sha256": "9246d408f483b042c6c85736ef3e78d4adba782eb83a9ee294059da99e8af98a",
+      "key": "bank_bpa"
+    },
+    {
+      "resource": "bank_bicsa",
+      "source": "assets/flutter_assets/assets/images/iconos/BICSA.png",
+      "width": 355,
+      "height": 355,
+      "sha256": "bbb7a0778b0534bae51b1ea9038ee627da706d3a91806a501a4cc3ff48d43bce",
+      "key": "bank_bicsa"
+    },
+    {
+      "resource": "bank_clasica",
+      "source": "assets/flutter_assets/assets/images/iconos/Cl%C3%A1sica.png",
+      "width": 355,
+      "height": 355,
+      "sha256": "c68a614103d58a8764bb60b313eaa4ef2910786dbce8d7ee746ad6b568493234",
+      "key": "bank_clasica"
+    },
+    {
+      "resource": "bank_ais",
+      "source": "assets/flutter_assets/assets/images/iconos/AIS.png",
+      "width": 355,
+      "height": 355,
+      "sha256": "6c193e14ef2b9dc8623ed8003afe6659eb0c3de779a4a1706d347ab137196515",
+      "key": "bank_ais"
+    }
+  ],
+  "avatars": [
+    {
+      "resource": "avatar_placeholder",
+      "source": "assets/flutter_assets/assets/images/im_foto_usuario.png",
+      "width": 198,
+      "height": 198,
+      "sha256": "7e350d7100f98e96d51976fd04477286a55cefb2bb5e8df765cc08a6deaca100",
+      "key": "avatar_placeholder"
+    }
   ]
 }
