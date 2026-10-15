@@ -16,10 +16,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.andrew.enzona.feature.home.domain.HomeService
 import org.andrew.enzona.ui.cards.BalanceRoute
+import org.andrew.enzona.ui.cards.CardDetailRoute
+import org.andrew.enzona.ui.cards.detailLabel
 import org.andrew.enzona.ui.ComingSoonScreen
 import org.andrew.enzona.ui.ProfileScreen
 import org.andrew.enzona.ui.dashboard.DashboardRoute
@@ -31,6 +34,8 @@ import org.andrew.enzona.ui.dashboard.DashboardRoute
 @Serializable data object Profile
 /** Segundo nivel (no es una pestaña): se abre desde la casilla "Balance" del inicio. */
 @Serializable data object Balance
+/** Tercer nivel: saldo y operaciones de una tarjeta. `cardLabel` es el texto de la fila "Tarjeta" ("BANMET 6856"). */
+@Serializable data class CardDetail(val cardId: String, val cardLabel: String)
 
 /** Navegación de la zona autenticada. El paso login <-> app lo decide SessionState, no este grafo. */
 @Composable
@@ -91,7 +96,12 @@ fun AppNavigation(onLogout: () -> Unit) {
                     onBack = { nav.popBackStack() },
                     // Eliminar / predeterminada / PIN / operaciones son operaciones nuevas: llegan en su hito.
                     onCardMenu = { showMessage("Las acciones de la tarjeta estarán disponibles próximamente.") },
+                    onCardClick = { card -> nav.navigate(CardDetail(card.id, card.detailLabel())) },
                 )
+            }
+            composable<CardDetail> { entry ->
+                val args = entry.toRoute<CardDetail>()
+                CardDetailRoute(args.cardId, args.cardLabel, onBack = { nav.popBackStack() })
             }
         }
     }

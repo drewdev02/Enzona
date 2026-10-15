@@ -21,6 +21,8 @@ struct EzBankCardModel: Identifiable {
     /// Lo que leen los lectores de pantalla (la imagen no se lee y el número quedaría en trozos).
     let spoken: String
     let menuLabel: String
+    /// Texto de la fila "Tarjeta" del detalle ("BANMET 6856"). Lo calcula quien traduce el dominio.
+    var detailLabel: String = ""
 }
 
 /// Tarjeta bancaria dibujada sobre la imagen de su banco. Los tamaños de letra salen del ANCHO de la
@@ -29,6 +31,8 @@ struct EzBankCardModel: Identifiable {
 struct EzBankCard: View {
     let model: EzBankCardModel
     var onMenu: () -> Void = {}
+    /// Toque sobre la tarjeta (el menú tiene el suyo). `nil` la deja sin acción, como en las previews.
+    var onTap: (() -> Void)? = nil
 
     var body: some View {
         GeometryReader { geo in
@@ -89,6 +93,8 @@ struct EzBankCard: View {
                 }
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(model.spoken)
+                .accessibilityAddTraits(onTap == nil ? [] : .isButton)
+                .accessibilityAction { onTap?() }
 
                 Button(action: onMenu) {
                     ZStack {
@@ -109,6 +115,8 @@ struct EzBankCard: View {
             }
             .frame(width: w, height: h, alignment: .topLeading)
             .clipShape(RoundedRectangle(cornerRadius: w * Ez.Card.cornerRadius))
+            .contentShape(RoundedRectangle(cornerRadius: w * Ez.Card.cornerRadius))
+            .onTapGesture { onTap?() }
             .shadow(color: .black.opacity(0.18), radius: Ez.Elevation.medium, y: 1)
         }
         .aspectRatio(1 / Ez.Card.heightRatio, contentMode: .fit)

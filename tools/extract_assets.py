@@ -4,11 +4,12 @@ Extrae del APK original los recursos gráficos que usa la app y los importa a An
 
     python3 tools/extract_assets.py --apk /ruta/cu.xetid.apk.enzona-v20003.apk
 
-Dos grupos:
+Tres grupos:
 - Iconos del inicio (`service_*`): el orden y las etiquetas salen de `assets/json/items.json` DEL
   APK. Se mapea por etiqueta, no por nombre de archivo: en el APK están cruzados (`Bulevar.png`
   es la tienda que la app llama "Mis compras").
 - Skins de tarjeta (`card_skin_*`): una imagen completa por banco (`images/card/tarjeta_*.png`).
+- Iconos de tipo de operación (`op_*`): los del detalle de tarjeta (`images/iconos/ic_*.png`).
 
 Falla en voz alta si el APK trae una etiqueta nueva, falta un archivo o cambian las medidas.
 Copia los PNG TAL CUAL (sin recomprimir), escribe `tools/assets_manifest.json` con el origen y el
@@ -51,6 +52,20 @@ CARD_SKINS = {
 }
 CARD_SIZE = (630, 332)
 
+# Iconos de tipo de operación (pantalla de detalle de tarjeta). La clave la usa la UI de cada plataforma
+# para mapear `OperationKind` -> imagen: el dominio no conoce nombres de iconos.
+# `op_ez` NO es `images/EZ.png` (70x40, no cuadrado, que usa la app original dentro del círculo): se usa
+# `ic_enzona_new.png` (257x257, el mismo círculo azul con las barras EZ) porque aquí va como avatar circular.
+OPERATION_ICONS = {
+    "op_transfer": "assets/images/iconos/ic_tranferencia.png",  # "tranferencia" (sic) es el nombre real
+    "op_mobile": "assets/images/iconos/ic_pago_telefono.png",
+    "op_payroll": "assets/images/iconos/ic_nomina_verde.png",
+    "op_pos": "assets/images/iconos/ic_pos.png",
+    "op_withdrawal": "assets/images/iconos/ic_extraccion.png",
+    "op_merchant": "assets/images/iconos/ic_pago_comercio.png",
+    "op_ez": "assets/images/iconos/ic_enzona_new.png",
+}
+
 
 def png_size(data: bytes):
     if data[:8] != b"\x89PNG\r\n\x1a\n":
@@ -91,7 +106,7 @@ def main() -> int:
     args = ap.parse_args()
 
     apk_sha = hashlib.sha256(args.apk.read_bytes()).hexdigest()
-    services, skins = [], []
+    services, skins, operation_icons = [], [], []
     with zipfile.ZipFile(args.apk) as z:
         items = json.loads(read_member(z, "assets/json/items.json")[0])
         unknown = [i["name"] for i in items if i["name"] not in SERVICE_KEYS]
@@ -121,6 +136,14 @@ def main() -> int:
             write_resource(name, data)
             skins.append(entry(name, member, data, w, h, key=key))
 
+        for name, logical in OPERATION_ICONS.items():
+            data, member = read_member(z, logical)
+            w, h = png_size(data)
+            if w != h:
+                raise SystemExit(f"ERROR: {logical} no es cuadrado ({w}x{h})")
+            write_resource(name, data)
+            operation_icons.append(entry(name, member, data, w, h, key=name))
+
     manifest = {
         "origin": "APK oficial de EnZona (cu.xetid.apk.enzona)",
         "apk_sha256": apk_sha,
@@ -128,10 +151,12 @@ def main() -> int:
                 "bancos y la red 'red'). Importado por decisión del titular del proyecto.",
         "services": services,
         "card_skins": skins,
+        "operation_icons": operation_icons,
     }
     out = ROOT / "tools/assets_manifest.json"
     out.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
-    print(f"OK: {len(services)} iconos + {len(skins)} skins -> Android + iOS ; manifiesto: {out.relative_to(ROOT)}")
+    print(f"OK: {len(services)} iconos + {len(skins)} skins + {len(operation_icons)} iconos de operación "
+          f"-> Android + iOS ; manifiesto: {out.relative_to(ROOT)}")
     return 0
 
 

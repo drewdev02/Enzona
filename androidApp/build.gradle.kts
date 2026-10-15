@@ -30,6 +30,9 @@ dependencies {
     implementation(libs.androidx.compose.materialIconsCore)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.lifecycle.runtimeCompose)
+
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlin.testJunit)
 }
 
 android {

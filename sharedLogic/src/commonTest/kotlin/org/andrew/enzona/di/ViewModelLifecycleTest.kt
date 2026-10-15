@@ -18,7 +18,9 @@ import org.andrew.enzona.feature.auth.data.OAuthService
 import org.andrew.enzona.feature.auth.data.TokenStore
 import org.andrew.enzona.feature.auth.data.dto.TokenDto
 import org.andrew.enzona.feature.auth.domain.SessionRepository
+import org.andrew.enzona.core.result.Failure
 import org.andrew.enzona.feature.cards.domain.BankCard
+import org.andrew.enzona.feature.cards.domain.CardActivity
 import org.andrew.enzona.feature.cards.domain.CardsRepository
 import org.andrew.enzona.feature.cards.domain.GetCardsUseCase
 import org.andrew.enzona.feature.cards.presentation.CardsUiState
@@ -48,6 +50,9 @@ private class PendingCards(private val gate: CompletableDeferred<List<BankCard>>
             cancelled = true
             throw e
         }
+
+    override suspend fun getActivity(cardId: String): EzResult<CardActivity> =
+        EzResult.Error(Failure.Unknown("No implementado para test de ciclo de vida."))
 }
 
 /** id_token con payload `{"sub":"user1"}`; la firma no se verifica en cliente. */
@@ -69,7 +74,7 @@ class ViewModelLifecycleTest {
     fun clearingTheHolderCancelsAnInFlightLoad() = runTest {
         val gate = CompletableDeferred<List<BankCard>>()
         val repo = PendingCards(gate)
-        val holder = viewModelHolder { CardsViewModel(GetCardsUseCase(repo, auth())) }
+        val holder = createViewModelHolder { CardsViewModel(GetCardsUseCase(repo, auth())) }
         val vm = holder.viewModel
 
         vm.load()
@@ -86,6 +91,8 @@ class ViewModelLifecycleTest {
     fun aNewScreenNeverSeesTheStateOfThePreviousOne() = runTest {
         val repo = object : CardsRepository {
             override suspend fun getCards(username: String): EzResult<List<BankCard>> = EzResult.Success(emptyList())
+            override suspend fun getActivity(cardId: String): EzResult<CardActivity> =
+                EzResult.Error(Failure.Unknown("No implementado para test de ciclo de vida."))
         }
         val first = CardsViewModel(GetCardsUseCase(repo, auth()))
         first.load()

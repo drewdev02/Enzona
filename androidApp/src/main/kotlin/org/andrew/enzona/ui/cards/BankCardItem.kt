@@ -9,7 +9,7 @@ import org.andrew.enzona.ui.designsystem.components.EzBankCard
 
 /** Traduce una [BankCard] del dominio a los parámetros de presentación de [EzBankCard]. */
 @Composable
-fun BankCardItem(card: BankCard, onMenuClick: () -> Unit, modifier: Modifier = Modifier) {
+fun BankCardItem(card: BankCard, onMenuClick: () -> Unit, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val skin = card.skin
     EzBankCard(
         last4 = card.last4,
@@ -28,5 +28,7 @@ fun BankCardItem(card: BankCard, onMenuClick: () -> Unit, modifier: Modifier = M
         background = skin.imageRes?.let { painterResource(it) },
         fallbackTitle = card.bankName.takeIf { skin == CardSkin.GENERIC && it.isNotBlank() },
         numberInset = skin.numberInset,
+        onClick = onClick,
+        onClickLabel = "Ver saldo y operaciones",
     )
 }

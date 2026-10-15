@@ -15,6 +15,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
@@ -49,4 +50,8 @@ object KoinHelper : KoinComponent {
 
     fun cardsViewModelHolder(): ViewModelHolder<org.andrew.enzona.feature.cards.presentation.CardsViewModel> =
         getKoin().viewModelHolder()
+
+    fun cardDetailViewModelHolder(cardId: String): ViewModelHolder<org.andrew.enzona.feature.cards.presentation.CardDetailViewModel> =
+        getKoin().viewModelHolder { parametersOf(cardId) }
 }
+

@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.andrew.enzona.feature.cards.domain.BankCard
 import org.andrew.enzona.feature.cards.presentation.CardsUiState
 import org.andrew.enzona.feature.cards.presentation.CardsViewModel
 import org.andrew.enzona.ui.designsystem.EnzonaTheme
@@ -27,10 +28,15 @@ import org.koin.compose.viewmodel.koinViewModel
 
 /** Conecta el ViewModel con la pantalla. La pantalla en sí no sabe nada de Koin. */
 @Composable
-fun BalanceRoute(onBack: () -> Unit, onCardMenu: () -> Unit, vm: CardsViewModel = koinViewModel()) {
+fun BalanceRoute(
+    onBack: () -> Unit,
+    onCardMenu: () -> Unit,
+    onCardClick: (BankCard) -> Unit,
+    vm: CardsViewModel = koinViewModel(),
+) {
     LaunchedEffect(Unit) { vm.load() }
     val state by vm.state.collectAsStateWithLifecycle()
-    BalanceScreen(state, onBack, onRetry = vm::load, onCardMenu = onCardMenu)
+    BalanceScreen(state, onBack, onRetry = vm::load, onCardMenu = onCardMenu, onCardClick = onCardClick)
 }
 
 /** Pantalla "Balance": las tarjetas del usuario, cada una con el aspecto de su banco. */
@@ -40,6 +46,7 @@ fun BalanceScreen(
     onBack: () -> Unit,
     onRetry: () -> Unit,
     onCardMenu: () -> Unit,
+    onCardClick: (BankCard) -> Unit = {},
 ) {
     Scaffold(
         topBar = { EzGradientTopAppBar("Balance", onBack) },
@@ -61,7 +68,10 @@ fun BalanceScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     items(state.cards, key = { it.id }) { card ->
-                        BankCardItem(card, onMenuClick = onCardMenu, modifier = Modifier.fillMaxWidth(0.95f))
+                        BankCardItem(
+                            card, onMenuClick = onCardMenu, onClick = { onCardClick(card) },
+                            modifier = Modifier.fillMaxWidth(0.95f),
+                        )
                     }
                 }
             }
