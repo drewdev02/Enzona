@@ -175,6 +175,11 @@ El login real necesita SMS, así que hay un anfitrión de previews que **no entr
 - iOS: `xcrun simctl launch booted org.andrew.enzona.Enzona -ezPreview detail` (`DebugPreview.swift`, `#if DEBUG`).
   Modo oscuro y tamaño: `xcrun simctl ui booted appearance dark`, `xcrun simctl ui booted content_size accessibility-extra-large`.
 
+Y con sesión iniciada, el perfil (Android e iOS) trae **solo en debug** un botón que copia
+`access_token`, `refresh_token` e `id_token` en texto plano al portapapeles, para depurar con
+curl/Postman. Los tokens se leen al pulsar (nunca antes) y **no pasan por los logs**; en release
+la sección no se muestra (Android: bandera `debuggable`; iOS: el archivo entero es `#if DEBUG`).
+
 ## 5. Autenticación (verificada contra producción)
 
 - **OAuth2 Authorization Code + PKCE** (cliente público, sin secreto) contra WSO2

@@ -28,13 +28,23 @@ struct ProfileView: View {
                         ("Biometría", account.biometricEnabled ? "Sí" : "No"),
                         ("Cuenta de comercio", account.isMerchant ? "Sí" : "No"),
                     ],
-                    onLogout: onLogout
+                    onLogout: onLogout,
+                    debugSection: debugSection
                 )
             }
         }
         .navigationTitle("Mi perfil")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear { profile.load() }
+    }
+
+    /// Solo builds debug: sección para copiar los tokens de sesión (ver `DebugTokenSection.swift`).
+    private var debugSection: AnyView? {
+        #if DEBUG
+        return AnyView(DebugTokenSection())
+        #else
+        return nil
+        #endif
     }
 }
 
@@ -46,6 +56,8 @@ struct ProfileContent: View {
     let rows: [(String, String)]
     let statusRows: [(String, String)]
     let onLogout: () -> Void
+    /// Solo builds debug: la inyecta `ProfileView`; las previews no la pasan.
+    var debugSection: AnyView? = nil
 
     var body: some View {
         List {
@@ -65,6 +77,7 @@ struct ProfileContent: View {
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets())
             }
+            debugSection
         }
         .scrollContentBackground(.hidden)
         .background(Ez.Palette.background)
