@@ -10,6 +10,12 @@ import org.andrew.enzona.feature.auth.domain.SessionState
 import org.andrew.enzona.feature.account.accountModule
 import org.andrew.enzona.feature.auth.authModule
 import org.andrew.enzona.feature.cards.cardsModule
+import org.andrew.enzona.feature.friends.friendsModule
+import org.andrew.enzona.feature.friends.presentation.FriendsViewModel
+import org.andrew.enzona.feature.transfer.presentation.FindRecipientViewModel
+import org.andrew.enzona.feature.transfer.presentation.TransferHistoryViewModel
+import org.andrew.enzona.feature.transfer.presentation.TransferMenuViewModel
+import org.andrew.enzona.feature.transfer.transferModule
 import org.koin.core.KoinApplication
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -26,7 +32,10 @@ val commonModule: Module = module {
 fun initKoin(appDeclaration: KoinAppDeclaration = {}): KoinApplication =
     startKoin {
         appDeclaration()
-        modules(commonModule, coreModule, platformModule(), authModule, accountModule, cardsModule)
+        modules(
+            commonModule, coreModule, platformModule(),
+            authModule, accountModule, cardsModule, transferModule, friendsModule,
+        )
     }
 
 // Helper for iOS invocation from Swift
@@ -53,5 +62,13 @@ object KoinHelper : KoinComponent {
 
     fun cardDetailViewModelHolder(cardId: String): ViewModelHolder<org.andrew.enzona.feature.cards.presentation.CardDetailViewModel> =
         getKoin().viewModelHolder { parametersOf(cardId) }
+
+    fun transferMenuViewModelHolder(): ViewModelHolder<TransferMenuViewModel> = getKoin().viewModelHolder()
+
+    fun transferHistoryViewModelHolder(): ViewModelHolder<TransferHistoryViewModel> = getKoin().viewModelHolder()
+
+    fun findRecipientViewModelHolder(): ViewModelHolder<FindRecipientViewModel> = getKoin().viewModelHolder()
+
+    fun friendsViewModelHolder(): ViewModelHolder<FriendsViewModel> = getKoin().viewModelHolder()
 }
 

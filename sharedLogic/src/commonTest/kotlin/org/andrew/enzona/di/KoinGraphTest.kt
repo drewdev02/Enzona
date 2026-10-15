@@ -23,6 +23,14 @@ import org.andrew.enzona.feature.cards.domain.CardActivity
 import org.andrew.enzona.feature.cards.domain.CardsRepository
 import org.andrew.enzona.feature.cards.presentation.CardDetailViewModel
 import org.andrew.enzona.feature.cards.presentation.CardsViewModel
+import org.andrew.enzona.feature.friends.domain.FriendsRepository
+import org.andrew.enzona.feature.friends.friendsModule
+import org.andrew.enzona.feature.friends.presentation.FriendsViewModel
+import org.andrew.enzona.feature.transfer.domain.TransferRepository
+import org.andrew.enzona.feature.transfer.presentation.FindRecipientViewModel
+import org.andrew.enzona.feature.transfer.presentation.TransferHistoryViewModel
+import org.andrew.enzona.feature.transfer.presentation.TransferMenuViewModel
+import org.andrew.enzona.feature.transfer.transferModule
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
@@ -52,8 +60,19 @@ class KoinGraphTest {
         Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
         try {
             val koin = koinApplication {
-                modules(coreModule, authModule, accountModule, cardsModule, module { single<SecureStorage> { MemoryStorage() } })
+                modules(
+                    coreModule, authModule, accountModule, cardsModule, transferModule, friendsModule,
+                    module { single<SecureStorage> { MemoryStorage() } },
+                )
             }.koin
+
+            // Transferir: cada pantalla, su ViewModel; los repositorios, uno para toda la app.
+            assertNotSame(koin.get<TransferMenuViewModel>(), koin.get<TransferMenuViewModel>())
+            assertNotSame(koin.get<TransferHistoryViewModel>(), koin.get<TransferHistoryViewModel>())
+            assertNotSame(koin.get<FindRecipientViewModel>(), koin.get<FindRecipientViewModel>())
+            assertNotSame(koin.get<FriendsViewModel>(), koin.get<FriendsViewModel>())
+            assertSame(koin.get<TransferRepository>(), koin.get<TransferRepository>())
+            assertSame(koin.get<FriendsRepository>(), koin.get<FriendsRepository>())
 
             // La sesión es de la app (una sola); la pantalla de login, no.
             assertSame(koin.get<SessionRepository>(), koin.get<SessionRepository>())
