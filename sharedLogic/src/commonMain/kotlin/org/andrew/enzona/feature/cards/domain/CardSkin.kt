@@ -1,13 +1,11 @@
 package org.andrew.enzona.feature.cards.domain
 
-import org.andrew.enzona.core.money.sameCurrency
-
 /** Color de tinta de un texto sobre un skin. Cada plataforma lo traduce a su color. */
 enum class CardInk { BLACK, SOFT_BLACK, WHITE }
 
 /**
  * Aspecto de una tarjeta: una imagen completa por banco (logo, fondo y franja del número).
- * El nombre en minúsculas es la clave del recurso (`BANDEC_USD` -> `card_skin_bandec_usd`) en
+ * El nombre en minúsculas es la clave del recurso (`BANDEC_TROPICAL` -> `card_skin_bandec_tropical`) en
  * Android e iOS; `tools/extract_assets.py` las importa y `tools/check_assets.py` lo comprueba.
  *
  * Las tintas NO son iguales en todos los skins (hay uno dorado, uno verde oscuro, una playa...) y
@@ -18,7 +16,7 @@ enum class CardInk { BLACK, SOFT_BLACK, WHITE }
  *
  * - [number]: "**** **** **** 1234".  - [text]: nombre, moneda y vencimiento.
  * - [menu]: icono de tres puntos y check.  - [menuScrim]: velo oscuro tras el icono, para fondos
- *   fotográficos donde ninguna tinta llega a 3:1 (la playa de Bandec USD).
+ *   fotográficos donde ninguna tinta llega a 3:1 (la playa de la Bandec Tropical).
  * - [numberInset]: dónde empieza el número, en fracción del ancho. BPA trae un triángulo dorado a
  *   la izquierda de su caja del número y el texto lo taparía.
  */
@@ -31,7 +29,8 @@ enum class CardSkin(
 ) {
     AIS(number = CardInk.WHITE, text = CardInk.BLACK, menu = CardInk.BLACK),
     BANDEC(number = CardInk.WHITE, text = CardInk.WHITE, menu = CardInk.WHITE),
-    BANDEC_USD(number = CardInk.BLACK, text = CardInk.BLACK, menu = CardInk.WHITE, menuScrim = true),
+    /** Bandec Tropical / prepago (la de la playa). La elige el BIN, no la moneda: ver [skinFor]. */
+    BANDEC_TROPICAL(number = CardInk.BLACK, text = CardInk.BLACK, menu = CardInk.WHITE, menuScrim = true),
     BANMET(number = CardInk.BLACK, text = CardInk.SOFT_BLACK, menu = CardInk.BLACK),
     BICSA(number = CardInk.BLACK, text = CardInk.SOFT_BLACK, menu = CardInk.BLACK),
     BPA(number = CardInk.BLACK, text = CardInk.SOFT_BLACK, menu = CardInk.BLACK, numberInset = 0.115f),
@@ -49,18 +48,27 @@ enum class CardSkin(
 }
 
 /**
- * Skin según el código de banco. Los códigos salen de la tabla única de [bankBrandOfCode]; aquí solo se elige la
- * imagen de cada banco.
- *
- * Bandec tiene dos skins; el original decide con una bandera calculada fuera del despachador
- * (se infiere que es la moneda: en los datos reales las Bandec son CUP y USD).
+ * BIN (los 9 primeros dígitos del número) de la tarjeta Bandec **Tropical / prepago**. Es el único dato que el
+ * original usa para distinguirla de una Bandec normal: en el despachador de tarjetas, con código de banco `06`,
+ * compara el BIN con el entero 924006999 (el mismo prefijo `9240 0699 9` que reconoce al añadir una tarjeta) y
+ * dibuja `BandecUsdBankCard`; si no coincide, `BandecBankCard`. La moneda NO interviene. Decodificado del APK v20003
+ * (sin validar en vivo con una tarjeta tropical real).
  */
-fun skinFor(bankCode: String?, currency: String?): CardSkin = when (bankBrandOfCode(bankCode)) {
+const val BANDEC_TROPICAL_BIN: String = "924006999"
+
+/**
+ * Skin según el código de banco y el BIN. Los códigos salen de la tabla única de [bankBrandOfCode]; aquí solo se
+ * elige la imagen de cada banco.
+ *
+ * Bandec tiene dos skins: la normal y la Tropical / prepago ([BANDEC_TROPICAL_BIN]). Un BIN ausente o distinto es
+ * una Bandec normal, como en el original; una Bandec en USD con otro BIN NO es tropical.
+ */
+fun skinFor(bankCode: String?, bin: String?): CardSkin = when (bankBrandOfCode(bankCode)) {
     BankBrand.AIS -> CardSkin.AIS
     BankBrand.CLASICA -> CardSkin.CLASICA
     BankBrand.BICSA -> CardSkin.BICSA
     BankBrand.BANMET -> CardSkin.BANMET
-    BankBrand.BANDEC -> if (sameCurrency(currency, "USD")) CardSkin.BANDEC_USD else CardSkin.BANDEC
+    BankBrand.BANDEC -> if (bin?.trim() == BANDEC_TROPICAL_BIN) CardSkin.BANDEC_TROPICAL else CardSkin.BANDEC
     BankBrand.BPA -> CardSkin.BPA
     BankBrand.UNKNOWN -> CardSkin.GENERIC
 }

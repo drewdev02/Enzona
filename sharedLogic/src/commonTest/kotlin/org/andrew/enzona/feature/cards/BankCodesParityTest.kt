@@ -1,6 +1,7 @@
 package org.andrew.enzona.feature.cards
 
 import org.andrew.enzona.core.money.sameCurrency
+import org.andrew.enzona.feature.cards.domain.BANDEC_TROPICAL_BIN
 import org.andrew.enzona.feature.cards.domain.BankBrand
 import org.andrew.enzona.feature.cards.domain.CardSkin
 import org.andrew.enzona.feature.cards.domain.KNOWN_BANK_CODES
@@ -19,7 +20,7 @@ class BankCodesParityTest {
         CardSkin.CLASICA -> BankBrand.CLASICA
         CardSkin.BICSA -> BankBrand.BICSA
         CardSkin.BANMET -> BankBrand.BANMET
-        CardSkin.BANDEC, CardSkin.BANDEC_USD -> BankBrand.BANDEC
+        CardSkin.BANDEC, CardSkin.BANDEC_TROPICAL -> BankBrand.BANDEC
         CardSkin.BPA -> BankBrand.BPA
         CardSkin.GENERIC -> BankBrand.UNKNOWN
     }
@@ -28,9 +29,9 @@ class BankCodesParityTest {
     fun everyKnownCodeGivesTheSameBankForSkinAndBrand() {
         assertEquals(setOf("02", "03", "04", "05", "06", "12", "95"), KNOWN_BANK_CODES)
         for (code in KNOWN_BANK_CODES) {
-            for (currency in listOf("CUP", "USD", "", null)) {
-                val skin = skinFor(code, currency)
-                assertEquals(bankBrandOfCode(code), brandOfSkin(skin), "código $code, moneda $currency")
+            for (bin in listOf("922706999", BANDEC_TROPICAL_BIN, "", null)) {
+                val skin = skinFor(code, bin)
+                assertEquals(bankBrandOfCode(code), brandOfSkin(skin), "código $code, bin $bin")
                 assertEquals(bankBrandOf(code), brandOfSkin(skin))
             }
         }
@@ -39,7 +40,7 @@ class BankCodesParityTest {
     @Test
     fun anUnknownCodeIsGenericAndUnknownEverywhere() {
         for (code in listOf("99", "", " ", null, "BANMET", "banco")) {
-            assertEquals(CardSkin.GENERIC, skinFor(code, "CUP"), "código $code")
+            assertEquals(CardSkin.GENERIC, skinFor(code, BANDEC_TROPICAL_BIN), "código $code")
             assertEquals(BankBrand.UNKNOWN, bankBrandOfCode(code), "código $code")
         }
     }
@@ -47,15 +48,15 @@ class BankCodesParityTest {
     @Test
     fun skinForReadsOnlyCodesNotNamesEvenThoughTheBrandLookupReadsBoth() {
         // Comportamiento que se conserva: un NOMBRE en el campo de código no elige skin; `bankBrandOf` sí lo reconoce.
-        assertEquals(CardSkin.GENERIC, skinFor("BANMET", "CUP"))
+        assertEquals(CardSkin.GENERIC, skinFor("BANMET", null))
         assertEquals(BankBrand.BANMET, bankBrandOf("BANMET"))
     }
 
     @Test
-    fun bandecHasTwoSkinsChosenByCurrencyWithoutCaseOrSpaceSensitivity() {
-        assertEquals(CardSkin.BANDEC_USD, skinFor("06", "USD"))
-        assertEquals(CardSkin.BANDEC_USD, skinFor(" 06 ", " usd "))
-        assertEquals(CardSkin.BANDEC, skinFor("06", "CUP"))
+    fun bandecHasTwoSkinsChosenByBinNotByCurrency() {
+        assertEquals(CardSkin.BANDEC_TROPICAL, skinFor("06", BANDEC_TROPICAL_BIN))
+        assertEquals(CardSkin.BANDEC_TROPICAL, skinFor(" 06 ", " $BANDEC_TROPICAL_BIN "))
+        assertEquals(CardSkin.BANDEC, skinFor("06", "922706999"))
         assertEquals(CardSkin.BANDEC, skinFor("06", null))
     }
 

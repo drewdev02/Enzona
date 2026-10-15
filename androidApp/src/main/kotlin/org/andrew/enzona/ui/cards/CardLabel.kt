@@ -10,7 +10,7 @@ import org.andrew.enzona.feature.cards.domain.CardSkin
 fun BankCard.detailLabel(): String {
     val bank = when (skin) {
         CardSkin.AIS -> "AIS"
-        CardSkin.BANDEC, CardSkin.BANDEC_USD -> "BANDEC"
+        CardSkin.BANDEC, CardSkin.BANDEC_TROPICAL -> "BANDEC"
         CardSkin.BANMET -> "BANMET"
         CardSkin.BICSA -> "BICSA"
         CardSkin.BPA -> "BPA"

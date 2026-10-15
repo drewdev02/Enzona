@@ -70,7 +70,7 @@ enum EzOperationKind: String, KotlinNamed {
 enum EzCardSkin: String, KotlinNamed {
     case ais = "AIS"
     case bandec = "BANDEC"
-    case bandecUsd = "BANDEC_USD"
+    case bandecTropical = "BANDEC_TROPICAL"
     case banmet = "BANMET"
     case bicsa = "BICSA"
     case bpa = "BPA"

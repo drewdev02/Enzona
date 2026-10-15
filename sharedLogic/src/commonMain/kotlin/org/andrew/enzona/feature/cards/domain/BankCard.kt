@@ -15,8 +15,13 @@ data class BankCard(
     val bankName: String,
     val isPrimary: Boolean,
     val createdAt: String?,
+    /**
+     * Los 9 primeros dígitos del número (`bin` del listado), solo dígitos. `null` si el servidor no lo trajo: entonces
+     * no se sabe si es una Bandec Tropical y se trata como Bandec normal, como hace el original.
+     */
+    val bin: String? = null,
 ) {
-    val skin: CardSkin get() = skinFor(bankCode, currency)
+    val skin: CardSkin get() = skinFor(bankCode, bin)
 
     /** "**** **** **** " que precede a los últimos cuatro dígitos. */
     val maskedPrefix: String get() = "**** **** **** "

@@ -28,6 +28,8 @@ internal fun CardDto.toDomain(): BankCard? {
         bankName = bankName.textOrNull().orEmpty(),
         isPrimary = primarySource.asFlag(),
         createdAt = createAt.textOrNull(),
+        // Solo dígitos: cualquier otra cosa no es un BIN y se trata como "no vino" (no se adivina).
+        bin = bin.textOrNull()?.takeIf { text -> text.all { it in '0'..'9' } },
     )
 }
 

@@ -44,7 +44,8 @@ SERVICE_KEYS = {
 CARD_SKINS = {
     "ais": "assets/images/card/tarjeta_ais.png",
     "bandec": "assets/images/card/tarjeta_bandec.png",
-    "bandec_usd": "assets/images/card/tarjeta_bandec_usd.png",
+    # El archivo se llama `tarjeta_bandec_usd.png` en el APK, pero la elige el BIN (Tropical / prepago), no la moneda.
+    "bandec_tropical": "assets/images/card/tarjeta_bandec_usd.png",
     "banmet": "assets/images/card/tarjeta_banmet.png",
     "bicsa": "assets/images/card/tarjeta_bicsa.png",
     "bpa": "assets/images/card/tarjeta_bpa.png",

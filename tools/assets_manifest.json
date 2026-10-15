@@ -162,12 +162,12 @@
       "key": "bandec"
     },
     {
-      "resource": "card_skin_bandec_usd",
+      "resource": "card_skin_bandec_tropical",
       "source": "assets/flutter_assets/assets/images/card/tarjeta_bandec_usd.png",
       "width": 630,
       "height": 332,
       "sha256": "5952e95278800baeedb92b03c79ace394ec28c9cb234e741e8494fe56199d3b3",
-      "key": "bandec_usd"
+      "key": "bandec_tropical"
     },
     {
       "resource": "card_skin_banmet",

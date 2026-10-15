@@ -14,7 +14,7 @@ val CardSkin.imageRes: Int?
     get() = when (this) {
         CardSkin.AIS -> R.drawable.card_skin_ais
         CardSkin.BANDEC -> R.drawable.card_skin_bandec
-        CardSkin.BANDEC_USD -> R.drawable.card_skin_bandec_usd
+        CardSkin.BANDEC_TROPICAL -> R.drawable.card_skin_bandec_tropical
         CardSkin.BANMET -> R.drawable.card_skin_banmet
         CardSkin.BICSA -> R.drawable.card_skin_bicsa
         CardSkin.BPA -> R.drawable.card_skin_bpa

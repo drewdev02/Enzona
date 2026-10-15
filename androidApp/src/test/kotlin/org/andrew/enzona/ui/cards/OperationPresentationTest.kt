@@ -70,7 +70,7 @@ class OperationPresentationTest {
     fun theDetailLabelShowsTheBankAndTheLastFourDigits() {
         assertEquals("BANMET 6856", CardPreviewData.banmet.detailLabel())
         assertEquals("BANDEC 5800", CardPreviewData.bandec.detailLabel())
-        assertEquals("BANDEC 4912", CardPreviewData.bandecUsd.detailLabel())
+        assertEquals("BANDEC 4912", CardPreviewData.bandecTropical.detailLabel())
         assertEquals("Clásica 3130", CardPreviewData.clasica.detailLabel())
         assertEquals("BICSA 1204", CardPreviewData.bicsa.detailLabel())
         assertEquals("BPA 7731", CardPreviewData.bpa.detailLabel())

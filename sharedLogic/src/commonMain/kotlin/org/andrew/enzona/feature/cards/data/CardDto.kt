@@ -23,4 +23,6 @@ data class CardDto(
     @SerialName("bank_name") val bankName: String? = null,
     @SerialName("primary_source") val primarySource: String? = null,
     @SerialName("create_at") val createAt: String? = null,
+    /** Llega como texto de 9 dígitos (`"922706999"`); el original lo lee como entero, así que también se admite un número. */
+    val bin: String? = null,
 )

@@ -76,7 +76,7 @@ enum OperationPresentation {
         let bank: String
         switch skin {
         case .ais: bank = "AIS"
-        case .bandec, .bandecUsd: bank = "BANDEC"
+        case .bandec, .bandecTropical: bank = "BANDEC"
         case .banmet: bank = "BANMET"
         case .bicsa: bank = "BICSA"
         case .bpa: bank = "BPA"

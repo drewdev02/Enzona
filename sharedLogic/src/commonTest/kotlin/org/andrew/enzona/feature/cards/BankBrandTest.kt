@@ -23,13 +23,13 @@ class BankBrandTest {
         // Mismos códigos que `skinFor` (que viene de la tabla del original).
         for (code in listOf("02", "03", "04", "05", "95", "06", "12", "99")) {
             val brand = bankBrandOf(code)
-            val skin = skinFor(code, "cup")
+            val skin = skinFor(code, null)
             val expected = when (skin) {
                 CardSkin.AIS -> BankBrand.AIS
                 CardSkin.CLASICA -> BankBrand.CLASICA
                 CardSkin.BICSA -> BankBrand.BICSA
                 CardSkin.BANMET -> BankBrand.BANMET
-                CardSkin.BANDEC, CardSkin.BANDEC_USD -> BankBrand.BANDEC
+                CardSkin.BANDEC, CardSkin.BANDEC_TROPICAL -> BankBrand.BANDEC
                 CardSkin.BPA -> BankBrand.BPA
                 CardSkin.GENERIC -> BankBrand.UNKNOWN
             }

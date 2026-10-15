@@ -5,7 +5,7 @@ func eq<T: Equatable>(_ a: T, _ b: T, _ what: String) { if a != b { failures += 
 // ---- Espejos de los enums del dominio ----
 eq(EzTransferStatus(kotlinName: "ACCEPTED"), .accepted, "nombre Kotlin conocido")
 eq(EzOperationKind(kotlinName: "CARD_ACTIVATION"), .cardActivation, "nombre con guion bajo")
-eq(EzCardSkin(kotlinName: "BANDEC_USD"), .bandecUsd, "skin con moneda")
+eq(EzCardSkin(kotlinName: "BANDEC_TROPICAL"), .bandecTropical, "skin tropical")
 eq(EzNotSentReason(kotlinName: "ANOTHER_TRANSFER_IN_PROGRESS"), .anotherTransferInProgress, "motivo largo")
 eq(EzResultKind(kotlinName: "NOT_SENT"), .notSent, "clasificación del dominio")
 eq(Set(EzBankBrand.allCases.map { $0.rawValue }).count, EzBankBrand.allCases.count, "valores crudos únicos")
@@ -53,7 +53,7 @@ eq(P.title(kind: .merchantPayment, merchantAlias: nil), "Pago a comercio", "come
 eq(P.title(kind: .unknown, merchantAlias: nil), "Operación", "tipo desconocido")
 for kind in EzOperationKind.allCases { eq(P.icons[kind] != nil, true, "icono de \(kind.rawValue)") }
 eq(P.icon(kind: .reversal), "op_transfer", "reverso como transferencia")
-eq(P.cardDetailLabel(skin: .bandecUsd, bankName: "x", last4: "4912"), "BANDEC 4912", "bandec usd")
+eq(P.cardDetailLabel(skin: .bandecTropical, bankName: "x", last4: "4912"), "BANDEC 4912", "bandec tropical")
 eq(P.cardDetailLabel(skin: .clasica, bankName: "x", last4: "3130"), "Clásica 3130", "clásica")
 eq(P.cardDetailLabel(skin: .generic, bankName: "Banco Desconocido", last4: "0042"), "Banco Desconocido 0042", "banco desconocido")
 eq(P.cardDetailLabel(skin: .generic, bankName: " ", last4: "0042"), "Tarjeta 0042", "sin nombre")

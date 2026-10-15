@@ -24,7 +24,7 @@ extension EzBankCardModel {
             make("6856", .banmet, "Banco Metropolitano S.A", "CUP", "05/32", primary: true, number: black, text: soft, menu: black),
             make("3130", .clasica, "FINCIMEX CLASICA", "USD", "01/31", number: black, text: white, menu: black),
             make("5800", .bandec, "Banco de Crédito y Comercio", "CUP", "02/32", number: white, text: white, menu: white),
-            make("4912", .bandecUsd, "Banco de Crédito y Comercio", "USD", "02/32", number: black, text: black, menu: white, scrim: true),
+            make("4912", .bandecTropical, "Banco de Crédito y Comercio", "USD", "02/32", number: black, text: black, menu: white, scrim: true),
             make("1204", .bicsa, "BICSA", "USD", "11/30", number: black, text: soft, menu: black),
             make("7731", .bpa, "Banco Popular de Ahorro", "CUP", "09/29", number: black, text: soft, menu: black, inset: 0.115),
             make("9087", .ais, "American International Service", "USD", "03/33", number: white, text: black, menu: black),

@@ -29,7 +29,8 @@ class CardsRepositoryTest {
 
     // Misma FORMA que la respuesta real (envoltorio {"card":[...]}, `status`/`verified` como número,
     // `primary_source` como booleano SIN comillas, `create_at` sin "d"), con datos inventados. El
-    // orden es el de la API (NO el de pantalla) y cubre Bandec CUP, Bandec USD, Metropolitano y Clásica.
+    // orden es el de la API (NO el de pantalla) y cubre Bandec CUP, Bandec USD (BIN normal), Bandec Tropical (BIN
+    // 924006999, que llega como NÚMERO: el original lo lee como entero), Metropolitano y Clásica.
     private val realShape = """
         {"card":[
          {"funding_source_uuid":"u-bandec-cup","last4":"5800","cardholder":"TEST USER","expdate":"0232",
@@ -43,7 +44,10 @@ class CardsRepositoryTest {
           "bank_name":"Banco Metropolitano S.A","bank_code":"95","verified":1,"bin":"922795987"},
          {"funding_source_uuid":"u-clasica","last4":"3130","cardholder":"Test User","expdate":"0131",
           "create_at":"2026-06-05 15:03:35.0","status":1,"currency":"usd","primary_source":false,
-          "bank_name":"FINCIMEX CLASICA","bank_code":"03","verified":1,"bin":"976003122"}
+          "bank_name":"FINCIMEX CLASICA","bank_code":"03","verified":1,"bin":"976003122"},
+         {"funding_source_uuid":"u-tropical","last4":"7001","cardholder":"TEST USER","expdate":"0831",
+          "create_at":"2026-01-01 10:00:00.0","status":1,"currency":"usd","primary_source":false,
+          "bank_name":"Banco de Credito y Comercio (BANDEC)","bank_code":"06","verified":1,"bin":924006999}
         ]}
     """.trimIndent()
 
@@ -62,7 +66,7 @@ class CardsRepositoryTest {
         val result = cards(repo())
 
         // Predeterminada primero; luego de la más nueva a la más antigua.
-        assertEquals(listOf("6856", "3130", "4912", "5800"), result.map { it.last4 })
+        assertEquals(listOf("6856", "3130", "7001", "4912", "5800"), result.map { it.last4 })
         val banmet = result.first()
         assertTrue(banmet.isPrimary)
         assertEquals("05/32", banmet.expiry)
@@ -72,11 +76,31 @@ class CardsRepositoryTest {
     }
 
     @Test
-    fun bandecPicksTheSkinByCurrency() = runTest {
+    fun bandecPicksTheTropicalSkinByBinNotByCurrency() = runTest {
         val byLast4 = cards(repo()).associateBy { it.last4 }
         assertEquals(CardSkin.BANDEC, byLast4.getValue("5800").skin)
-        assertEquals(CardSkin.BANDEC_USD, byLast4.getValue("4912").skin)
+        // USD pero con un BIN normal: es una Bandec normal (antes se confundía por la moneda).
+        assertEquals("USD", byLast4.getValue("4912").currency)
+        assertEquals(CardSkin.BANDEC, byLast4.getValue("4912").skin)
+        // La tropical: su BIN llega como número JSON y se lee igual.
+        assertEquals("924006999", byLast4.getValue("7001").bin)
+        assertEquals(CardSkin.BANDEC_TROPICAL, byLast4.getValue("7001").skin)
         assertEquals(CardSkin.CLASICA, byLast4.getValue("3130").skin)
+    }
+
+    @Test
+    fun theBinIsKeptAsDigitsAndAnythingElseCountsAsMissing() = runTest {
+        val body = """{"card":[
+            {"last4":"1111","bank_code":"06","currency":"cup","bin":"924006999"},
+            {"last4":"2222","bank_code":"06","currency":"cup","bin":"92x006999"},
+            {"last4":"3333","bank_code":"06","currency":"cup","bin":false},
+            {"last4":"4444","bank_code":"06","currency":"cup"}]}"""
+        val byLast4 = cards(repo(body = body)).associateBy { it.last4 }
+        assertEquals(CardSkin.BANDEC_TROPICAL, byLast4.getValue("1111").skin)
+        for (last4 in listOf("2222", "3333", "4444")) {
+            assertNull(byLast4.getValue(last4).bin, last4)
+            assertEquals(CardSkin.BANDEC, byLast4.getValue(last4).skin, last4)
+        }
     }
 
     @Test
