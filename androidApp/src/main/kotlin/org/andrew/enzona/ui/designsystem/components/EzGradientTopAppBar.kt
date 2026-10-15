@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,7 +31,14 @@ import org.andrew.enzona.ui.designsystem.WhiteStatusBarIcons
  * blancos (el degradado es siempre oscuro, también en tema claro) y barra de estado clara.
  */
 @Composable
-fun EzGradientTopAppBar(title: String, onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun EzGradientTopAppBar(
+    title: String,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    /** Texto de una acción a la derecha ("Historial"). Va con [onAction]. */
+    actionText: String? = null,
+    onAction: (() -> Unit)? = null,
+) {
     WhiteStatusBarIcons()
     val colors = EnzonaTheme.colors
     Row(
@@ -49,7 +57,12 @@ fun EzGradientTopAppBar(title: String, onBack: () -> Unit, modifier: Modifier = 
             title,
             color = Color.White,
             style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(start = EnzonaTheme.spacing.sm).semantics { heading() },
+            modifier = Modifier.weight(1f).padding(start = EnzonaTheme.spacing.sm).semantics { heading() },
         )
+        if (actionText != null && onAction != null) {
+            TextButton(onClick = onAction, modifier = Modifier.padding(end = EnzonaTheme.spacing.xs)) {
+                Text(actionText, color = Color.White, style = MaterialTheme.typography.titleMedium)
+            }
+        }
     }
 }

@@ -12,7 +12,7 @@ package org.andrew.enzona.feature.home.domain
  * se muestra y avisa de que llegará próximamente.
  */
 enum class HomeService(val label: String, val isAvailable: Boolean = false) {
-    TRANSFER("Transferir"),
+    TRANSFER("Transferir", isAvailable = true),
     BALANCE("Balance", isAvailable = true),
     BULEVAR("Bulevar"),
     GIFT("Regalo"),

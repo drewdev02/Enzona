@@ -26,6 +26,11 @@ import org.andrew.enzona.ui.cards.detailLabel
 import org.andrew.enzona.ui.ComingSoonScreen
 import org.andrew.enzona.ui.ProfileScreen
 import org.andrew.enzona.ui.dashboard.DashboardRoute
+import org.andrew.enzona.ui.transfer.FindAccountRoute
+import org.andrew.enzona.ui.transfer.TransferFriendsRoute
+import org.andrew.enzona.ui.transfer.TransferHistoryRoute
+import org.andrew.enzona.ui.transfer.TransferMenuRoute
+import org.andrew.enzona.ui.transfer.TransferOption
 
 // Rutas tipadas (Navigation 2.8+): sin strings sueltas, los argumentos futuros serán campos.
 @Serializable data object Home
@@ -36,6 +41,11 @@ import org.andrew.enzona.ui.dashboard.DashboardRoute
 @Serializable data object Balance
 /** Tercer nivel: saldo y operaciones de una tarjeta. `cardLabel` es el texto de la fila "Tarjeta" ("BANMET 6856"). */
 @Serializable data class CardDetail(val cardId: String, val cardLabel: String)
+/** Segundo nivel: menú "Transferir" (formas de transferir y recientes) y sus pantallas de apoyo. */
+@Serializable data object TransferMenu
+@Serializable data object TransferHistory
+@Serializable data object TransferFindAccount
+@Serializable data object TransferFriends
 
 /** Navegación de la zona autenticada. El paso login <-> app lo decide SessionState, no este grafo. */
 @Composable
@@ -80,6 +90,7 @@ fun AppNavigation(onLogout: () -> Unit) {
                         when {
                             !service.isAvailable -> showMessage("${service.label} estará disponible próximamente.")
                             service == HomeService.BALANCE -> nav.navigate(Balance)
+                            service == HomeService.TRANSFER -> nav.navigate(TransferMenu)
                         }
                     },
                 )
@@ -97,6 +108,34 @@ fun AppNavigation(onLogout: () -> Unit) {
                     // Eliminar / predeterminada / PIN / operaciones son operaciones nuevas: llegan en su hito.
                     onCardMenu = { showMessage("Las acciones de la tarjeta estarán disponibles próximamente.") },
                     onCardClick = { card -> nav.navigate(CardDetail(card.id, card.detailLabel())) },
+                )
+            }
+            composable<TransferMenu> {
+                TransferMenuRoute(
+                    onBack = { nav.popBackStack() },
+                    onHistory = { nav.navigate(TransferHistory) },
+                    onOption = { option ->
+                        when (option) {
+                            TransferOption.ACCOUNT -> nav.navigate(TransferFindAccount)
+                            TransferOption.FRIEND -> nav.navigate(TransferFriends)
+                            // Los formularios que mueven dinero llegan en su hito.
+                            TransferOption.CARD, TransferOption.OWN_CARD ->
+                                showMessage("${option.label} estará disponible próximamente.")
+                        }
+                    },
+                )
+            }
+            composable<TransferHistory> { TransferHistoryRoute(onBack = { nav.popBackStack() }) }
+            composable<TransferFindAccount> {
+                FindAccountRoute(
+                    onBack = { nav.popBackStack() },
+                    onRecipient = { showMessage("Transferir a una cuenta estará disponible próximamente.") },
+                )
+            }
+            composable<TransferFriends> {
+                TransferFriendsRoute(
+                    onBack = { nav.popBackStack() },
+                    onFriend = { showMessage("Transferir a un amigo estará disponible próximamente.") },
                 )
             }
             composable<CardDetail> { entry ->

@@ -19,7 +19,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -34,6 +33,7 @@ import org.andrew.enzona.feature.cards.domain.CardOperation
 import org.andrew.enzona.feature.cards.presentation.CardDetailUiState
 import org.andrew.enzona.feature.cards.presentation.CardDetailViewModel
 import org.andrew.enzona.ui.designsystem.EnzonaTheme
+import org.andrew.enzona.ui.designsystem.isLargeFont
 import org.andrew.enzona.ui.designsystem.components.EzAmount
 import org.andrew.enzona.ui.designsystem.components.EzDivider
 import org.andrew.enzona.ui.designsystem.components.EzErrorState
@@ -138,15 +138,6 @@ private fun AvailableBalance(available: Money?) {
         }
     }
 }
-
-/**
- * Con la fuente muy grande no caben dos columnas: un importe no puede truncarse ni partirse, así que las
- * filas se apilan. Mismo umbral que la rejilla de servicios.
- */
-@Composable
-private fun isLargeFont(): Boolean = LocalDensity.current.fontScale >= LargeFontScale
-
-private const val LargeFontScale = 1.3f
 
 @Composable
 private fun DetailRow(label: String, value: String) {

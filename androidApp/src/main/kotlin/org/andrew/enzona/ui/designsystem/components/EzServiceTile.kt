@@ -18,12 +18,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import org.andrew.enzona.ui.designsystem.EnzonaTheme
+import org.andrew.enzona.ui.designsystem.isLargeFont
 
 /**
  * Casilla de servicio: icono grande con la etiqueta debajo. La etiqueta es el nombre
@@ -46,7 +46,7 @@ fun EzServiceTile(
         // Tamaños normales: una línea que se reduce hasta 10sp antes de cortar una palabra
         // ("Organizaciones"). Con fuente grande no se reduce y puede ocupar varias líneas (la
         // cuadrícula pasa a 2 columnas, donde las palabras caben).
-        val largeText = isLargeText()
+        val largeText = isLargeFont()
         Text(
             label,
             style = EnzonaTheme.extraTypography.tileLabel,
@@ -60,10 +60,6 @@ fun EzServiceTile(
     }
 }
 
-/** Fuente del usuario >= 1.3x: la cuadrícula necesita otra disposición. */
-@Composable
-private fun isLargeText(): Boolean = LocalDensity.current.fontScale >= 1.3f
-
 /** Cuadrícula de casillas (4 columnas; 2 con fuente grande). Se desplaza si no cabe. */
 @Composable
 fun <T> EzServiceGrid(
@@ -74,7 +70,7 @@ fun <T> EzServiceGrid(
     tile: @Composable (T) -> Unit,
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(if (isLargeText()) 2 else columns),
+        columns = GridCells.Fixed(if (isLargeFont()) 2 else columns),
         modifier = modifier,
         contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(EnzonaTheme.spacing.md),

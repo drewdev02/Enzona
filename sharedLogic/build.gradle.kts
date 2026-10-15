@@ -44,7 +44,8 @@ kotlin {
             api(libs.androidx.lifecycle.viewmodel)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
-            implementation(libs.kotlinx.datetime)
+            // api: LocalDate/LocalDateTime aparecen en el dominio público (filtros y fechas de transferencias).
+            api(libs.kotlinx.datetime)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.contentNegotiation)
             implementation(libs.ktor.serialization.json)
