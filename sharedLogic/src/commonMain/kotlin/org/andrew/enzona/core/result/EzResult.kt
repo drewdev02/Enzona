@@ -8,6 +8,8 @@ sealed interface Failure {
     data class Http(val status: Int, override val message: String? = null) : Failure
     data class Parse(override val message: String? = null) : Failure
     data class Auth(override val message: String? = null) : Failure
+    /** No se pudo cifrar o firmar. Nunca lleva el dato que se intentaba proteger. */
+    data class Crypto(override val message: String? = null) : Failure
     data class Unknown(override val message: String? = null) : Failure
 }
 
@@ -43,5 +45,6 @@ fun Failure.userMessage(): String = when (this) {
     }
     is Failure.Parse -> "Respuesta inesperada del servidor."
     is Failure.Auth -> message ?: "Error de autenticación."
+    is Failure.Crypto -> "No se pudo proteger la información de pago. Inténtalo de nuevo."
     is Failure.Unknown -> message ?: "Ocurrió un error inesperado."
 }

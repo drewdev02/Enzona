@@ -1,5 +1,7 @@
 package org.andrew.enzona.core.di
 
+import org.andrew.enzona.core.crypto.PaymentPasswordEncryptor
+import org.andrew.enzona.core.crypto.RsaPaymentPasswordEncryptor
 import org.andrew.enzona.core.network.createPlainHttpClient
 import org.andrew.enzona.core.network.enzonaJson
 import org.koin.core.module.Module
@@ -13,6 +15,7 @@ val PlainHttpClient = named("plainHttpClient")
 val coreModule: Module = module {
     single { enzonaJson }
     single(PlainHttpClient) { createPlainHttpClient() }
+    single<PaymentPasswordEncryptor> { RsaPaymentPasswordEncryptor() }
 }
 
 /** Dependencias específicas de plataforma (SecureStorage, etc.). */

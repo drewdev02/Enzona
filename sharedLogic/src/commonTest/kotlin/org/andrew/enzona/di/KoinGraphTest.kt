@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.andrew.enzona.core.di.PlainHttpClient
+import org.andrew.enzona.core.crypto.PaymentPasswordEncryptor
 import org.andrew.enzona.core.di.coreModule
 import org.andrew.enzona.core.result.EzResult
 import org.andrew.enzona.core.storage.SecureStorage
@@ -36,6 +37,7 @@ import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
 import kotlin.test.assertSame
@@ -73,6 +75,10 @@ class KoinGraphTest {
             assertNotSame(koin.get<FriendsViewModel>(), koin.get<FriendsViewModel>())
             assertSame(koin.get<TransferRepository>(), koin.get<TransferRepository>())
             assertSame(koin.get<FriendsRepository>(), koin.get<FriendsRepository>())
+
+            // El cifrador de la contraseña de pago es uno para toda la app y ya trae la clave de EnZona.
+            assertSame(koin.get<PaymentPasswordEncryptor>(), koin.get<PaymentPasswordEncryptor>())
+            assertIs<EzResult.Success<String>>(koin.get<PaymentPasswordEncryptor>().encrypt("1234"))
 
             // La sesión es de la app (una sola); la pantalla de login, no.
             assertSame(koin.get<SessionRepository>(), koin.get<SessionRepository>())
