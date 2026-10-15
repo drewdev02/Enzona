@@ -129,6 +129,7 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 - ☐ i18n (es/en), formato de moneda/fecha.
 - ☐ Tests: unit (domain/usecases), contract (DTOs vs esquemas verificados), auth flow.
 - ☐ CI (build Android + framework iOS), lint/format.
+- ☐ **Icono de la app** (aplazado): hoy Android usa el robot por defecto e iOS no tiene icono. El original solo trae PNG de 192 px (`mipmap/launcher_icon`, nombres ofuscados en el APK) y 257 px (`ic_enzona_new.png`), sin vector ni adaptive icon. Plan: redibujarlo en vector (círculo con degradado + 5 barras "EZ" medidas sobre el PNG), con icono adaptativo + monocromo en Android (primer plano dentro de la zona segura de ~66 dp) y PNG 1024×1024 opaco para iOS (+ variantes oscura y tintada ya declaradas en `Contents.json`, generadas con un script Swift/CoreGraphics porque no hay `rsvg`/`magick`). Registrar la procedencia en `tools/assets_manifest.json` y verificar con capturas del launcher en emulador/simulador. Es marca de EnZona/XETID: no publicar en las tiendas con ella.
 - ☑ Observabilidad: logger estilo .NET (`core/logging`, Kermit debajo) con `Sensitive<T>`, logging de red sin ruta ni cabeceras y tests de redacción (ver ARCHITECTURE §4). Pendiente: sink a archivo / "compartir logs", y la regla keep si se activa R8.
 
 ## Orden recomendado
