@@ -11,8 +11,6 @@ import org.andrew.enzona.core.money.Money
 import org.andrew.enzona.core.money.sameCurrency
 import org.andrew.enzona.core.result.EzResult
 import org.andrew.enzona.core.result.userMessage
-import org.andrew.enzona.core.util.Cancellable
-import org.andrew.enzona.core.util.watch
 import org.andrew.enzona.feature.cards.domain.BankCard
 import org.andrew.enzona.feature.cards.domain.GetCardsUseCase
 import org.andrew.enzona.feature.transfer.domain.AmountInput
@@ -50,7 +48,10 @@ sealed interface OwnCardTransferUiState {
         val amountText: String,
         val description: String,
         val problems: OwnCardFormProblems = OwnCardFormProblems(),
-    ) : OwnCardTransferUiState
+    ) : OwnCardTransferUiState {
+        /** Swift Export no exporta una propiedad llamada `description` (choca con la de Swift): este es el acceso para iOS. */
+        val descriptionText: String get() = description
+    }
 
     /**
      * Resumen para confirmar. [exchangeApplies]: las monedas difieren y el servidor aplicará su tasa de cambio.
@@ -218,7 +219,4 @@ class OwnCardTransferViewModel(
         val finished = _state.value as? OwnCardTransferUiState.Finished ?: return
         _state.value = freshForm(finished.form.cards)
     }
-
-    /** Observa el estado desde Swift (puente manual en lugar de SKIE). */
-    fun watchState(onEach: (OwnCardTransferUiState) -> Unit): Cancellable = state.watch(onEach)
 }

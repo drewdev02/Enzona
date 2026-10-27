@@ -1,5 +1,5 @@
 import SwiftUI
-import SharedLogic
+import SharedLogicSwift
 
 /// Historial conectado al ViewModel. El contenido (`TransferHistoryContent`) no depende del framework Kotlin.
 struct TransferHistoryView: View {

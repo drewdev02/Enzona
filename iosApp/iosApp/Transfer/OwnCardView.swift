@@ -1,5 +1,5 @@
 import SwiftUI
-import SharedLogic
+import SharedLogicSwift
 
 /// Todo lo que la pantalla puede pedir al modelo, para pasarlo junto y poder previsualizar sin él.
 struct OwnCardActions {

@@ -1,11 +1,11 @@
 import Foundation
-import SharedLogic
+import SharedLogicSwift
 
 private extension OwnCardTransferUiStateEditing {
     func formData() -> OwnCardFormData {
         OwnCardFormData(
             cards: cards.map { $0.choice() }, sourceId: sourceId, destinationId: destinationId,
-            amountText: amountText, description: description_,
+            amountText: amountText, description: descriptionText,
             amountError: problems.amount.map { OwnCardPresentation.amountProblem(EzAmountProblem($0)) },
             destinationError: problems.destinationMissing, descriptionError: problems.descriptionMissing
         )
@@ -21,23 +21,28 @@ private extension OwnCardTransferUiStateFinished {
     }
 }
 
-/// Envuelve el OwnCardTransferViewModel de Kotlin para SwiftUI (puente `watchState`, en lugar de SKIE).
+/// Envuelve el OwnCardTransferViewModel de Kotlin para SwiftUI (observa `state` con `asAsyncSequence()` de Swift Export).
 /// Un ViewModel por pantalla: `deinit` lo limpia. La contraseña no pasa por aquí más que hacia `submit`.
 @MainActor
 final class OwnCardModel: ObservableObject {
     @Published var phase: OwnCardPhase = .loading
 
-    private let holder: ViewModelHolder<OwnCardTransferViewModel>
+    private let holder: OwnCardTransferViewModelHolder
     private var vm: OwnCardTransferViewModel { holder.viewModel }
-    private var subscription: Cancellable?
+    private var observation: Task<Void, Never>?
 
     init() {
         holder = KoinHelper.shared.ownCardTransferViewModelHolder()
-        subscription = holder.viewModel.watchState { [weak self] state in self?.apply(state) }
+        let state = holder.viewModel.state
+        observation = Task { [weak self] in
+            do {
+                for try await value in state.asAsyncSequence() { self?.apply(value) }
+            } catch {}
+        }
     }
 
     deinit {
-        subscription?.cancel()
+        observation?.cancel()
         holder.clear()
     }
 

@@ -1,5 +1,5 @@
 import Foundation
-import SharedLogic
+import SharedLogicSwift
 
 /// Observa la sesión de la app (`SessionRepository`, vive todo el proceso) para decidir
 /// qué se muestra: login o la zona autenticada. No es dueño de la sesión, solo la refleja.
@@ -9,20 +9,25 @@ final class SessionModel: ObservableObject {
 
     @Published private(set) var phase: Phase
 
-    private var subscription: Cancellable?
+    private var observation: Task<Void, Never>?
 
     init() {
-        phase = Self.phase(of: KoinHelper.shared.session.state.value)
-        subscription = KoinHelper.shared.watchSession { [weak self] state in
-            self?.phase = Self.phase(of: state)
+        let state = KoinHelper.shared.session.state
+        phase = Self.phase(of: state.value)
+        observation = Task { [weak self] in
+            do {
+                for try await value in state.asAsyncSequence() { self?.phase = Self.phase(of: value) }
+            } catch {}
         }
     }
 
-    deinit { subscription?.cancel() }
+    deinit { observation?.cancel() }
 
-    private static func phase(of state: Any?) -> Phase {
-        if let out = state as? SessionStateLoggedOut { return .loggedOut(expired: out.expired) }
-        return .loggedIn
+    private static func phase(of state: any SessionState) -> Phase {
+        switch state.sealedType() {
+        case .loggedOut(let out): return .loggedOut(expired: out.value.expired)
+        case .loggedIn: return .loggedIn
+        }
     }
 
     func logout() { KoinHelper.shared.session.logout() }

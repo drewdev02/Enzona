@@ -1,11 +1,11 @@
 import Foundation
-import SharedLogic
+import SharedLogicSwift
 
 private extension RecipientTransferUiStateEditing {
     func formData() -> RecipientFormData {
         RecipientFormData(
             recipient: recipient.identity(), cards: cards.map { $0.choice() }, sourceId: sourceId,
-            amountText: amountText, description: description_,
+            amountText: amountText, description: descriptionText,
             amountError: amountProblem.map { OwnCardPresentation.amountProblem(EzAmountProblem($0)) }
         )
     }
@@ -20,23 +20,28 @@ private extension RecipientTransferUiStateFinished {
     }
 }
 
-/// Envuelve el RecipientTransferViewModel de Kotlin para SwiftUI (puente `watchState`, en lugar de SKIE). Un ViewModel
+/// Envuelve el RecipientTransferViewModel de Kotlin para SwiftUI (observa `state` con `asAsyncSequence()` de Swift Export). Un ViewModel
 /// por pantalla, creado con el destinatario ya verificado: `deinit` lo limpia. La contraseña solo pasa hacia `submit`.
 @MainActor
 final class RecipientModel: ObservableObject {
     @Published var phase: RecipientPhase = .loading
 
-    private let holder: ViewModelHolder<RecipientTransferViewModel>
+    private let holder: RecipientTransferViewModelHolder
     private var vm: RecipientTransferViewModel { holder.viewModel }
-    private var subscription: Cancellable?
+    private var observation: Task<Void, Never>?
 
     init(recipient: RecipientIdentity) {
         holder = KoinHelper.shared.recipientTransferViewModelHolder(recipient: recipient.kotlin())
-        subscription = holder.viewModel.watchState { [weak self] state in self?.apply(state) }
+        let state = holder.viewModel.state
+        observation = Task { [weak self] in
+            do {
+                for try await value in state.asAsyncSequence() { self?.apply(value) }
+            } catch {}
+        }
     }
 
     deinit {
-        subscription?.cancel()
+        observation?.cancel()
         holder.clear()
     }
 

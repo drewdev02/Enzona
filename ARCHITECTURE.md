@@ -34,7 +34,7 @@ Enzona/
     src/androidMain/      actual: SecureStorage(Keystore), RsaEncryptor(JCA), httpEngine(OkHttp)
     src/iosMain/          actual: SecureStorage(Keychain), RsaEncryptor(Security), httpEngine(Darwin)
   androidApp/             Jetpack Compose — consume sharedLogic (collectAsState)
-  iosApp/                 SwiftUI — consume el framework SharedLogic vía SKIE
+  iosApp/                 SwiftUI — consume `SharedLogicSwift` vía Swift Export
 ```
 
 > `sharedUI` → eliminar (o, si algún día quieres un design system Compose **solo-Android**
@@ -58,20 +58,30 @@ api.enzona.net / identity.enzona.net
 - `Result<Failure, T>` (sealed) atraviesa las capas (análogo al `Either/dartz` del original).
 - Mapeo `Dto` (data) → `Entity` (domain) en el `RepositoryImpl`.
 
-## 4. El puente Swift — puente manual (SKIE en pausa)
+## 4. El puente Swift — Swift Export (spike, Kotlin 2.5.0-Beta2)
 
-> ⚠️ **SKIE no es compatible con este toolchain**: soporta Kotlin hasta 2.1.10, y el proyecto
-> usa Kotlin 2.4.20 (además AGP 9.1.1 fuerza ≥ 2.2.10). Usarlo exigiría bajar AGP a 8.x y
-> reescribir el DSL Android KMP. Se adoptará cuando SKIE publique soporte para Kotlin 2.4.
+> ⚠️ **Experimental**: Swift Export está en alpha y esta rama depende de Kotlin `2.5.0-Beta2`.
+> SKIE no soporta este toolchain (Kotlin ≥ 2.2.10 por AGP 9.1.1), así que no es alternativa.
 
-Mientras tanto, un **puente manual ligero** expone los `StateFlow` a SwiftUI:
-- `core/util/FlowBridge.kt`: `Cancellable` + `StateFlow.watch(onEach)`.
-- El ViewModel expone `watchState(onEach:): Cancellable`, consumible directo desde Swift.
-- SwiftUI envuelve el ViewModel en un `ObservableObject` que actualiza `@Published` desde
-  el callback (ver `iosApp/LoginModel.swift`, `SessionModel.swift`).
-- Los `sealed interface` de Kotlin se chequean en Swift con `case is LoginUiStateAuthenticating`.
+`sharedLogic` se exporta a Swift con `export { swift { ... } }` (módulo `SharedLogicSwift`); Xcode
+lo integra con `:sharedLogic:embedSwiftExportForXcode`. `androidx.lifecycle.viewmodel` se marca
+`SwiftExportVisibility.HIDDEN` porque su Swift generado no compila.
 
-Migrar a SKIE después = cambiar solo esta capa de observación iOS; la lógica no se toca.
+- Los ViewModels exponen `state: StateFlow`, que llega a Swift tipado (`KotlinTypedStateFlow`).
+  SwiftUI lo observa con `for try await value in state.asAsyncSequence()` dentro de una `Task`
+  que se cancela en `deinit` (ver `iosApp/Auth/LoginModel.swift`, `App/SessionModel.swift`).
+- Los `sealed interface` se recorren con `switch state.sealedType()` (enum nativo, exhaustivo).
+- `iosApp/Domain/KotlinAliases.swift` da nombres cortos a los tipos, que viven en
+  `ExportedKotlinPackages.<paquete>`, y nombres planos a las subclases de los sealed.
+- Cada pantalla tiene un holder **no genérico** (`LoginViewModelHolder`…, en `di/ViewModelHolder.kt`):
+  Swift Export no exporta generics y el getter de `ViewModelHolder<T>` saldría como `fatalError()`.
+
+Gotchas comprobados:
+- Una propiedad llamada `description` no se exporta (choca con la de Swift): se añade un acceso
+  `descriptionText`.
+- Un `List<enum>` revienta en ejecución al convertirse en Swift: usar `Enum.allCases`.
+- Los enums llegan como enums de Swift con casos en mayúsculas; el nombre es `.description`.
+- Las funciones top-level son estáticas del namespace del paquete (`CardsDomain.bankBrandOf`).
 
 ### Ciclo de vida: quién es dueño de qué
 
@@ -234,7 +244,7 @@ la sección no se muestra (Android: bandera `debuggable`; iOS: el archivo entero
 | DI | Koin (ya presente) |
 | Storage | multiplatform-settings o `expect SecureStorage` |
 | Logs | Napier |
-| Swift interop | **SKIE** (plugin) |
+| Swift interop | **Swift Export** (Kotlin 2.5.0-Beta2, experimental) |
 | Auth UI | Custom Tabs (Android) · WKWebView (iOS; ASWebAuthenticationSession no capta `http://`) |
 | Navegación | Android: `navigation-compose` 2.10.2 (rutas tipadas) · iOS: `NavigationStack` |
 | QR | CameraX + MLKit (Android) · AVFoundation (iOS) |

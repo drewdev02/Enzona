@@ -9,8 +9,6 @@ import kotlinx.coroutines.launch
 import org.andrew.enzona.core.logging.logger
 import org.andrew.enzona.core.result.EzResult
 import org.andrew.enzona.core.result.userMessage
-import org.andrew.enzona.core.util.Cancellable
-import org.andrew.enzona.core.util.watch
 import org.andrew.enzona.feature.auth.domain.SessionRepository
 
 /** Estado de la pantalla de login. La sesión en sí (dentro/fuera) es de [SessionRepository]. */
@@ -57,7 +55,4 @@ class LoginViewModel(
         session.cancelLogin()
         _state.value = LoginUiState.Error(message)
     }
-
-    /** Observa el estado desde Swift (puente manual en lugar de SKIE). */
-    fun watchState(onEach: (LoginUiState) -> Unit): Cancellable = state.watch(onEach)
 }

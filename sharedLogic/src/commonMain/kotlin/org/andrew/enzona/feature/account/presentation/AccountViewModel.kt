@@ -9,8 +9,6 @@ import kotlinx.coroutines.launch
 import org.andrew.enzona.core.logging.logger
 import org.andrew.enzona.core.result.EzResult
 import org.andrew.enzona.core.result.userMessage
-import org.andrew.enzona.core.util.Cancellable
-import org.andrew.enzona.core.util.watch
 import org.andrew.enzona.feature.account.domain.Account
 import org.andrew.enzona.feature.account.domain.GetAccountUseCase
 
@@ -44,7 +42,4 @@ class AccountViewModel(
             }
         }
     }
-
-    /** Observa el estado desde Swift (puente manual en lugar de SKIE). */
-    fun watchState(onEach: (AccountUiState) -> Unit): Cancellable = state.watch(onEach)
 }

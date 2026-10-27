@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.export.SwiftExportVisibility
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -21,6 +22,15 @@ kotlin {
         }
     }
     
+    export {
+        swift {
+            moduleName = "SharedLogicSwift"
+            xcodeIntegration {
+                configure(libs.androidx.lifecycle.viewmodel, SwiftExportVisibility.HIDDEN)
+            }
+        }
+    }
+
     android {
        namespace = "org.andrew.enzona.sharedLogic"
        compileSdk = libs.versions.android.compileSdk.get().toInt()

@@ -30,6 +30,7 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 **Meta:** login real con OAuth/PKCE + sesión persistente, UI nativa en cada plataforma.
 
 - ⛔ ~~Plugin SKIE~~ → **no compatible con Kotlin 2.4.20/AGP 9**; se usa un **puente manual** (`core/util/FlowBridge.kt`: `Cancellable` + `StateFlow.watch`). Migrar a SKIE cuando soporte Kotlin 2.4.
+- 🧪 **Swift Export** (rama `spike/swift-export`, Kotlin 2.5.0-Beta2): reemplaza el puente manual; `FlowBridge.kt` y los `watchState` eliminados. Pendiente: probar login y pantallas con cuenta real, y esperar Kotlin 2.5 estable antes de mergear.
 - ☑ `core/crypto/Pkce`: S256 (okio). **Verificado contra el vector de la RFC 7636** (test, Android + iOS).
 - ☑ `feature/auth/data/OAuthService`: authorize URL + exchange + refresh (form-urlencoded).
 - ☑ `feature/auth/data/TokenStore` sobre `SecureStorage`.
@@ -56,7 +57,7 @@ Leyenda: ☐ pendiente · ◧ en curso · ☑ hecho.
 - ☑ `domain`: `Account` + `AccountRepository` + `GetAccountUseCase` (username = claim `sub` del id_token).
 - ☑ `data`: `GET /account/v1.0.0/account?username=<sub>`, envelope `{"account":{}}`. DTO solo con los campos usados; los flags de tipo laxo (`"1"`, `"true"`, `"8"`, `false`) se leen como `String` y se normalizan en el mapper.
 - ☑ El cuerpo de error nunca se propaga (puede llevar datos personales).
-- ☑ `AccountViewModel` + `AccountUiState` (StateFlow) + `watchState` para Swift.
+- ☑ `AccountViewModel` + `AccountUiState` (StateFlow) (observado desde Swift con `asAsyncSequence()`).
 - ☑ **Navegación**: Android = `androidx.navigation:navigation-compose` **2.10.2** (rutas tipadas `@Serializable`); iOS = `NavigationStack`. (Navigation 3 queda como alternativa futura.)
 - ☑ Android: Home → Mi perfil en **Compose**. iOS: Home → Mi perfil en **SwiftUI**.
 - ☑ Fix transversal: `apiCall` y `OAuthService` ya no convierten `CancellationException` en error de red.

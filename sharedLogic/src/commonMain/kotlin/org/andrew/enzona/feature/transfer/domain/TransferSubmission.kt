@@ -17,6 +17,8 @@ sealed interface TransferRequest {
     val sourceCardId: String
     val amount: Money
     val description: String
+    /** Swift Export no exporta una propiedad llamada `description` (choca con la de Swift): este es el acceso para iOS. */
+    val descriptionText: String get() = description
 
     /** "A una de mis tarjetas": el destino es otra tarjeta del propio usuario. */
     data class ToOwnCard(

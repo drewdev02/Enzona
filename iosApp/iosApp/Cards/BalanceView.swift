@@ -1,5 +1,5 @@
 import SwiftUI
-import SharedLogic
+import SharedLogicSwift
 
 /// Pantalla "Balance" conectada al ViewModel. El cromo de navegación vive aquí; el contenido
 /// (`BalanceContent`) no depende del framework Kotlin y se puede previsualizar.

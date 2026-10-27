@@ -1,5 +1,5 @@
 import SwiftUI
-import SharedLogic
+import SharedLogicSwift
 
 struct ContentView: View {
     @StateObject private var session = SessionModel()

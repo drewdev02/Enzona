@@ -1,5 +1,5 @@
 import Foundation
-import SharedLogic
+import SharedLogicSwift
 
 // Frontera Kotlin -> Swift que comparten los formularios que mueven dinero: cómo se muestra una tarjeta y cómo se
 // arma el comprobante de cualquier transferencia.
@@ -11,7 +11,7 @@ extension BankCard {
     }
 
     /// Logo del banco, o el avatar neutro si no se reconoce.
-    var logo: String { TransferPresentation.logo(brand: EzBankBrand(BankBrandKt.bankBrandOf(bank: bankCode))) }
+    var logo: String { TransferPresentation.logo(brand: EzBankBrand(CardsDomain.bankBrandOf(bank: bankCode))) }
 
     /// La tarjeta como se ofrece en los selectores: su texto, su moneda y el logo de su banco.
     func choice() -> CardChoice { CardChoice(id: id, label: label, currency: currency, logoName: logo) }
@@ -49,7 +49,7 @@ enum TransferDetailBuilder {
             mainText: mainText, destinationLogo: destinationLogo,
             amountText: OwnCardPresentation.amountPlain(minorUnits: request.amount.minorUnits, currency: request.amount.currency),
             dateText: receipt.flatMap { OwnCardPresentation.dateText(wallClock: wallClock, receivedText: $0.createdAtText) },
-            rows: OwnCardPresentation.rows(operationCode: receipt?.operationCode, description: request.description_),
+            rows: OwnCardPresentation.rows(operationCode: receipt?.operationCode, description: request.descriptionText),
             sourceLogo: source.logo, sourceHolder: source.holder,
             sourceSuffix: OwnCardPresentation.sourceSuffix(last4: source.last4, currency: source.currency),
             qrContent: receipt?.signature

@@ -1,7 +1,7 @@
 #if DEBUG
 import SwiftUI
 import UIKit
-import SharedLogic
+import SharedLogicSwift
 
 /// Herramienta de depuración: copia los tres tokens de la sesión en texto plano al portapapeles.
 /// Solo existe en builds debug (este archivo entero queda fuera de release). Los tokens se leen
