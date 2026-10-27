@@ -1,5 +1,5 @@
 import SwiftUI
-import SharedLogic
+import SharedLogicSwift
 
 /// Segundo nivel (no son pestañas): pantallas que se abren desde el inicio.
 enum HomeRoute: Hashable {
@@ -26,7 +26,7 @@ struct HomeView: View {
     @State private var comingSoon: String?
 
     /// Orden y etiquetas vienen del enum compartido `HomeService` (una sola fuente).
-    private let services: [EzServiceItem] = HomeServices.shared.all.map {
+    private let services: [EzServiceItem] = HomeService.allCases.map {
         EzServiceItem(id: $0.iconKey, title: $0.label, imageName: $0.iconKey)
     }
 
@@ -109,12 +109,11 @@ struct HomeView: View {
 
     /// La navegación de cada servicio se añade con su hito; hasta entonces avisa.
     private func open(_ item: EzServiceItem) {
-        let service = HomeServices.shared.all.first { $0.iconKey == item.id }
+        let service = HomeService.allCases.first { $0.iconKey == item.id }
         if let service, service.isAvailable {
-            // Se compara con las constantes de Kotlin (tipadas), no con el nombre en texto.
-            if service == HomeService.balance {
+                        if service == HomeService.BALANCE {
                 path.append(.balance)
-            } else if service == HomeService.transfer {
+            } else if service == HomeService.TRANSFER {
                 path.append(.transferMenu)
             }
         } else {

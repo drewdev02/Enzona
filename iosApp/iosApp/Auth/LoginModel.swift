@@ -1,8 +1,7 @@
 import Foundation
-import SharedLogic
+import SharedLogicSwift
 
-/// Envuelve el LoginViewModel de Kotlin para la pantalla de login (puente `watchState`,
-/// en lugar de SKIE). La sesión en sí es de `SessionModel`; esto solo es el intento de login.
+/// Envuelve el LoginViewModel de Kotlin para la pantalla de login (observa `state` con `asAsyncSequence()` de Swift Export). La sesión en sí es de `SessionModel`; esto solo es el intento de login.
 @MainActor
 final class LoginModel: ObservableObject {
     enum Phase { case idle, authenticating, error(String) }
@@ -14,24 +13,29 @@ final class LoginModel: ObservableObject {
     /// Un ViewModel por pantalla: `deinit` lo limpia. El PKCE pendiente vive en el repositorio.
     private let holder = KoinHelper.shared.loginViewModelHolder()
     private var vm: LoginViewModel { holder.viewModel }
-    private var subscription: Cancellable?
+    private var observation: Task<Void, Never>?
 
     init() {
-        subscription = holder.viewModel.watchState { [weak self] state in
-            self?.apply(state)
+        let state = holder.viewModel.state
+        observation = Task { [weak self] in
+            do {
+                for try await value in state.asAsyncSequence() {
+                    self?.apply(value)
+                }
+            } catch {}
         }
     }
 
     deinit {
-        subscription?.cancel()
+        observation?.cancel()
         holder.clear()
     }
 
     private func apply(_ state: LoginUiState) {
-        switch state {
-        case is LoginUiStateAuthenticating: phase = .authenticating
-        case let e as LoginUiStateError: phase = .error(e.message)
-        default: phase = .idle
+        switch state.sealedType() {
+        case .authenticating: phase = .authenticating
+        case .error(let e): phase = .error(e.value.message)
+        case .idle: phase = .idle
         }
     }
 

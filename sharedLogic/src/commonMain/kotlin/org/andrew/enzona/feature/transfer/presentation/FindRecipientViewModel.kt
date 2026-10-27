@@ -9,8 +9,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.andrew.enzona.core.logging.logger
 import org.andrew.enzona.core.result.userMessage
-import org.andrew.enzona.core.util.Cancellable
-import org.andrew.enzona.core.util.watch
 import org.andrew.enzona.feature.transfer.domain.FindRecipientResult
 import org.andrew.enzona.feature.transfer.domain.FindRecipientUseCase
 import org.andrew.enzona.feature.transfer.domain.InvalidQuery
@@ -59,7 +57,4 @@ class FindRecipientViewModel(
         job?.cancel()
         _state.value = FindRecipientUiState.Idle
     }
-
-    /** Observa el estado desde Swift (puente manual en lugar de SKIE). */
-    fun watchState(onEach: (FindRecipientUiState) -> Unit): Cancellable = state.watch(onEach)
 }

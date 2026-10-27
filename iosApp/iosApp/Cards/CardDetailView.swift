@@ -1,5 +1,5 @@
 import SwiftUI
-import SharedLogic
+import SharedLogicSwift
 
 /// Detalle de una tarjeta conectado al ViewModel (uno por pantalla, con el id de la tarjeta). El cromo de
 /// navegación vive aquí; el contenido (`CardDetailContent`) no depende del framework Kotlin y se previsualiza.

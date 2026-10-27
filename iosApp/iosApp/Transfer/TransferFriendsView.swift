@@ -1,5 +1,5 @@
 import SwiftUI
-import SharedLogic
+import SharedLogicSwift
 
 /// "Mis amigos" conectado al ViewModel: elegir a quién transferir.
 struct TransferFriendsView: View {

@@ -1,5 +1,5 @@
 import SwiftUI
-import SharedLogic
+import SharedLogicSwift
 
 /// "Buscar una cuenta" conectado al ViewModel. Solo una cuenta que el servidor devolvió permite seguir.
 struct FindAccountView: View {

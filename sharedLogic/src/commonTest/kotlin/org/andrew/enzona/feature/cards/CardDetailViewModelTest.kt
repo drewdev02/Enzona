@@ -214,24 +214,6 @@ class CardDetailViewModelTest {
     }
 
     @Test
-    fun watchStateBridgesEmissionsToCallback() = runTest {
-        val repo = FakeCardsRepository()
-        val expected = sampleActivity()
-        repo.activityResult = EzResult.Success(expected)
-
-        val vm = CardDetailViewModel("card-watch", repo)
-        val emitted = mutableListOf<CardDetailUiState>()
-        val cancellable = vm.watchState { emitted.add(it) }
-
-        assertEquals(listOf<CardDetailUiState>(CardDetailUiState.Loading), emitted)
-
-        vm.load()
-        assertEquals(listOf<CardDetailUiState>(CardDetailUiState.Loading, CardDetailUiState.Content(expected)), emitted)
-
-        cancellable.cancel()
-    }
-
-    @Test
     fun loadingRedactsCardIdAmountsAliasesAndSecretsInLogs() = runTest {
         val repo = FakeCardsRepository()
         val activity = CardActivity(

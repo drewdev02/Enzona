@@ -1,5 +1,5 @@
 import SwiftUI
-import SharedLogic
+import SharedLogicSwift
 
 /// Las cuatro formas de transferir del menú, en el orden del original.
 enum TransferOption: CaseIterable, Identifiable {

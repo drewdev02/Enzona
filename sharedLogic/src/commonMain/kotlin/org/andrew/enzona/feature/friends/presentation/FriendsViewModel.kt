@@ -9,8 +9,6 @@ import kotlinx.coroutines.launch
 import org.andrew.enzona.core.logging.logger
 import org.andrew.enzona.core.result.EzResult
 import org.andrew.enzona.core.result.userMessage
-import org.andrew.enzona.core.util.Cancellable
-import org.andrew.enzona.core.util.watch
 import org.andrew.enzona.feature.account.domain.GetAccountUseCase
 import org.andrew.enzona.feature.friends.domain.Friend
 import org.andrew.enzona.feature.friends.domain.FriendsRepository
@@ -55,7 +53,4 @@ class FriendsViewModel(
             }
         }
     }
-
-    /** Observa el estado desde Swift (puente manual en lugar de SKIE). */
-    fun watchState(onEach: (FriendsUiState) -> Unit): Cancellable = state.watch(onEach)
 }

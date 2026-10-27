@@ -1,7 +1,7 @@
 import Foundation
-import SharedLogic
+import SharedLogicSwift
 
-/// Envuelve el AccountViewModel de Kotlin para SwiftUI (puente `watchState`, en lugar de SKIE).
+/// Envuelve el AccountViewModel de Kotlin para SwiftUI (observa `state` con `asAsyncSequence()` de Swift Export).
 @MainActor
 final class ProfileModel: ObservableObject {
     enum Phase {
@@ -15,24 +15,27 @@ final class ProfileModel: ObservableObject {
     /// Un ViewModel por pantalla: `deinit` lo limpia y cancela sus cargas en vuelo.
     private let holder = KoinHelper.shared.accountViewModelHolder()
     private var vm: AccountViewModel { holder.viewModel }
-    private var subscription: Cancellable?
+    private var observation: Task<Void, Never>?
 
     init() {
-        subscription = holder.viewModel.watchState { [weak self] state in
-            self?.apply(state)
+        let state = holder.viewModel.state
+        observation = Task { [weak self] in
+            do {
+                for try await value in state.asAsyncSequence() { self?.apply(value) }
+            } catch {}
         }
     }
 
     deinit {
-        subscription?.cancel()
+        observation?.cancel()
         holder.clear()
     }
 
     private func apply(_ state: AccountUiState) {
-        switch state {
-        case let content as AccountUiStateContent: phase = .content(content.account)
-        case let error as AccountUiStateError: phase = .error(error.message)
-        default: phase = .loading
+        switch state.sealedType() {
+        case .content(let content): phase = .content(content.value.account)
+        case .error(let error): phase = .error(error.value.message)
+        case .loading: phase = .loading
         }
     }
 

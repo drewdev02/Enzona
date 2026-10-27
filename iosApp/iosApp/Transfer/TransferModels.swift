@@ -1,5 +1,5 @@
 import Foundation
-import SharedLogic
+import SharedLogicSwift
 
 extension TransferSummary {
     /// Traduce el dominio a lo que pinta una fila. Aquí viven los textos y el formato (el dominio solo guarda hechos).
@@ -24,7 +24,7 @@ extension TransferSummary {
         let statusLabel = TransferPresentation.statusLabel(status: statusKind, statusText: statusText)
         return TransferRowModel(
             id: id, title: title, subtitle: subtitle,
-            logoName: TransferPresentation.logo(brand: EzBankBrand(BankBrandKt.bankBrandOf(bank: recipient.bank))),
+            logoName: TransferPresentation.logo(brand: EzBankBrand(CardsDomain.bankBrandOf(bank: recipient.bank))),
             amountText: amount, currency: currency, amountTone: TransferPresentation.amountTone(direction: directionKind),
             dateText: dateText, statusText: statusLabel, statusTone: TransferPresentation.statusTone(status: statusKind),
             spoken: TransferPresentation.spoken(title: title, subtitle: subtitle, amount: amount, currency: currency,
@@ -35,7 +35,7 @@ extension TransferSummary {
 
 extension TransferFilterModel {
     var domain: TransferFilter {
-        TransferFilter.companion.fromIso(startDay: startDay, endDay: endDay, status: status?.kotlin)
+        TransferFilter.Companion.shared.fromIso(startDay: startDay, endDay: endDay, status: status?.kotlin)
     }
 
     init(_ filter: TransferFilter) {
@@ -49,9 +49,9 @@ extension TransferFilterModel {
 private extension TransferStatusFilter {
     var kotlin: TransferStatus {
         switch self {
-        case .accepted: return TransferStatus.accepted
-        case .pending: return TransferStatus.pending
-        case .failed: return TransferStatus.failed
+        case .accepted: return TransferStatus.ACCEPTED
+        case .pending: return TransferStatus.PENDING
+        case .failed: return TransferStatus.FAILED
         }
     }
 
@@ -62,22 +62,27 @@ private extension TransferStatusFilter {
     }
 }
 
-/// Envuelve el TransferMenuViewModel de Kotlin para SwiftUI (puente `watchState`, en lugar de SKIE).
+/// Envuelve el TransferMenuViewModel de Kotlin para SwiftUI (observa `state` con `asAsyncSequence()` de Swift Export).
 /// Un ViewModel por pantalla: `deinit` lo limpia y cancela sus cargas en vuelo.
 @MainActor
 final class TransferMenuModel: ObservableObject {
     @Published var phase: TransferMenuPhase = .loading
 
-    private let holder: ViewModelHolder<TransferMenuViewModel>
-    private var subscription: Cancellable?
+    private let holder: TransferMenuViewModelHolder
+    private var observation: Task<Void, Never>?
 
     init() {
         holder = KoinHelper.shared.transferMenuViewModelHolder()
-        subscription = holder.viewModel.watchState { [weak self] state in self?.apply(state) }
+        let state = holder.viewModel.state
+        observation = Task { [weak self] in
+            do {
+                for try await value in state.asAsyncSequence() { self?.apply(value) }
+            } catch {}
+        }
     }
 
     deinit {
-        subscription?.cancel()
+        observation?.cancel()
         holder.clear()
     }
 
@@ -99,16 +104,21 @@ final class TransferHistoryModel: ObservableObject {
     /// El filtro vigente (el del último estado recibido, o el pedido mientras carga).
     @Published var filter = TransferFilterModel.none
 
-    private let holder: ViewModelHolder<TransferHistoryViewModel>
-    private var subscription: Cancellable?
+    private let holder: TransferHistoryViewModelHolder
+    private var observation: Task<Void, Never>?
 
     init() {
         holder = KoinHelper.shared.transferHistoryViewModelHolder()
-        subscription = holder.viewModel.watchState { [weak self] state in self?.apply(state) }
+        let state = holder.viewModel.state
+        observation = Task { [weak self] in
+            do {
+                for try await value in state.asAsyncSequence() { self?.apply(value) }
+            } catch {}
+        }
     }
 
     deinit {
-        subscription?.cancel()
+        observation?.cancel()
         holder.clear()
     }
 
@@ -139,16 +149,21 @@ final class TransferHistoryModel: ObservableObject {
 final class FindAccountModel: ObservableObject {
     @Published var phase: FindAccountPhase = .idle
 
-    private let holder: ViewModelHolder<FindRecipientViewModel>
-    private var subscription: Cancellable?
+    private let holder: FindRecipientViewModelHolder
+    private var observation: Task<Void, Never>?
 
     init() {
         holder = KoinHelper.shared.findRecipientViewModelHolder()
-        subscription = holder.viewModel.watchState { [weak self] state in self?.apply(state) }
+        let state = holder.viewModel.state
+        observation = Task { [weak self] in
+            do {
+                for try await value in state.asAsyncSequence() { self?.apply(value) }
+            } catch {}
+        }
     }
 
     deinit {
-        subscription?.cancel()
+        observation?.cancel()
         holder.clear()
     }
 
@@ -176,16 +191,21 @@ final class FindAccountModel: ObservableObject {
 final class FriendsModel: ObservableObject {
     @Published var phase: FriendsPhase = .loading
 
-    private let holder: ViewModelHolder<FriendsViewModel>
-    private var subscription: Cancellable?
+    private let holder: FriendsViewModelHolder
+    private var observation: Task<Void, Never>?
 
     init() {
         holder = KoinHelper.shared.friendsViewModelHolder()
-        subscription = holder.viewModel.watchState { [weak self] state in self?.apply(state) }
+        let state = holder.viewModel.state
+        observation = Task { [weak self] in
+            do {
+                for try await value in state.asAsyncSequence() { self?.apply(value) }
+            } catch {}
+        }
     }
 
     deinit {
-        subscription?.cancel()
+        observation?.cancel()
         holder.clear()
     }
 

@@ -9,8 +9,6 @@ import kotlinx.coroutines.launch
 import org.andrew.enzona.core.logging.logger
 import org.andrew.enzona.core.result.EzResult
 import org.andrew.enzona.core.result.userMessage
-import org.andrew.enzona.core.util.Cancellable
-import org.andrew.enzona.core.util.watch
 import org.andrew.enzona.feature.cards.domain.BankCard
 import org.andrew.enzona.feature.cards.domain.GetCardsUseCase
 
@@ -45,7 +43,4 @@ class CardsViewModel(
             }
         }
     }
-
-    /** Observa el estado desde Swift (puente manual en lugar de SKIE). */
-    fun watchState(onEach: (CardsUiState) -> Unit): Cancellable = state.watch(onEach)
 }

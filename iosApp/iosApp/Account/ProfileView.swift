@@ -1,5 +1,5 @@
 import SwiftUI
-import SharedLogic
+import SharedLogicSwift
 
 struct ProfileView: View {
     @ObservedObject var profile: ProfileModel
@@ -19,7 +19,7 @@ struct ProfileView: View {
                         ("Correo", account.email ?? "—"),
                         ("Teléfono", account.phone ?? "—"),
                         ("Moneda principal", account.primaryCurrency ?? "—"),
-                        ("Nivel de perfil", account.profileLevel.map { "\($0.intValue)" } ?? "—"),
+                        ("Nivel de perfil", account.profileLevel.map { String($0) } ?? "—"),
                     ],
                     statusRows: [
                         ("Cuenta verificada", account.isVerified ? "Sí" : "No"),

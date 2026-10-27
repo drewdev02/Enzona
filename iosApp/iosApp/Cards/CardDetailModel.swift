@@ -1,5 +1,5 @@
 import Foundation
-import SharedLogic
+import SharedLogicSwift
 
 extension CardActivity {
     /// Traduce el dominio a lo que pinta la pantalla. Aquí viven los textos y el formato (el dominio
@@ -10,7 +10,7 @@ extension CardActivity {
         }
         let currencyText = OperationPresentation.displayCurrency(currency)
         let rows: [OperationRowModel] = operations.enumerated().map { index, operation in
-            let isDebit = operation.direction == OperationDirection.debit
+            let isDebit = operation.direction == .DEBIT
             let kind = EzOperationKind(operation.kind)
             let title = OperationPresentation.title(kind: kind, merchantAlias: operation.merchantAlias)
             let label = OperationPresentation.label(isDebit: isDebit)
@@ -40,33 +40,36 @@ extension CardActivity {
     }
 }
 
-/// Envuelve el CardDetailViewModel de Kotlin para SwiftUI (puente `watchState`, en lugar de SKIE).
+/// Envuelve el CardDetailViewModel de Kotlin para SwiftUI (observa `state` con `asAsyncSequence()` de Swift Export).
 /// Un ViewModel por pantalla: `deinit` lo limpia y cancela sus cargas en vuelo.
 @MainActor
 final class CardDetailModel: ObservableObject {
     @Published var phase: CardDetailPhase = .loading
 
-    private let holder: ViewModelHolder<CardDetailViewModel>
+    private let holder: CardDetailViewModelHolder
     private var vm: CardDetailViewModel { holder.viewModel }
-    private var subscription: Cancellable?
+    private var observation: Task<Void, Never>?
 
     init(cardId: String) {
         holder = KoinHelper.shared.cardDetailViewModelHolder(cardId: cardId)
-        subscription = holder.viewModel.watchState { [weak self] state in
-            self?.apply(state)
+        let state = holder.viewModel.state
+        observation = Task { [weak self] in
+            do {
+                for try await value in state.asAsyncSequence() { self?.apply(value) }
+            } catch {}
         }
     }
 
     deinit {
-        subscription?.cancel()
+        observation?.cancel()
         holder.clear()
     }
 
     private func apply(_ state: CardDetailUiState) {
-        switch state {
-        case let content as CardDetailUiStateContent: phase = .content(content.activity.toData())
-        case let error as CardDetailUiStateError: phase = .error(error.message)
-        default: phase = .loading
+        switch state.sealedType() {
+        case .content(let content): phase = .content(content.value.activity.toData())
+        case .error(let error): phase = .error(error.value.message)
+        case .loading: phase = .loading
         }
     }
 

@@ -1,7 +1,5 @@
 package org.andrew.enzona.di
 
-import org.andrew.enzona.core.util.Cancellable
-import org.andrew.enzona.core.util.watch
 import org.andrew.enzona.feature.auth.domain.SessionRepository
 import org.andrew.enzona.feature.auth.domain.SessionState
 import org.andrew.enzona.feature.account.accountModule
@@ -40,34 +38,35 @@ fun initKoinIos(): KoinApplication = initKoin {}
 object KoinHelper : KoinComponent {
     val session: SessionRepository by inject()
 
-    /** Observa la sesión desde Swift (puente manual en lugar de SKIE). */
-    fun watchSession(onEach: (SessionState) -> Unit): Cancellable = session.state.watch(onEach)
-
     /** Un ViewModel nuevo por pantalla; quien lo pide llama a `clear()` al destruirla. */
-    fun loginViewModelHolder(): ViewModelHolder<org.andrew.enzona.feature.auth.presentation.LoginViewModel> =
-        getKoin().viewModelHolder()
+    fun loginViewModelHolder(): LoginViewModelHolder = LoginViewModelHolder(getKoin().viewModelHolder())
 
-    fun accountViewModelHolder(): ViewModelHolder<org.andrew.enzona.feature.account.presentation.AccountViewModel> =
-        getKoin().viewModelHolder()
+    fun accountViewModelHolder(): AccountViewModelHolder =
+        AccountViewModelHolder(getKoin().viewModelHolder())
 
-    fun cardsViewModelHolder(): ViewModelHolder<org.andrew.enzona.feature.cards.presentation.CardsViewModel> =
-        getKoin().viewModelHolder()
+    fun cardsViewModelHolder(): CardsViewModelHolder =
+        CardsViewModelHolder(getKoin().viewModelHolder())
 
-    fun cardDetailViewModelHolder(cardId: String): ViewModelHolder<org.andrew.enzona.feature.cards.presentation.CardDetailViewModel> =
-        getKoin().viewModelHolder { parametersOf(cardId) }
+    fun cardDetailViewModelHolder(cardId: String): CardDetailViewModelHolder =
+        CardDetailViewModelHolder(getKoin().viewModelHolder { parametersOf(cardId) })
 
-    fun transferMenuViewModelHolder(): ViewModelHolder<TransferMenuViewModel> = getKoin().viewModelHolder()
+    fun transferMenuViewModelHolder(): TransferMenuViewModelHolder =
+        TransferMenuViewModelHolder(getKoin().viewModelHolder())
 
-    fun transferHistoryViewModelHolder(): ViewModelHolder<TransferHistoryViewModel> = getKoin().viewModelHolder()
+    fun transferHistoryViewModelHolder(): TransferHistoryViewModelHolder =
+        TransferHistoryViewModelHolder(getKoin().viewModelHolder())
 
-    fun findRecipientViewModelHolder(): ViewModelHolder<FindRecipientViewModel> = getKoin().viewModelHolder()
+    fun findRecipientViewModelHolder(): FindRecipientViewModelHolder =
+        FindRecipientViewModelHolder(getKoin().viewModelHolder())
 
-    fun friendsViewModelHolder(): ViewModelHolder<FriendsViewModel> = getKoin().viewModelHolder()
+    fun friendsViewModelHolder(): FriendsViewModelHolder =
+        FriendsViewModelHolder(getKoin().viewModelHolder())
 
-    fun ownCardTransferViewModelHolder(): ViewModelHolder<OwnCardTransferViewModel> = getKoin().viewModelHolder()
+    fun ownCardTransferViewModelHolder(): OwnCardTransferViewModelHolder =
+        OwnCardTransferViewModelHolder(getKoin().viewModelHolder())
 
     /** "A una cuenta" y "A un amigo": el destinatario ya verificado lo pone quien abre la pantalla. */
-    fun recipientTransferViewModelHolder(recipient: TransferRecipient): ViewModelHolder<RecipientTransferViewModel> =
-        getKoin().viewModelHolder { parametersOf(recipient) }
+    fun recipientTransferViewModelHolder(recipient: TransferRecipient): RecipientTransferViewModelHolder =
+        RecipientTransferViewModelHolder(getKoin().viewModelHolder { parametersOf(recipient) })
 }
 
